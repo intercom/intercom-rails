@@ -1,0 +1,1 @@
+require 'intercom-rails/railtie' if defined? Rails

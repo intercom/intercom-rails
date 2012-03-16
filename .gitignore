@@ -1,0 +1,6 @@
+.yardoc/
+.bundle/
+log/*.log
+pkg/
+TODO
+*.gem

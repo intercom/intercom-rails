@@ -1,6 +1,6 @@
 module Intercom
   module Generators
-    class IntercomGenerator < Rails::Generators::Base
+    class IntercomGenerator < ::Rails::Generators::Base
       desc "Installs Intercom.io into your Rails app"
 
       argument :app_id, :desc => "The Intercom.io app-id token"

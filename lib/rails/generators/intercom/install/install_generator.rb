@@ -1,13 +1,17 @@
 module Intercom
   module Generators
     class InstallGenerator < ::Rails::Generators::Base
-      desc "Installs Intercom.io into your Rails app"
+      desc "Installs Intercom (https://www.intercom.io) into your Rails app"
 
-      argument :app_id, :desc => "The Intercom.io app-id token"
+      argument :app_id, :desc => "Your Intercom app-id, which can be found here: https://www.intercom.io/apps/api_keys"
 
       def update_layout
         snippet = <<-HTML
-<!-- TODO add any user/app/situational data to the Hash below -->
+<!--
+TODO add any user/app/situational data to the custom Hash below
+e.g. :plan => 'Pro', :dashboard_page => 'http://dashboard.example.com/user-id'
+See http://docs.intercom.io/#CustomData for more details about custom data
+-->
 <% if logged_in? %>
   <%= intercom_script_tag({
     :app_id => #{app_id.inspect},
@@ -15,7 +19,9 @@ module Intercom
     :email => current_user.email,
     :name => current_user.name,
     :created_at => current_user.created_at,
-    :custom_data => {:plan => "Pro"}}) %>
+    :custom_data => {
+
+    }}) %>
 <% end %>
 </body>
 HTML

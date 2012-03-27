@@ -9,9 +9,22 @@ Add this to your Gemfile:
 
   gem "intercom-rails"
 
+Then run:
+
 <code>bundle install</code>
 
 == Usage
+
+Take note of your app_id from here: You can find your app id here: https://www.intercom.io/apps/api_keys
+
+=== rails generator
+
+The <strong>intercom:install</strong> rails generator will add <code>intercom_script_tag</code> to your application layout. It provides a great start that will work well for most people and is easily customised.
+
+<code>rails g intercom:install YOUR-APP-ID</code>
+
+=== manual install
+
 In your layout file:
 
   <% if logged_in? %>
@@ -29,13 +42,10 @@ In your layout file:
 :custom_data allows you to specify any app/user/situational data to associate with the current_user. It will be visible in Intercom, and you'll be able to search/filter/send messages based on it.
 
 e.g.
-
-  :plan => "Pro"
-
-or
+  :plan => "Pro",
   :dashboard_page => 'http://dashboard.example.com/user-id'
 
-See IntercomRails::ScriptTagHelper for more details.
+See {IntercomRails::ScriptTagHelper} for more details.
 
 == Contributors
 

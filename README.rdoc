@@ -26,6 +26,10 @@ In your layout file:
 
 See {IntercomRails::ScriptTagHelper} for more details.
 
+== Contributors
+
+- Dr Nic Williams (@drnic) - provided a rails generator for adding the Intercom javascript tag into your layout.
+
 == License
 
 This project rocks and uses MIT-LICENSE.

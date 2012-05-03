@@ -1,4 +1,5 @@
 require "active_support/json"
+require "active_support/core_ext/hash/indifferent_access"
 
 module IntercomRails
   # Helper methods for generating Intercom javascript script tags.
@@ -28,8 +29,9 @@ module IntercomRails
     #                             {:activator => "#Intercom"}
     #                          ) %>
     def intercom_script_tag(user_details, widget_options={})
-      intercom_settings = user_details.merge({:widget => widget_options})
+      intercom_settings = user_details.merge({:widget => widget_options}).with_indifferent_access
       intercom_settings_with_dates_as_timestamps = convert_dates_to_unix_timestamps(intercom_settings)
+      intercom_settings_with_dates_as_timestamps.reject! { |key, value| %w(email name user_id).include?(key.to_s) && value.nil? }
       intercom_script = <<-INTERCOM_SCRIPT
 <script id="IntercomSettingsScriptTag">
     var intercomSettings = #{ActiveSupport::JSON.encode(intercom_settings_with_dates_as_timestamps)};

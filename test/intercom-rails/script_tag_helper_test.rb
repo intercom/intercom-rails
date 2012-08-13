@@ -21,4 +21,9 @@ class IntercomRailsTest < MiniTest::Unit::TestCase
       assert(!intercom_script_tag({standard_attribute => nil}).include?("\"#{standard_attribute}\":"), "should strip #{standard_attribute} when nil")
     end
   end
+
+  def test_secure_mode
+    assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + 'ciaran@intercom.io')}"/, intercom_script_tag({:email => "ciaran@intercom.io"}, {:secret => 'abcdefgh'}))
+    assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:id => 1234}, {:secret => 'abcdefgh'}))
+  end
 end

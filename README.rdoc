@@ -45,6 +45,23 @@ e.g.
   :plan => "Pro",
   :dashboard_page => 'http://dashboard.example.com/user-id'
 
+=== secure mode
+
+Pass in a second argument to intercom_script_tag, a hash containing the secret, like so:
+
+  <% if logged_in? %>
+    <%= intercom_script_tag({
+      :app_id => 'your-app-id'
+      :user_id => current_user.id
+      :email => current_user.email
+      :name => current_user.name
+      :created_at => current_user.created_at
+      },
+      {:secret => 'your-apps-secret'}
+    ) %>
+  <% end %>
+
+
 See {IntercomRails::ScriptTagHelper} for more details.
 
 == Contributors

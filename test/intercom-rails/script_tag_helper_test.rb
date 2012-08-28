@@ -24,7 +24,7 @@ class IntercomRailsTest < MiniTest::Unit::TestCase
 
   def test_secure_mode
     assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + 'ciaran@intercom.io')}"/, intercom_script_tag({:email => "ciaran@intercom.io"}, {:secret => 'abcdefgh'}))
-    assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:id => 1234}, {:secret => 'abcdefgh'}))
-    assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:id => 1234, :email => "ciaran@intercom.io"}, {:secret => 'abcdefgh'}))
+    assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:user_id => 1234}, {:secret => 'abcdefgh'}))
+    assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:user_id => 1234, :email => "ciaran@intercom.io"}, {:secret => 'abcdefgh'}))
   end
 end

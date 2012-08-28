@@ -30,7 +30,7 @@ module IntercomRails
     #                          ) %>
     def intercom_script_tag(user_details, options={})
       if options[:secret]
-        secret_string = "#{options[:secret]}#{user_details[:id].blank? ? user_details[:email] : user_details[:id]}"
+        secret_string = "#{options[:secret]}#{user_details[:user_id].blank? ? user_details[:email] : user_details[:user_id]}"
         user_details[:user_hash] = Digest::SHA1.hexdigest(secret_string)
       end
       intercom_settings = user_details.merge({:widget => options[:widget]}).with_indifferent_access

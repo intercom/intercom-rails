@@ -13,8 +13,13 @@ module IntercomRails
       @rendered_string.gsub!(CLOSING_BODY_TAG, intercom_script_tag + ' \\0')
     end
 
+    def intercom_script_tag_called!
+      @intercom_script_tag_called = true
+    end
+
     private
     def include_intercom_javascript?
+      !@intercom_script_tag_called &&
       lookup_context.rendered_format == :html &&
       @rendered_string[CLOSING_BODY_TAG] &&
       user_object_present?

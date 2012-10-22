@@ -57,6 +57,8 @@ module IntercomRails
 })();
 </script>
       INTERCOM_SCRIPT
+
+      controller.intercom_script_tag_called! if defined?(controller)
       intercom_script.respond_to?(:html_safe) ? intercom_script.html_safe : intercom_script
     end
 

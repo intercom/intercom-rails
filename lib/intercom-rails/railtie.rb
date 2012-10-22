@@ -1,4 +1,5 @@
 require 'intercom-rails/script_tag_helper'
+require 'intercom-rails/action_controller_patch'
 
 module IntercomRails
   class Railtie < Rails::Railtie

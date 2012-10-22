@@ -10,7 +10,7 @@ module IntercomRails
       @rendered_string = super
       return @rendered_string unless include_intercom_javascript? 
 
-      @rendered_string.gsub!(CLOSING_BODY_TAG, intercom_javascript + ' \\0')
+      @rendered_string.gsub!(CLOSING_BODY_TAG, intercom_script_tag + ' \\0')
     end
 
     private
@@ -51,7 +51,7 @@ module IntercomRails
 
       user_details[:user_id] = user.id if user.respond_to?(:id) && user.id.present?
       [:email, :name, :created_at].each do |attribute|
-        user_details[attribute] = user.send(attribute) if user.respond_to?(attribute) && user.attribute.present?
+        user_details[attribute] = user.send(attribute) if user.respond_to?(attribute) && user.send(attribute).present?
       end
 
       super(user_details)

@@ -31,9 +31,7 @@ module IntercomRails
 
     POTENTIAL_USER_OBJECTS = [
       Proc.new { current_user },
-      Proc.new { current_admin },
-      Proc.new { @user },
-      Proc.new { @admin }
+      Proc.new { @user }
     ]
 
     def user_object

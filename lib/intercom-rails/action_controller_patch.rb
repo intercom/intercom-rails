@@ -4,7 +4,7 @@ module IntercomRails
 
     include ScriptTagHelper
 
-    CLOSING_BODY_TAG = /<\/body>/
+    CLOSING_BODY_TAG = %r{</body>}
 
     def render_to_body(*args)
       @rendered_string = super

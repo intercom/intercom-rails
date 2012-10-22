@@ -7,7 +7,7 @@ module IntercomRails
       ActionView::Base.send :include, ScriptTagHelper
     end
 
-    initializer "intercom_on_rails.active_controller.rb" do |app|
+    initializer "intercom_on_rails.action_controller_patch.rb" do |app|
       ActionController::Base.send :include, ActionControllerPatch
     end
   end

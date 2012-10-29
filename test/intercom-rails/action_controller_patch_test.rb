@@ -46,7 +46,7 @@ class ActionControllerPatchTest < ActionController::TestCase
     get :with_user_instance_variable, :body => "<body>Hello world</body>"
 
     assert_includes @response.body, "<script>"
-    assert_includes @response.body, "abcd1234"
+    assert_includes @response.body, ENV['INTERCOM_APP_ID']
     assert_includes @response.body, "ben@intercom.io"
     assert_includes @response.body, "Ben McRedmond"
   end

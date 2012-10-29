@@ -1,6 +1,5 @@
-require "active_support/core_ext/string/output_safety"
-require 'intercom-rails'
-require 'minitest/autorun'
+require 'active_support/core_ext/string/output_safety'
+require 'test_setup'
 
 class IntercomRailsTest < MiniTest::Unit::TestCase
   include IntercomRails::ScriptTagHelper

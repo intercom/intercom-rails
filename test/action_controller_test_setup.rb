@@ -1,8 +1,6 @@
-require 'intercom-rails'
+require 'test_setup'
 
 require 'pry'
-
-require 'minitest/autorun'
 require 'action_controller'
 require 'action_controller/test_case'
 

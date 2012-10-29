@@ -1,3 +1,5 @@
+require 'action_controller'
+
 module IntercomRails
 
   module ActionControllerPatch
@@ -6,11 +8,11 @@ module IntercomRails
 
     CLOSING_BODY_TAG = %r{</body>}
 
-    def render_to_body(*args)
-      @rendered_string = super
-      return @rendered_string unless include_intercom_javascript? 
+    ActionController::Base.after_filter :modify_response_to_insert_intercom_script_tag
 
-      @rendered_string.gsub!(CLOSING_BODY_TAG, intercom_script_tag + ' \\0')
+    def modify_response_to_insert_intercom_script_tag
+      return unless include_intercom_javascript?
+      response.body = response.body.gsub(CLOSING_BODY_TAG, intercom_script_tag + '\\0')
     end
 
     def intercom_script_tag_called!
@@ -20,8 +22,8 @@ module IntercomRails
     private
     def include_intercom_javascript?
       !@intercom_script_tag_called &&
-      lookup_context.rendered_format == :html &&
-      @rendered_string[CLOSING_BODY_TAG] &&
+      (response.content_type == 'text/html') &&
+      response.body[CLOSING_BODY_TAG] &&
       user_object_present?
     end
 

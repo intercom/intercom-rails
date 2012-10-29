@@ -1,13 +1,15 @@
 require 'intercom-rails'
 
+require 'pry'
+
 require 'minitest/autorun'
 require 'action_controller'
 require 'action_controller/test_case'
 
-def dummy_user
+def dummy_user(options = {})
   user = Struct.new(:email, :name).new
-  user.email = 'ben@intercom.io'
-  user.name = 'Ben McRedmond'
+  user.email = options[:email] || 'ben@intercom.io'
+  user.name = options[:name] || 'Ben McRedmond'
   user
 end
 
@@ -18,6 +20,8 @@ end
 
 
 class ActionController::Base
+
+  include IntercomRails::ActionControllerPatch
 
   include TestRoutes.url_helpers
   include TestRoutes.mounted_helpers

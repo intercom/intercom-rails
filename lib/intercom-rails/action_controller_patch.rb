@@ -28,13 +28,13 @@ module IntercomRails
       intercom_user_object.present?
     end
 
-    POTENTIAL_USER_OBJECTS = [
+    POTENTIAL_INTERCOM_USER_OBJECTS = [
       Proc.new { current_user },
       Proc.new { @user }
     ]
 
     def intercom_user_object
-      POTENTIAL_USER_OBJECTS.each do |potential_user|
+      POTENTIAL_INTERCOM_USER_OBJECTS.each do |potential_user|
         begin
           user = instance_eval &potential_user
           return user if user.present? && 

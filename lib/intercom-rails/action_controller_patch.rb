@@ -21,15 +21,11 @@ module IntercomRails
 
     private
     def include_intercom_javascript?
-      ENV['INTERCOM_APP_ID'].present? &&
+      intercom_app_id.present? &&
       !@intercom_script_tag_called &&
       (response.content_type == 'text/html') &&
       response.body[CLOSING_BODY_TAG] &&
-      user_object_present?
-    end
-
-    def user_object_present?
-      !!user_object
+      intercom_user_object.present?
     end
 
     POTENTIAL_USER_OBJECTS = [
@@ -37,7 +33,7 @@ module IntercomRails
       Proc.new { @user }
     ]
 
-    def user_object
+    def intercom_user_object
       POTENTIAL_USER_OBJECTS.each do |potential_user|
         begin
           user = instance_eval &potential_user
@@ -51,9 +47,15 @@ module IntercomRails
       nil
     end
 
+    def intercom_app_id
+      return ENV['INTERCOM_APP_ID'] if ENV['INTERCOM_APP_ID'].present?
+      return 'abcd1234' if defined?(Rails) && Rails.env.development?
+      nil
+    end
+
     def intercom_script_tag
-      user_details = {:app_id => ENV['INTERCOM_APP_ID']}
-      user = user_object
+      user_details = {:app_id => intercom_app_id}
+      user = intercom_user_object
 
       user_details[:user_id] = user.id if user.respond_to?(:id) && user.id.present?
       [:email, :name, :created_at].each do |attribute|

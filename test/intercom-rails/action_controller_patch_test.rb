@@ -28,7 +28,7 @@ class ActionControllerPatchTest < ActionController::TestCase
 
   def setup
     super
-    ENV['INTERCOM_APP_ID'] = 'abcd1234'
+    ENV['INTERCOM_APP_ID'] = 'my_app_id'
   end
   
   def test_no_user_present

@@ -1,5 +1,5 @@
 require "active_support/core_ext/string/output_safety"
-require 'intercom-rails/script_tag_helper'
+require 'intercom-rails'
 require 'minitest/autorun'
 
 class IntercomRailsTest < MiniTest::Unit::TestCase

@@ -1,4 +1,5 @@
 #!/usr/bin/env rake
+
 begin
   require 'bundler/setup'
 rescue LoadError
@@ -10,10 +11,11 @@ Bundler::GemHelper.install_tasks
 require 'rake/testtask'
 
 Rake::TestTask.new("test") do |test|
-  test.libs.push "lib"
-  test.libs.push "test"
+  test.libs << 'lib'
+  test.libs << 'test'
+
   test.test_files = FileList['test/**/*_test.rb']
-  test.warning = true
+  test.warning = false
   test.verbose = true
 end
 

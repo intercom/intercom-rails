@@ -18,6 +18,8 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'activesupport', ">3.0"
-  s.add_development_dependency 'minitest'
   s.add_development_dependency 'rake'
+  s.add_development_dependency 'rails'
+  s.add_development_dependency 'actionpack'
+  s.add_development_dependency 'pry'
 end

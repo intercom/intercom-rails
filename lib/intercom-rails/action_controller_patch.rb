@@ -21,6 +21,7 @@ module IntercomRails
 
     private
     def include_intercom_javascript?
+      ENV['INTERCOM_APP_ID'].present? &&
       !@intercom_script_tag_called &&
       (response.content_type == 'text/html') &&
       response.body[CLOSING_BODY_TAG] &&

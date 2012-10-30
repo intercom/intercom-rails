@@ -20,6 +20,11 @@ class TestController < ActionController::Base
     render :text => params[:body], :content_type => 'text/html'
   end
 
+  def with_admin_instance_variable
+    @admin = dummy_user(:email => 'eoghan@intercom.io', :name => 'Eoghan McCabe')
+    render :text => params[:body], :content_type => 'text/html'
+  end
+
   def current_user
     raise NameError if params[:action] != 'with_current_user_method'
     dummy_user(:email => 'ciaran@intercom.io', :name => 'Ciaran Lee')
@@ -66,6 +71,16 @@ class ActionControllerPatchTest < ActionController::TestCase
     assert_includes @response.body, "<script>"
     assert_includes @response.body, "ciaran@intercom.io"
     assert_includes @response.body, "Ciaran Lee"
+  end
+
+  def test_setting_current_user_with_intercom_config
+    IntercomRails.config.current_user = Proc.new { @admin }
+
+    get :with_admin_instance_variable, :body => "<body>Hello world</body>"
+
+    assert_includes @response.body, "<script>"
+    assert_includes @response.body, "eoghan@intercom.io"
+    assert_includes @response.body, "Eoghan McCabe"
   end
 
   def test_no_app_id_present

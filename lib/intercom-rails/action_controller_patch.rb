@@ -29,6 +29,7 @@ module IntercomRails
     end
 
     POTENTIAL_INTERCOM_USER_OBJECTS = [
+      Proc.new { instance_eval &IntercomRails.config.current_user if IntercomRails.config.current_user.present? },
       Proc.new { current_user },
       Proc.new { @user }
     ]
@@ -49,7 +50,9 @@ module IntercomRails
 
     def intercom_app_id
       return ENV['INTERCOM_APP_ID'] if ENV['INTERCOM_APP_ID'].present?
+      return IntercomRails.config.app_id if IntercomRails.config.app_id.present?
       return 'abcd1234' if defined?(Rails) && Rails.env.development?
+
       nil
     end
 

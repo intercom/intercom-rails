@@ -1,7 +1,8 @@
 require 'active_support/core_ext/string/output_safety'
 require 'test_setup'
 
-class IntercomRailsTest < MiniTest::Unit::TestCase
+class ScriptTagHelperTest < MiniTest::Unit::TestCase
+
   include IntercomRails::ScriptTagHelper
   def test_output_is_html_safe?
     assert_equal true, intercom_script_tag({}).html_safe?
@@ -26,4 +27,5 @@ class IntercomRailsTest < MiniTest::Unit::TestCase
     assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:user_id => 1234}, {:secret => 'abcdefgh'}))
     assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:user_id => 1234, :email => "ciaran@intercom.io"}, {:secret => 'abcdefgh'}))
   end
+
 end

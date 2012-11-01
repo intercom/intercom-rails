@@ -32,7 +32,7 @@ class TestController < ActionController::Base
 
 end
 
-class ActionControllerPatchTest < ActionController::TestCase 
+class AutoIncludeFilterTest < ActionController::TestCase 
 
   tests TestController
 

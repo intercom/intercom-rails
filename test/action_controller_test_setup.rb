@@ -16,7 +16,6 @@ TestRoutes.draw do
   get ':controller(/:action)'
 end
 
-
 class ActionController::Base
 
   after_filter IntercomRails::AutoIncludeFilter

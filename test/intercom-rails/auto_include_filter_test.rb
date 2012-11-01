@@ -90,4 +90,13 @@ class AutoIncludeFilterTest < ActionController::TestCase
     assert_equal @response.body, "<body>Hello world</body>"
   end
 
+  def test_manual_script_tag_helper_call
+    fake_action_view = fake_action_view_class.new
+    fake_action_view.instance_variable_set(:@controller, @controller)
+    fake_action_view.intercom_script_tag({})
+
+    get :with_current_user_method, :body => "<body>Hello world</body>"
+    assert_equal @response.body,  "<body>Hello world</body>"
+  end
+
 end

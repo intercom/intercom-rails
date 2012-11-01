@@ -29,15 +29,9 @@ class ScriptTagHelperTest < MiniTest::Unit::TestCase
   end
 
   def test_sets_instance_variable
-    klass = Class.new(ActionView::Base)
+    fake_action_view = fake_action_view_class.new
     obj = Object.new
 
-    klass.class_eval do
-      include IntercomRails::ScriptTagHelper
-      attr_reader :controller
-    end
-
-    fake_action_view = klass.new
     fake_action_view.instance_variable_set(:@controller, obj)
 
     fake_action_view.intercom_script_tag({})

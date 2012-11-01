@@ -5,7 +5,6 @@ module IntercomRails
     end
 
     initializer "intercom_on_rails.auto_include_filter.rb" do |app|
-      ActionController::Base.send :include, ScriptTagHelperCallTracker
       ActionController::Base.send :after_filter, AutoIncludeFilter 
     end
   end

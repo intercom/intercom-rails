@@ -44,7 +44,7 @@ module IntercomRails
     end
 
     def intercom_script_tag_called_manually?
-      controller.instance_variable_get(:@intercom_script_tag_called)
+      controller.instance_variable_get(SCRIPT_TAG_HELPER_CALLED_INSTANCE_VARIABLE)
     end
 
     POTENTIAL_INTERCOM_USER_OBJECTS = [

@@ -28,4 +28,20 @@ class ScriptTagHelperTest < MiniTest::Unit::TestCase
     assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:user_id => 1234, :email => "ciaran@intercom.io"}, {:secret => 'abcdefgh'}))
   end
 
+  def test_sets_instance_variable
+    klass = Class.new(ActionView::Base)
+    obj = Object.new
+
+    klass.class_eval do
+      include IntercomRails::ScriptTagHelper
+      attr_reader :controller
+    end
+
+    fake_action_view = klass.new
+    fake_action_view.instance_variable_set(:@controller, obj)
+
+    fake_action_view.intercom_script_tag({})
+    assert_equal obj.instance_variable_get(IntercomRails::SCRIPT_TAG_HELPER_CALLED_INSTANCE_VARIABLE), true
+  end
+
 end

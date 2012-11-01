@@ -19,7 +19,8 @@ end
 
 class ActionController::Base
 
-  include IntercomRails::ActionControllerPatch
+  include IntercomRails::ScriptTagHelperCallTracker
+  after_filter IntercomRails::AutoIncludeFilter
 
   include TestRoutes.url_helpers
   include TestRoutes.mounted_helpers

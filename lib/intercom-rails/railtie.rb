@@ -4,8 +4,9 @@ module IntercomRails
       ActionView::Base.send :include, ScriptTagHelper
     end
 
-    initializer "intercom_on_rails.action_controller_patch.rb" do |app|
-      ActionController::Base.send :include, ActionControllerPatch
+    initializer "intercom_on_rails.auto_include_filter.rb" do |app|
+      ActionController::Base.send :include, ScriptTagHelperCallTracker
+      ActionController::Base.send :after_filter, AutoIncludeFilter 
     end
   end
 end

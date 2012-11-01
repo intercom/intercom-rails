@@ -1,31 +1,50 @@
-require 'action_controller'
-
 module IntercomRails
 
-  module ActionControllerPatch
+  class AutoIncludeFilter
 
     include ScriptTagHelper
-
     CLOSING_BODY_TAG = %r{</body>}
 
-    ActionController::Base.after_filter :modify_response_to_insert_intercom_script_tag
+    def self.filter(controller)
+      auto_include_filter = new(controller)
+      return unless auto_include_filter.include_javascript?
 
-    def modify_response_to_insert_intercom_script_tag
-      return unless include_intercom_javascript?
+      auto_include_filter.include_javascript!
+    end
+
+    attr_reader :controller
+
+    def initialize(kontroller)
+      @controller = kontroller 
+    end
+
+    def include_javascript! 
       response.body = response.body.gsub(CLOSING_BODY_TAG, intercom_script_tag + '\\0')
     end
 
-    def intercom_script_tag_called!
-      @intercom_script_tag_called = true
+    def include_javascript?
+      !intercom_script_tag_called_manually? &&
+      html_content_type? &&
+      response_has_closing_body_tag? &&
+      intercom_app_id.present? &&
+      intercom_user_object.present?
     end
 
     private
-    def include_intercom_javascript?
-      intercom_app_id.present? &&
-      !@intercom_script_tag_called &&
-      (response.content_type == 'text/html') &&
-      response.body[CLOSING_BODY_TAG] &&
-      intercom_user_object.present?
+    def response
+      controller.response
+    end
+
+    def html_content_type?
+      response.content_type == 'text/html'
+    end
+
+    def response_has_closing_body_tag?
+      !!(response.body[CLOSING_BODY_TAG])
+    end
+
+    def intercom_script_tag_called_manually?
+      controller.instance_variable_get(:@intercom_script_tag_called)
     end
 
     POTENTIAL_INTERCOM_USER_OBJECTS = [
@@ -37,7 +56,7 @@ module IntercomRails
     def intercom_user_object
       POTENTIAL_INTERCOM_USER_OBJECTS.each do |potential_user|
         begin
-          user = instance_eval &potential_user
+          user = controller.instance_eval &potential_user
           return user if user.present? && 
                          (user.email.present? || user.id.present?)
         rescue NameError
@@ -68,6 +87,6 @@ module IntercomRails
       super(user_details)
     end
 
-  end 
+  end
 
 end

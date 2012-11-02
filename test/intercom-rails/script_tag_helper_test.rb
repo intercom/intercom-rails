@@ -1,8 +1,8 @@
-require "active_support/core_ext/string/output_safety"
-require 'intercom-rails/script_tag_helper'
-require 'minitest/autorun'
+require 'active_support/core_ext/string/output_safety'
+require 'test_setup'
 
-class IntercomRailsTest < MiniTest::Unit::TestCase
+class ScriptTagHelperTest < MiniTest::Unit::TestCase
+
   include IntercomRails::ScriptTagHelper
   def test_output_is_html_safe?
     assert_equal true, intercom_script_tag({}).html_safe?
@@ -27,4 +27,15 @@ class IntercomRailsTest < MiniTest::Unit::TestCase
     assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:user_id => 1234}, {:secret => 'abcdefgh'}))
     assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:user_id => 1234, :email => "ciaran@intercom.io"}, {:secret => 'abcdefgh'}))
   end
+
+  def test_sets_instance_variable
+    fake_action_view = fake_action_view_class.new
+    obj = Object.new
+
+    fake_action_view.instance_variable_set(:@controller, obj)
+
+    fake_action_view.intercom_script_tag({})
+    assert_equal obj.instance_variable_get(IntercomRails::SCRIPT_TAG_HELPER_CALLED_INSTANCE_VARIABLE), true
+  end
+
 end

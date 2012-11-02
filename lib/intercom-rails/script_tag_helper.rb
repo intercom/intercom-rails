@@ -3,6 +3,8 @@ require "active_support/core_ext/hash/indifferent_access"
 
 module IntercomRails
   # Helper methods for generating Intercom javascript script tags.
+  SCRIPT_TAG_HELPER_CALLED_INSTANCE_VARIABLE = :@_intercom_script_tag_helper_called
+
   module ScriptTagHelper
     # @param user_details [Hash] a customizable hash of user details
     # @param options [Hash] an optional hash for secure mode and widget customisation
@@ -57,6 +59,8 @@ module IntercomRails
 })();
 </script>
       INTERCOM_SCRIPT
+
+      controller.instance_variable_set(IntercomRails::SCRIPT_TAG_HELPER_CALLED_INSTANCE_VARIABLE, true) if defined?(controller)
       intercom_script.respond_to?(:html_safe) ? intercom_script.html_safe : intercom_script
     end
 

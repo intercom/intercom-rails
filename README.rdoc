@@ -70,4 +70,4 @@ See {IntercomRails::ScriptTagHelper} for more details.
 
 == License
 
-This project rocks and uses MIT-LICENSE.
+Copyright (c) 2011-2012 Intercom, Inc.  All rights reserved.

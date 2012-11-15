@@ -1,4 +1,5 @@
 require 'net/http'
+require 'json'
 require 'uri'
 
 module IntercomRails
@@ -13,6 +14,23 @@ module IntercomRails
 
     def self.run
       new.run
+    end
+
+    attr_reader :uri, :http, :failed
+
+    def initialize
+      @uri = Import.bulk_create_api_endpoint
+      @http = New::HTTP.new(@uri.host, @uri.port)
+      @failed = []
+
+      if uri.scheme == 'https'
+        http.use_ssl = true 
+
+        pem = File.read('data/cacert.pem')
+        http.cert = OpenSSL::X509::Certificate.new(pem)
+        http.key = OpenSSL::PKey::RSA.new(pem)
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      end
     end
 
     def run
@@ -40,7 +58,13 @@ module IntercomRails
     end
 
     def send_user_batch(batch)
-      batch = batch.compact.to_json
+      return unless batch.compact!
+      users = {:users => batch}.to_json
+      response_body = authed_http_post_request_with_body(users, :max_retries => 3) do |response|
+        [200,201].include?(response.code)
+      end
+
+      failed += response_body['failed']
     end
 
     def user_for_wire(user)
@@ -60,6 +84,25 @@ module IntercomRails
       else
         User if defined?(User)
       end
+    end
+
+    def authed_http_post_request_with_body(body, options = {})
+      options[:max_retries] ||= 3
+      should_retry = false
+      response = nil
+      attempts = 0
+
+      request = Net::HTTP::Post.new(uri.request_uri) 
+      request.basic_auth(IntercomRails.config.app_id, IntercomRails.config.api_key)
+      request["Content-Type"] = "application/json"
+      request.body = body 
+
+      begin do
+        response = http.request(request)
+        should_retry = !yield(response)
+      end while(should_retry && ((attempts += 1) < options[:max_retries]))
+
+      JSON.parse(response.body)
     end
 
   end

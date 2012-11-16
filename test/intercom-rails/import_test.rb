@@ -116,7 +116,7 @@ class ImportTest < MiniTest::Unit::TestCase
     assert_equal({:user_id => 1, :email => "ben@intercom.io", :name => "Ben McRedmond"}, hsh)
   end
 
-  def test_send_users_in_batches_prepares_users_for_Wire
+  def test_send_users_in_batches_prepares_users_for_wire
     expected_batch = User.all.map { |u| IntercomRails::Import.new.user_for_wire(u) }
     IntercomRails::Import.any_instance.should_receive(:send_user_batch).with(expected_batch)
     IntercomRails::Import.run

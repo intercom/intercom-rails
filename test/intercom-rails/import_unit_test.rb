@@ -2,10 +2,6 @@ require 'import_test_setup'
 
 class ImportUnitTest < ImportTest 
 
-  def after
-    puts 'hi'
-  end
-
   def test_run_with_wrong_rails_env
     Rails.stub(:env).and_return ActiveSupport::StringInquirer.new("development")
 

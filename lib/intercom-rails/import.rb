@@ -20,15 +20,14 @@ module IntercomRails
 
     def initialize
       @uri = Import.bulk_create_api_endpoint
-      @http = New::HTTP.new(@uri.host, @uri.port)
+      @http = Net::HTTP.new(@uri.host, @uri.port)
       @failed = []
 
       if uri.scheme == 'https'
         http.use_ssl = true 
 
-        pem = File.read('data/cacert.pem')
-        http.cert = OpenSSL::X509::Certificate.new(pem)
-        http.key = OpenSSL::PKey::RSA.new(pem)
+        pem = File.read('lib/data/cacert.pem')
+        http.ca_file = File.join(File.dirname(__FILE__), '../data/ca_cert.pem')
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       end
     end
@@ -97,7 +96,7 @@ module IntercomRails
       request["Content-Type"] = "application/json"
       request.body = body 
 
-      begin do
+      begin
         response = http.request(request)
         should_retry = !yield(response)
       end while(should_retry && ((attempts += 1) < options[:max_retries]))

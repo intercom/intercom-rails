@@ -110,13 +110,13 @@ module IntercomRails
         sleep(0.5) 
       elsif error.present?
         raise error[:exception] if error[:exception]
-        raise exception_for_failed_response(error[:previous_response])
+        raise exception_for_failed_response(error[:failed_response])
       end
 
       response = http.request(request)
 
       return response if successful_response?(response)
-      perform_request(request, (attempts + 1), :previous_response => response)
+      perform_request(request, (attempts + 1), :failed_response => response)
     rescue Timeout::Error, Errno::ECONNREFUSED => e
       perform_request(request, attempts + 1, :exception => e)
     end

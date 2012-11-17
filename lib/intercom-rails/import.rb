@@ -76,10 +76,10 @@ module IntercomRails
     end
 
     def user_for_wire(user)
-      wired = {}.tap do |hsh|
-        hsh[:user_id] = user.id if user.respond_to?(:id) && user.id.present?
-        hsh[:email] = user.email if user.respond_to?(:email) && user.email.present?
-        hsh[:name] = user.name if user.respond_to?(:name) && user.name.present?
+      wired = {}.tap do |h|
+        h[:user_id] = user.id if user.respond_to?(:id) && user.id.present?
+        h[:email] = user.email if user.respond_to?(:email) && user.email.present?
+        h[:name] = user.name if user.respond_to?(:name) && user.name.present?
         #Ma hsh[:custom_data] = user_attributes.reduce({}) { |hsh,attribute| hsh.merge(attribute => user.send(:attribute)) }
       end
 

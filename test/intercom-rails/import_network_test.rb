@@ -27,6 +27,11 @@ class MockIntercom < Sinatra::Base
     {"error" => {"type" => "not_authenticated", "message" => "HTTP Basic: Access denied."}}.to_json
   end
 
+  post '/500_error' do
+    status 500
+    {"error" => {"type" => "server_error", "message" => "Danger deploy, gone wrong?"}}.to_json
+  end
+
 end
 
 class InterRunner < MiniTest::Unit
@@ -101,6 +106,16 @@ class ImportNetworkTest < InterRunner::TestCase
     }
 
     assert_equal "App ID or API Key are incorrect, please check them in config/initializers/intercom.rb", exception.message
+  end
+
+  def test_throws_exception_when_intercom_api_is_being_a_dick
+    self.api_path = '/500_error'
+
+    exception = assert_raises(IntercomRails::IntercomAPIError) {
+      @import.run
+    }
+
+    assert_equal "The Intercom API request failed with the code: 500, after 3 attempts.", exception.message
   end
 
 end

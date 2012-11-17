@@ -4,6 +4,7 @@ require 'uri'
 
 module IntercomRails
   class ImportError < StandardError; end
+  class IntercomAPIError < StandardError; end
 
   class Import
 
@@ -79,7 +80,7 @@ module IntercomRails
         hsh[:user_id] = user.id if user.respond_to?(:id) && user.id.present?
         hsh[:email] = user.email if user.respond_to?(:email) && user.email.present?
         hsh[:name] = user.name if user.respond_to?(:name) && user.name.present?
-        # hsh[:custom_data] = user_attributes.reduce({}) { |hsh,attribute| hsh.merge(attribute => user.send(:attribute)) }
+        #Ma hsh[:custom_data] = user_attributes.reduce({}) { |hsh,attribute| hsh.merge(attribute => user.send(:attribute)) }
       end
 
       (wired[:user_id] || wired[:email]) ? wired : nil
@@ -93,27 +94,41 @@ module IntercomRails
       end
     end
 
-    def send_users(users, options = {})
-      options[:max_retries] ||= 3
-      response = nil
-      attempts = 0
-
+    def send_users(users)
       request = Net::HTTP::Post.new(uri.request_uri) 
       request.basic_auth(IntercomRails.config.app_id, IntercomRails.config.api_key)
       request["Content-Type"] = "application/json"
       request.body = users 
 
-      begin
-        response = http.request(request)
-        raise ImportError, "App ID or API Key are incorrect, please check them in config/initializers/intercom.rb" if response.code == '403'
-      end while(!successful_response?(response) && 
-                ((attempts += 1) < options[:max_retries]))
-
+      response = perform_request(request)
       JSON.parse(response.body)
     end
 
+    MAX_REQUEST_ATTEMPTS = 3
+    def perform_request(request, attempts = 0, error = {})
+      if (attempts > 0) && (attempts < MAX_REQUEST_ATTEMPTS)
+        sleep(0.5) 
+      elsif error.present?
+        raise error[:exception] if error[:exception]
+        raise exception_for_failed_response(error[:previous_response])
+      end
+
+      response = http.request(request)
+
+      return response if successful_response?(response)
+      perform_request(request, (attempts + 1), :previous_response => response)
+    rescue Timeout::Error, Errno::ECONNREFUSED => e
+      perform_request(request, attempts + 1, :exception => e)
+    end
+
     def successful_response?(response)
+      raise ImportError, "App ID or API Key are incorrect, please check them in config/initializers/intercom.rb" if response.code == '403'
       ['200', '201'].include?(response.code)
+    end
+
+    def exception_for_failed_response(response)
+      code = response.code
+      IntercomAPIError.new("The Intercom API request failed with the code: #{code}, after #{MAX_REQUEST_ATTEMPTS} attempts.")
     end
 
   end

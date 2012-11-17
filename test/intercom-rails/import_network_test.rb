@@ -102,7 +102,7 @@ class ImportNetworkTest < InterRunner::TestCase
     self.api_path = '/bad_auth'
 
     exception = assert_raises(IntercomRails::ImportError) { 
-      @import.send(:send_users, '{}')
+      @import.run
     }
 
     assert_equal "App ID or API Key are incorrect, please check them in config/initializers/intercom.rb", exception.message

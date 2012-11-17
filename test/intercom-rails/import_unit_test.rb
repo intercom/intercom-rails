@@ -1,6 +1,8 @@
 require 'import_test_setup'
 
-class ImportUnitTest < ImportTest 
+class ImportUnitTest < MiniTest::Unit::TestCase 
+
+  include ImportTest
 
   def test_run_with_wrong_rails_env
     Rails.stub(:env).and_return ActiveSupport::StringInquirer.new("development")

@@ -16,12 +16,14 @@ module IntercomRails
       new.run
     end
 
-    attr_reader :uri, :http, :failed
+    attr_reader :uri, :http
+    attr_accessor :failed, :total_sent
 
     def initialize
       @uri = Import.bulk_create_api_endpoint
       @http = Net::HTTP.new(@uri.host, @uri.port)
       @failed = []
+      @total_sent = 0
 
       if uri.scheme == 'https'
         http.use_ssl = true 
@@ -39,8 +41,14 @@ module IntercomRails
       raise ImportError, "Please add an Intercom API Key to config/initializers/intercom.rb" unless IntercomRails.config.api_key.present?
 
       send_users_in_batches
+      self
     end
 
+    def total_failed
+      self.failed.count
+    end
+
+    private
     def send_users_in_batches
       batch = []
 
@@ -52,18 +60,21 @@ module IntercomRails
           batch = []
         end
       end
-      
+
       send_user_batch(batch) unless batch.length.zero?
     end
 
     def send_user_batch(batch)
-      return unless batch.compact!
+      return if(batch.compact! && batch.length.zero?)
+
+      self.total_sent += batch.count
       users = {:users => batch}.to_json
+
       response_body = authed_http_post_request_with_body(users, :max_retries => 3) do |response|
         [200,201].include?(response.code)
       end
 
-      failed += response_body['failed']
+      self.failed += response_body['failed']
     end
 
     def user_for_wire(user)

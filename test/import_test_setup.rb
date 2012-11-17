@@ -46,13 +46,15 @@ class User
 
 end
 
-class ImportTest < MiniTest::Unit::TestCase
+module ImportTest
 
   def setup
+    super
     IntercomRails.config.stub(:api_key).and_return("abcd")
   end
 
   def teardown
+    super
     Rails.rspec_reset
     User.rspec_reset
     IntercomRails::Import.rspec_reset

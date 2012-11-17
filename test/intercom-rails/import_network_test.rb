@@ -18,8 +18,13 @@ class MockIntercom < Sinatra::Base
     {:failed => []}.to_json 
   end
 
-  post '/return_body' do
-    request.body
+  post '/one_failure' do
+    {:failed => ['ben@intercom.io']}.to_json
+  end
+
+  post '/bad_auth' do
+    status 403
+    {"error" => {"type" => "not_authenticated", "message" => "HTTP Basic: Access denied."}}.to_json
   end
 
 end
@@ -72,14 +77,30 @@ class ImportNetworkTest < InterRunner::TestCase
     @import = IntercomRails::Import.new
   end
 
-  def test_posts_json_hash
-  end
-
-  def test_total_sent
+  def test_empty_failed
     self.api_path = '/all_successful'
 
-    @import.send_users_in_batches
+    @import.run
+    assert_equal [], @import.failed
     assert_equal 2, @import.total_sent
+  end
+
+  def test_sets_failed_correctly
+    self.api_path = '/one_failure'
+
+    @import.run
+    assert_equal ["ben@intercom.io"], @import.failed
+    assert_equal 2, @import.total_sent
+  end
+
+  def test_raises_import_error_on_bad_auth
+    self.api_path = '/bad_auth'
+
+    exception = assert_raises(IntercomRails::ImportError) { 
+      @import.send(:send_users, '{}')
+    }
+
+    assert_equal "App ID or API Key are incorrect, please check them in config/initializers/intercom.rb", exception.message
   end
 
 end

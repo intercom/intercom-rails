@@ -40,7 +40,10 @@ module IntercomRails
       raise ImportError, "Only ActiveRecord models are supported" unless (user_klass < ActiveRecord::Base)
       raise ImportError, "Please add an Intercom API Key to config/initializers/intercom.rb" unless IntercomRails.config.api_key.present?
 
-      send_users_in_batches
+      batches do |batch|
+        self.failed += send_users(batch)['failed']
+      end
+
       self
     end
 
@@ -49,32 +52,26 @@ module IntercomRails
     end
 
     private
-    def send_users_in_batches
+    MAX_BATCH_SIZE = 100
+    def batches
       batch = []
 
       user_klass.find_each(:batch_size => 100) do |user|
-        batch << user_for_wire(user)
-        
-        if(batch.length == 100)
-          send_user_batch(batch)
+        user = user_for_wire(user)
+        batch << user unless user.nil?
+
+        if(batch.count == MAX_BATCH_SIZE)
+          yield(prepare_batch(batch))
           batch = []
         end
       end
 
-      send_user_batch(batch) unless batch.length.zero?
+      yield(prepare_batch(batch)) if batch.present?
     end
 
-    def send_user_batch(batch)
-      return if(batch.compact! && batch.length.zero?)
-
+    def prepare_batch(batch)
       self.total_sent += batch.count
-      users = {:users => batch}.to_json
-
-      response_body = authed_http_post_request_with_body(users, :max_retries => 3) do |response|
-        [200,201].include?(response.code)
-      end
-
-      self.failed += response_body['failed']
+      {:users => batch}.to_json
     end
 
     def user_for_wire(user)
@@ -96,23 +93,27 @@ module IntercomRails
       end
     end
 
-    def authed_http_post_request_with_body(body, options = {})
+    def send_users(users, options = {})
       options[:max_retries] ||= 3
-      should_retry = false
       response = nil
       attempts = 0
 
       request = Net::HTTP::Post.new(uri.request_uri) 
       request.basic_auth(IntercomRails.config.app_id, IntercomRails.config.api_key)
       request["Content-Type"] = "application/json"
-      request.body = body 
+      request.body = users 
 
       begin
         response = http.request(request)
-        should_retry = !yield(response)
-      end while(should_retry && ((attempts += 1) < options[:max_retries]))
+        raise ImportError, "App ID or API Key are incorrect, please check them in config/initializers/intercom.rb" if response.code == '403'
+      end while(!successful_response?(response) && 
+                ((attempts += 1) < options[:max_retries]))
 
       JSON.parse(response.body)
+    end
+
+    def successful_response?(response)
+      ['200', '201'].include?(response.code)
     end
 
   end

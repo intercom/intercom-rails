@@ -120,7 +120,7 @@ module IntercomRails
       response = http.request(request)
 
       return response if successful_response?(response)
-      perform_request(request, (attempts + 1), :failed_response => response)
+      perform_request(request, attempts + 1, :failed_response => response)
     rescue Timeout::Error, Errno::ECONNREFUSED => e
       perform_request(request, attempts + 1, :exception => e)
     end

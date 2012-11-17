@@ -35,11 +35,15 @@ module IntercomRails
       end
     end
 
-    def run
+    def assert_runnable
       raise ImportError, "You can only import your users from your production environment" unless Rails.env.production?
       raise ImportError, "We couldn't find your user class, please set one in config/initializers/intercom_rails.rb" unless user_klass.present?
       raise ImportError, "Only ActiveRecord models are supported" unless (user_klass < ActiveRecord::Base)
       raise ImportError, "Please add an Intercom API Key to config/initializers/intercom.rb" unless IntercomRails.config.api_key.present?
+    end
+
+    def run
+      assert_runnable
 
       batches do |batch|
         self.failed += send_users(batch)['failed']

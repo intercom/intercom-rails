@@ -1,0 +1,109 @@
+# IntercomRails
+
+Rails helper for creating Intercom (https://www.intercom.io) javascript tags.
+
+For interacting with the Intercom API, use the intercom gem (https://github.com/intercom/intercom-ruby)
+
+## Installation
+Add this to your Gemfile:
+
+```ruby
+gem "intercom-rails"
+```
+
+Then run:
+
+```
+bundle install
+```
+
+## Usage
+
+Take note of your `app_id` from here: You can find your app id here: https://www.intercom.io/apps/api_keys
+
+### Automatic insertion of intercom_script_tag
+
+To help get people up and running quicker, where possible `intercom_script_tag` will be automatically inserted when a logged in user is detected.
+
+In order to use this, you have to configure your `app_id`.
+
+The best way to do this is using the generator:
+
+```
+rails g intercom:config YOUR-APP-ID
+```
+
+Which sets your app id in `config/initializers/intercom.rb`
+
+To disable automatic insertion for a particular controller or action you can:
+
+```ruby
+skip_after_filter IntercomRails::AutoIncludeFilter
+```
+
+### Adding intercom_script_tag to your layout with a generator
+
+The __intercom:install__ rails generator will add `intercom_script_tag` to your application layout. It provides a great start that will work well for most people and is easily customised.
+
+```
+rails g intercom:install YOUR-APP-ID
+```
+
+If you want to start providing custom data about your users, then this is the way to go.
+
+### Manual install
+
+In your layout file:
+
+```erb
+<% if logged_in? %>
+  <%= intercom_script_tag({
+    :app_id => 'your-app-id'
+    :user_id => current_user.id
+    :email => current_user.email
+    :name => current_user.name
+    :created_at => current_user.created_at
+    :custom_data => {
+
+    }}) %>
+<% end %>
+```
+
+`:custom_data` allows you to specify any app/user/situational data to associate with the current_user. It will be visible in Intercom, and you'll be able to search/filter/send messages based on it.
+
+e.g.
+
+```ruby
+:custom_data => {
+  :plan => "Pro",
+  :dashboard_page => 'http://dashboard.example.com/user-id'
+}
+```
+
+### Secure mode
+
+Pass in a second argument to `intercom_script_tag`, a hash containing the secret, like so:
+
+```erb
+<% if logged_in? %>
+  <%= intercom_script_tag({
+    :app_id => 'your-app-id'
+    :user_id => current_user.id
+    :email => current_user.email
+    :name => current_user.name
+    :created_at => current_user.created_at
+    },
+    {:secret => 'your-apps-secret'}
+  ) %>
+<% end %>
+```
+
+See `IntercomRails::ScriptTagHelper` for more details.
+
+## Contributors
+
+- Dr Nic Williams (@drnic) - provided a rails generator for adding the Intercom javascript tag into your layout.
+
+## License
+
+Copyright (c) 2011-2012 Intercom, Inc.  All rights reserved.

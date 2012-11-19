@@ -82,7 +82,6 @@ module IntercomRails
         h[:user_id] = user.id if user.respond_to?(:id) && user.id.present?
         h[:email] = user.email if user.respond_to?(:email) && user.email.present?
         h[:name] = user.name if user.respond_to?(:name) && user.name.present?
-        #Ma hsh[:custom_data] = user_attributes.reduce({}) { |hsh,attribute| hsh.merge(attribute => user.send(:attribute)) }
       end
 
       (wired[:user_id] || wired[:email]) ? wired : nil

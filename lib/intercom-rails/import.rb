@@ -28,8 +28,6 @@ module IntercomRails
 
       if uri.scheme == 'https'
         http.use_ssl = true 
-
-        pem = File.read('lib/data/cacert.pem')
         http.ca_file = File.join(File.dirname(__FILE__), '../data/ca_cert.pem')
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       end

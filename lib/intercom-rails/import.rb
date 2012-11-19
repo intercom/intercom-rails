@@ -9,8 +9,8 @@ module IntercomRails
   class Import
 
     def self.bulk_create_api_endpoint
-      host = (ENV['INTERCOM_RAILS_DEV'] ? "http://intercom.dev" : "https://api.intercom.io")
-      URI.parse(host + "api/v1/users/bulk_create")
+      host = (ENV['INTERCOM_RAILS_DEV'] ? "http://api.intercom.dev" : "https://api.intercom.io")
+      URI.parse(host + "/v1/users/bulk_create")
     end
 
     def self.run(*args)
@@ -85,7 +85,6 @@ module IntercomRails
     end
 
     def prepare_batch(batch)
-      self.total_sent += batch.count
       {:users => batch}.to_json
     end
 
@@ -103,8 +102,11 @@ module IntercomRails
       if IntercomRails.config.user_model.present?
         IntercomRails.config.user_model.call
       else
-        User if defined?(User)
+        User
       end
+    rescue NameError
+      # Rails lazy loads constants, so this is how we check 
+      nil
     end
 
     def send_users(users)

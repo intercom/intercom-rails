@@ -67,4 +67,18 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     IntercomRails::Import.run
   end
 
+  def test_status_output
+    @import = IntercomRails::Import.new(:status_enabled => true)
+    @import.stub(:send_users).and_return('failed' => [1])
+    @import.should_receive(:batches).and_yield(nil, 3)
+
+    @old_stdout = $stdout.dup
+    $stdout = @output = StringIO.new
+
+    @import.run
+    assert_equal "..F", @output.string
+  ensure
+    $stdout = @old_stdout
+  end
+
 end

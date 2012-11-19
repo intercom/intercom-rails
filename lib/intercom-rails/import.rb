@@ -13,18 +13,20 @@ module IntercomRails
       URI.parse(host + "api/v1/users/bulk_create")
     end
 
-    def self.run
-      new.run
+    def self.run(*args)
+      new(*args).run
     end
 
     attr_reader :uri, :http
     attr_accessor :failed, :total_sent
 
-    def initialize
+    def initialize(options = {})
       @uri = Import.bulk_create_api_endpoint
       @http = Net::HTTP.new(@uri.host, @uri.port)
       @failed = []
       @total_sent = 0
+
+      @status_enabled = !!options[:status_enabled]
 
       if uri.scheme == 'https'
         http.use_ssl = true 
@@ -43,8 +45,14 @@ module IntercomRails
     def run
       assert_runnable
 
-      batches do |batch|
-        self.failed += send_users(batch)['failed']
+      batches do |batch, number_in_batch|
+        failures = send_users(batch)['failed']
+        self.failed += failures
+
+        if status_enabled?
+          print ('.' * (number_in_batch - failures.count))
+          print ('F' * failures.count)
+        end
       end
 
       self
@@ -63,13 +71,13 @@ module IntercomRails
         user = user_for_wire(user)
         batch << user unless user.nil?
 
-        if(batch.count == MAX_BATCH_SIZE)
-          yield(prepare_batch(batch))
+        if(batch.count >= MAX_BATCH_SIZE)
+          yield(prepare_batch(batch), batch.count)
           batch = []
         end
       end
 
-      yield(prepare_batch(batch)) if batch.present?
+      yield(prepare_batch(batch), batch.count) if batch.present?
     end
 
     def prepare_batch(batch)
@@ -130,6 +138,10 @@ module IntercomRails
     def exception_for_failed_response(response)
       code = response.code
       IntercomAPIError.new("The Intercom API request failed with the code: #{code}, after #{MAX_REQUEST_ATTEMPTS} attempts.")
+    end
+
+    def status_enabled?
+      @status_enabled
     end
 
   end

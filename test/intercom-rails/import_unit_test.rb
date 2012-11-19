@@ -72,11 +72,22 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     @import.stub(:send_users).and_return('failed' => [1])
     @import.should_receive(:batches).and_yield(nil, 3)
 
+    $stdout.flush
     @old_stdout = $stdout.dup
     $stdout = @output = StringIO.new
 
     @import.run
-    assert_equal "..F", @output.string
+    expected_output = <<-output
+* Found user class: User
+* Intercom API key found
+* Sending users in batches of 100:
+..F
+* Successfully created 2 users
+* Failed to create 1 user, this is likely due to bad data
+output
+    $stdout.flush
+
+    assert_equal expected_output, @output.string
   ensure
     $stdout = @old_stdout
   end

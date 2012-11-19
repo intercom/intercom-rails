@@ -38,23 +38,27 @@ module IntercomRails
     def assert_runnable
       raise ImportError, "You can only import your users from your production environment" unless Rails.env.production?
       raise ImportError, "We couldn't find your user class, please set one in config/initializers/intercom_rails.rb" unless user_klass.present?
+      info "Found user class: #{user_klass}"
       raise ImportError, "Only ActiveRecord models are supported" unless (user_klass < ActiveRecord::Base)
       raise ImportError, "Please add an Intercom API Key to config/initializers/intercom.rb" unless IntercomRails.config.api_key.present?
+      info "Intercom API key found"
     end
 
     def run
       assert_runnable
 
+      info "Sending users in batches of #{MAX_BATCH_SIZE}:"
       batches do |batch, number_in_batch|
         failures = send_users(batch)['failed']
         self.failed += failures
+        self.total_sent += number_in_batch
 
-        if status_enabled?
-          print ('.' * (number_in_batch - failures.count))
-          print ('F' * failures.count)
-        end
+        progress '.' * (number_in_batch - failures.count)
+        progress 'F' * failures.count
       end
-
+      info "Successfully created #{self.total_sent - self.failed.count} users", :new_line => true
+      info "Failed to create #{self.failed.count} #{(self.failed.count == 1) ? 'user' : 'users'}, this is likely due to bad data" unless failed.count.zero?
+      
       self
     end
 
@@ -142,6 +146,14 @@ module IntercomRails
 
     def status_enabled?
       @status_enabled
+    end
+
+    def progress(str)
+      print(str) if status_enabled?
+    end
+
+    def info(str, options = {})
+      puts "#{"\n" if options[:new_line]}* #{str}" if status_enabled?
     end
 
   end

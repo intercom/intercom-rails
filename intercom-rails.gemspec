@@ -17,8 +17,11 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
 
-  s.add_dependency 'activesupport', ">3.0"
+  s.add_dependency 'activesupport', '>3.0'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'actionpack'
+  s.add_development_dependency 'rspec-mocks'
   s.add_development_dependency 'pry'
+  s.add_development_dependency 'sinatra', '~> 1.3.1'
+  s.add_development_dependency 'thin', '~> 1.4.1'
 end

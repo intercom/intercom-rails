@@ -1,5 +1,7 @@
 require 'intercom-rails'
 require 'minitest/autorun'
+require 'rspec/mocks'
+require 'pry'
 
 def fake_action_view_class
   klass = Class.new(ActionView::Base)
@@ -9,3 +11,18 @@ def fake_action_view_class
   end
   klass
 end
+
+class Object
+  # any_instance.rspec_reset does not work
+  def self.unstub_all_instance_methods
+    public_instance_methods.each do |method|
+      begin
+        self.any_instance.unstub(method) 
+      rescue RSpec::Mocks::MockExpectationError
+        next
+      end
+    end
+  end
+end
+
+RSpec::Mocks::setup(Object.new)

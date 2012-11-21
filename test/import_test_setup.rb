@@ -26,10 +26,8 @@ class User
     {:id => 2, :email => "ciaran@intercom.io", :name => "Ciaran Lee"}
   ]
 
-  def self.find_each(*args)
-    MOCK_USERS.each do |user|
-      yield new(user)
-    end
+  def self.find_in_batches(*args)
+    yield(MOCK_USERS.map {|u| new(u)})
   end
 
   def self.all

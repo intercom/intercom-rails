@@ -69,19 +69,10 @@ module IntercomRails
     private
     MAX_BATCH_SIZE = 100
     def batches
-      batch = []
-
-      user_klass.find_each(:batch_size => 100) do |user|
-        user = user_for_wire(user)
-        batch << user unless user.nil?
-
-        if(batch.count >= MAX_BATCH_SIZE)
-          yield(prepare_batch(batch), batch.count)
-          batch = []
-        end
+      user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
+        users_for_wire = users.map { |u| user_for_wire(u) }.compact
+        yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?
       end
-
-      yield(prepare_batch(batch), batch.count) if batch.present?
     end
 
     def prepare_batch(batch)

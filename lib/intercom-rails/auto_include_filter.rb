@@ -2,7 +2,6 @@ module IntercomRails
 
   class AutoIncludeFilter
 
-    include ScriptTagHelper
     CLOSING_BODY_TAG = %r{</body>}
 
     def self.filter(controller)
@@ -84,7 +83,7 @@ module IntercomRails
         user_details[attribute] = user.send(attribute) if user.respond_to?(attribute) && user.send(attribute).present?
       end
       
-      super(user_details)
+      ScriptTag.generate(user_details)
     end
 
   end

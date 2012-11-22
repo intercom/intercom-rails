@@ -3,8 +3,7 @@ require 'test_setup'
 
 class ScriptTagTest < MiniTest::Unit::TestCase
 
-  # Brevity
-  ScriptTag = IntercomRails::ScriptTag
+  include IntercomRails
 
   def test_output_is_html_safe?
     assert_equal true, ScriptTag.generate({}).html_safe?

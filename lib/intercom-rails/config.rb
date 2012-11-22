@@ -49,6 +49,16 @@ module IntercomRails
       @user_model
     end
 
+    # Widget options
+    def self.inbox=(value)
+      raise ArgumentError, "inbox must be one of :default or :custom" unless [:default, :custom].include?(value)
+      @inbox = value
+    end
+
+    def self.inbox
+      @inbox
+    end
+
   end
 
 end

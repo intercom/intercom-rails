@@ -84,11 +84,7 @@ module IntercomRails
         user_details[attribute] = user.send(attribute) if user.respond_to?(attribute) && user.send(attribute).present?
       end
       
-      options = {
-        :secret => IntercomRails.config.api_secret
-      }
-
-      super(user_details, options)
+      super(user_details)
     end
 
   end

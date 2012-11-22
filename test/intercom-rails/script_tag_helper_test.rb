@@ -28,6 +28,16 @@ class ScriptTagHelperTest < MiniTest::Unit::TestCase
     assert_match(/.user_hash.\s*:\s*"#{Digest::SHA1.hexdigest('abcdefgh' + '1234')}"/, intercom_script_tag({:user_id => 1234, :email => "ciaran@intercom.io"}, {:secret => 'abcdefgh'}))
   end
 
+  def test_secure_mode_with_secret_from_config
+    IntercomRails.config.api_secret = 'abcd'
+    assert_includes intercom_script_tag(:email => 'ben@intercom.io'), Digest::SHA1.hexdigest('abcd' + 'ben@intercom.io')
+  end
+
+  def test_secure_mode_chooses_passed_secret_over_config
+    IntercomRails.config.api_secret = 'abcd'
+    assert_includes intercom_script_tag({:email => 'ben@intercom.io'}, {:secret => '1234'}), Digest::SHA1.hexdigest('1234' + 'ben@intercom.io')
+  end
+
   def test_sets_instance_variable
     fake_action_view = fake_action_view_class.new
     obj = Object.new

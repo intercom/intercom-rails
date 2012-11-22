@@ -1,7 +1,5 @@
 module IntercomRails
 
-  class CurrentUserNotFoundError < StandardError; end
-
   class CurrentUser
 
     POTENTIAL_USER_OBJECTS = [
@@ -10,21 +8,21 @@ module IntercomRails
       Proc.new { @user }
     ]
 
-    def self.locate_and_prepare_for_intercom(controller)
-      new(controller).to_hash
+    def self.locate_and_prepare_for_intercom(*args)
+      new(*args).to_hash
     end
 
-    attr_reader :controller, :user
+    attr_reader :search_object, :user
 
-    def initialize(controller)
-      @controller = controller
+    def initialize(search_object)
+      @search_object = search_object 
       @user = find_user
     end
 
     def find_user
       POTENTIAL_USER_OBJECTS.each do |potential_user|
         begin
-          user = controller.instance_eval &potential_user
+          user = search_object.instance_eval &potential_user
           return user if user.present? && 
                          (user.email.present? || user.id.present?)
         rescue NameError
@@ -32,7 +30,7 @@ module IntercomRails
         end
       end
 
-#      raise CurrentUserNotFoundError
+      raise CurrentUserNotFoundError
     end
 
     def to_hash

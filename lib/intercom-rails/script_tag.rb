@@ -70,6 +70,8 @@ module IntercomRails
     def find_current_user_details
       return {} unless controller.present?
       CurrentUser.locate_and_prepare_for_intercom(controller)
+    rescue CurrentUserNotFoundError
+      {}
     end
 
     def user_hash

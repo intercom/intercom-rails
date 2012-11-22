@@ -9,21 +9,25 @@ module IntercomRails
       new(*args).output
     end
 
-    attr_reader :user, :secret, :widget_options
-    def initialize(user_details, options = {})
-      @secret = options[:secret] || Config.api_secret
-      @widget_options = options[:widget] || widget_options_from_config
+    attr_reader :user_details
+    attr_accessor :secret, :widget_options, :controller
 
-      @user = user_details.with_indifferent_access
-      @user[:user_hash] = user_hash if secret.present?
-      [:email, :name, :user_id].each { |key| @user.delete(key) if @user[key].nil? }
+    def initialize(options = {})
+      self.secret = options[:secret] || Config.api_secret
+      self.widget_options = options[:widget] || widget_options_from_config
+      self.controller = options[:controller]
+      self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details] 
+    end
+
+    def valid?
+      user_details[:app_id].present? && (user_details[:user_id] || user_details[:email]).present?
     end
 
     def intercom_settings
-      return @intercom_settings if @intercom_settings.present?
-      
-      @intercom_settings = user.merge(:widget => widget_options)
-      @intercom_settings = convert_dates_to_unix_timestamps(@intercom_settings)
+      options = {}
+      options[:widget] = widget_options if widget_options.present?
+
+      user_details.merge(options)
     end
 
     def output 
@@ -53,9 +57,32 @@ module IntercomRails
     end
 
     private
+    def user_details=(user_details)
+      @user_details = convert_dates_to_unix_timestamps(user_details || {})
+      @user_details = @user_details.with_indifferent_access.tap do |u|
+        [:email, :name, :user_id].each { |k| u.delete(k) if u[k].nil? }
+
+        u[:user_hash] ||= user_hash if secret.present?
+        u[:app_id] ||= app_id
+      end
+    end
+
+    def find_current_user_details
+      return {} unless controller.present?
+      CurrentUser.locate_and_prepare_for_intercom(controller)
+    end
+
     def user_hash
-      components = [secret, (user[:user_id] || user[:email])]
+      components = [secret, (user_details[:user_id] || user_details[:email])]
       Digest::SHA1.hexdigest(components.join)
+    end
+
+    def app_id
+      return ENV['INTERCOM_APP_ID'] if ENV['INTERCOM_APP_ID'].present?
+      return IntercomRails.config.app_id if IntercomRails.config.app_id.present?
+      return 'abcd1234' if defined?(Rails) && Rails.env.development?
+
+      nil
     end
 
     def widget_options_from_config 

@@ -1,3 +1,4 @@
+require 'intercom-rails/current_user'
 require 'intercom-rails/script_tag'
 require 'intercom-rails/script_tag_helper'
 require 'intercom-rails/auto_include_filter'

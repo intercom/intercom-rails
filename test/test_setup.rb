@@ -3,6 +3,13 @@ require 'minitest/autorun'
 require 'rspec/mocks'
 require 'pry'
 
+def dummy_user(options = {})
+  user = Struct.new(:email, :name).new
+  user.email = options[:email] || 'ben@intercom.io'
+  user.name = options[:name] || 'Ben McRedmond'
+  user
+end
+
 def fake_action_view_class
   klass = Class.new(ActionView::Base)
   klass.class_eval do

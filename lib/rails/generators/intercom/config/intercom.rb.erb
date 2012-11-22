@@ -33,4 +33,15 @@ IntercomRails.config do |config|
   # The class which defines your user model
   #
   # config.user_model = Proc.new { User }
+  
+  # == Inbox 
+  # This enables the Intercom inbox which allows your users to read their
+  # past conversations with your app, as well as start new ones.
+  #   * :default shows a small tab with a question mark icon on it
+  #   * :custom attaches the inbox open event to an anchor with an
+  #             id of #Intercom.
+  #
+  # config.inbox = :default 
+  # config.inbox = :custom
+
 end

@@ -83,6 +83,14 @@ class AutoIncludeFilterTest < ActionController::TestCase
     assert_includes @response.body, "Eoghan McCabe"
   end
 
+  def test_auto_insert_with_api_secret_set
+    IntercomRails.config.api_secret = 'abcd'
+    get :with_current_user_method, :body => "<body>Hello world</body>"
+    assert_includes @response.body, "<script>"
+    assert_includes @response.body, "user_hash"
+    assert_includes @response.body, Digest::SHA1.hexdigest('abcd' + @controller.current_user.email)
+  end
+
   def test_no_app_id_present
     ENV.delete('INTERCOM_APP_ID')
     get :with_current_user_method, :body => "<body>Hello world</body>"

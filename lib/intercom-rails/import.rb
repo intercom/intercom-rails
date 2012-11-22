@@ -3,8 +3,6 @@ require 'json'
 require 'uri'
 
 module IntercomRails
-  class ImportError < StandardError; end
-  class IntercomAPIError < StandardError; end
 
   class Import
 

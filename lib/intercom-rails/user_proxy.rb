@@ -1,6 +1,6 @@
 module IntercomRails
 
-  class CurrentUser
+  class UserProxy 
 
     POTENTIAL_USER_OBJECTS = [
       Proc.new { instance_eval &IntercomRails.config.current_user if IntercomRails.config.current_user.present? },
@@ -8,29 +8,24 @@ module IntercomRails
       Proc.new { @user }
     ]
 
-    def self.locate_and_prepare_for_intercom(*args)
-      new(*args).to_hash
-    end
-
-    attr_reader :search_object, :user
-
-    def initialize(search_object)
-      @search_object = search_object 
-      @user = find_user
-    end
-
-    def find_user
+    def self.from_current_user_in_object(search_object)
       POTENTIAL_USER_OBJECTS.each do |potential_user|
         begin
           user = search_object.instance_eval &potential_user
-          return user if user.present? && 
-                         (user.email.present? || user.id.present?)
+          return new(user) if user.present? && 
+                              (user.email.present? || user.id.present?)
         rescue NameError
           next
         end
       end
 
-      raise CurrentUserNotFoundError
+      raise NoUserFoundError 
+    end
+
+    attr_reader :search_object, :user
+
+    def initialize(user)
+      @user = user
     end
 
     def to_hash

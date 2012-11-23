@@ -5,6 +5,10 @@ class ScriptTagTest < MiniTest::Unit::TestCase
 
   include IntercomRails
 
+  def setup
+    IntercomRails.config.app_id = 'script_tag_test'
+  end
+
   def test_output_is_html_safe?
     assert_equal true, ScriptTag.generate({}).html_safe?
   end
@@ -62,23 +66,23 @@ class ScriptTagTest < MiniTest::Unit::TestCase
   def test_inbox_default_style
     IntercomRails.config.inbox.style = :default
     script_tag = ScriptTag.new
-    expected_intercom_settings = {'app_id' => nil, 'widget' => {'activator' => '#IntercomDefaultWidget'}}
-    assert_equal expected_intercom_settings, script_tag.intercom_settings
+    expected_widget_settings= {'activator' => '#IntercomDefaultWidget'}
+    assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
   end
 
   def test_inbox_custom_style
     IntercomRails.config.inbox.style = :custom
     script_tag = ScriptTag.new
-    expected_intercom_settings = {'app_id' => nil, 'widget' => {'activator' => '#Intercom'}}
-    assert_equal expected_intercom_settings, script_tag.intercom_settings
+    expected_widget_settings = {'activator' => '#Intercom'}
+    assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
   end
 
   def test_inbox_custom_style_with_counter
     IntercomRails.config.inbox.style = :custom
     IntercomRails.config.inbox.counter = true
     script_tag = ScriptTag.new
-    expected_intercom_settings = {'app_id' => nil, 'widget' => {'activator' => '#Intercom', 'use_counter' => true}}
-    assert_equal expected_intercom_settings, script_tag.intercom_settings
+    expected_widget_settings = {'activator' => '#Intercom', 'use_counter' => true}
+    assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
   end
 
 

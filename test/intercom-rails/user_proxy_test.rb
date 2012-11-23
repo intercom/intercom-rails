@@ -1,14 +1,14 @@
 require 'test_setup'
 
-class CurrentUserTest < MiniTest::Unit::TestCase
+class UserProxyTest < MiniTest::Unit::TestCase
 
   include IntercomRails
 
   DUMMY_USER = dummy_user(:email => 'ciaran@intercom.io', :name => 'Ciaran Lee')
 
   def test_raises_error_when_no_user_found
-    assert_raises(IntercomRails::CurrentUserNotFoundError) {
-      CurrentUser.new(Object.new)
+    assert_raises(IntercomRails::NoUserFoundError) {
+      UserProxy.from_current_user_in_object(Object.new)
     }
   end
 
@@ -20,7 +20,7 @@ class CurrentUserTest < MiniTest::Unit::TestCase
       end
     end
 
-    @current_user = CurrentUser.new(object_with_current_user_method)
+    @current_user = UserProxy.from_current_user_in_object(object_with_current_user_method)
     assert_user_found 
   end
 
@@ -30,7 +30,7 @@ class CurrentUserTest < MiniTest::Unit::TestCase
       @user = DUMMY_USER 
     end
 
-    @current_user = CurrentUser.new(object_with_instance_variable)
+    @current_user = UserProxy.from_current_user_in_object(object_with_instance_variable)
     assert_user_found 
   end
 
@@ -43,7 +43,7 @@ class CurrentUserTest < MiniTest::Unit::TestCase
     end
 
     IntercomRails.config.current_user = Proc.new { something_esoteric }
-    @current_user = CurrentUser.new(object_from_config)
+    @current_user = UserProxy.from_current_user_in_object(object_from_config)
     assert_user_found 
   end
 
@@ -62,13 +62,7 @@ class CurrentUserTest < MiniTest::Unit::TestCase
       'plan' => :plan
     }
 
-    object_with_instance_variable = Object.new
-    object_with_instance_variable.instance_eval do
-      @user = DUMMY_USER 
-    end
-
-    @current_user = CurrentUser.new(object_with_instance_variable)
-
+    @current_user = UserProxy.new(DUMMY_USER)
     expected_custom_data = {'plan' => 'pro'}
     assert_equal expected_custom_data, @current_user.to_hash[:custom_data]
   end

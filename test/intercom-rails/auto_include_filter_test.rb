@@ -40,6 +40,10 @@ class AutoIncludeFilterTest < ActionController::TestCase
     super
     ENV['INTERCOM_APP_ID'] = 'my_app_id'
   end
+
+  def teardown
+    ENV.delete('INTERCOM_APP_ID')
+  end
   
   def test_no_user_present
     get :without_user, :body => "<body>Hello world</body>"

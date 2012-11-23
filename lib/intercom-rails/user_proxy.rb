@@ -11,7 +11,7 @@ module IntercomRails
     def self.from_current_user_in_object(search_object)
       POTENTIAL_USER_OBJECTS.each do |potential_user|
         begin
-          user_proxy = new(search_object.instance_eval(&potential_user))
+          user_proxy = new(search_object.instance_eval(&potential_user), search_object)
           return user_proxy if user_proxy.valid?
         rescue NameError
           next
@@ -23,8 +23,9 @@ module IntercomRails
 
     attr_reader :search_object, :user
 
-    def initialize(user)
+    def initialize(user, search_object = nil)
       @user = user
+      @search_object = search_object
     end
 
     def to_hash
@@ -42,10 +43,7 @@ module IntercomRails
     end
 
     def custom_data
-      return {} unless Config.custom_data.present?
-      Config.custom_data.reduce({}) do |custom_data, (k,v)|
-        custom_data.merge(k => custom_data_value_from_proc_or_symbol(v))
-      end
+      custom_data_from_config.merge custom_data_from_request
     end
 
     def valid?
@@ -64,6 +62,19 @@ module IntercomRails
         user.send(proc_or_symbol)
       elsif proc_or_symbol.kind_of?(Proc)
         proc_or_symbol.call(user)
+      end
+    end
+
+    def custom_data_from_request 
+      search_object.intercom_custom_data
+    rescue NoMethodError
+      {}
+    end
+
+    def custom_data_from_config 
+      return {} if Config.custom_data.blank?
+      Config.custom_data.reduce({}) do |custom_data, (k,v)|
+        custom_data.merge(k => custom_data_value_from_proc_or_symbol(v))
       end
     end
 

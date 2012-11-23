@@ -21,7 +21,7 @@ class UserProxyTest < MiniTest::Unit::TestCase
       end
     end
 
-    @current_user = UserProxy.from_current_user_in_object(object_with_current_user_method)
+    @user_proxy = UserProxy.from_current_user_in_object(object_with_current_user_method)
     assert_user_found 
   end
 
@@ -31,7 +31,7 @@ class UserProxyTest < MiniTest::Unit::TestCase
       @user = DUMMY_USER 
     end
 
-    @current_user = UserProxy.from_current_user_in_object(object_with_instance_variable)
+    @user_proxy = UserProxy.from_current_user_in_object(object_with_instance_variable)
     assert_user_found 
   end
 
@@ -44,16 +44,17 @@ class UserProxyTest < MiniTest::Unit::TestCase
     end
 
     IntercomRails.config.current_user = Proc.new { something_esoteric }
-    @current_user = UserProxy.from_current_user_in_object(object_from_config)
+    @user_proxy = UserProxy.from_current_user_in_object(object_from_config)
     assert_user_found 
   end
 
   def assert_user_found
-    assert_equal DUMMY_USER, @current_user.user
+    assert_equal DUMMY_USER, @user_proxy.user
   end
 
   def test_includes_custom_data
-    DUMMY_USER.instance_eval do
+    plan_dummy_user = DUMMY_USER.dup
+    plan_dummy_user.instance_eval do
       def plan
         'pro'
       end
@@ -63,13 +64,26 @@ class UserProxyTest < MiniTest::Unit::TestCase
       'plan' => :plan
     }
 
-    @current_user = UserProxy.new(DUMMY_USER)
+    @user_proxy = UserProxy.new(plan_dummy_user)
     expected_custom_data = {'plan' => 'pro'}
-    assert_equal expected_custom_data, @current_user.to_hash[:custom_data]
+    assert_equal expected_custom_data, @user_proxy.to_hash[:custom_data]
   end
 
   def test_valid_returns_true_if_user_id_or_email
     assert_equal true, UserProxy.new(DUMMY_USER).valid?
+  end
+
+  def test_includes_custom_data_from_intercom_custom_data
+    object_with_intercom_custom_data = Object.new
+    object_with_intercom_custom_data.instance_eval do
+      def intercom_custom_data
+        {:ponies => :rainbows}
+      end
+    end
+
+    @user_proxy = UserProxy.new(DUMMY_USER, object_with_intercom_custom_data) 
+    expected_custom_data = {:ponies => :rainbows}
+    assert_equal expected_custom_data, @user_proxy.to_hash[:custom_data]
   end
 
 end

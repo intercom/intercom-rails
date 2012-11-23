@@ -10,6 +10,12 @@ class TestController < ActionController::Base
     @user = dummy_user
     render :text => params[:body], :content_type => 'text/html'
   end
+  
+  def with_user_instance_variable_and_custom_data
+    @user = dummy_user
+    intercom_custom_data['testing_stuff'] = true 
+    render :text => params[:body], :content_type => 'text/html'
+  end
 
   def with_unusable_user_instance_variable
     @user = Object.new
@@ -34,11 +40,17 @@ end
 
 class AutoIncludeFilterTest < ActionController::TestCase 
 
+  include InterTest
+
   tests TestController
 
   def setup
     super
     ENV['INTERCOM_APP_ID'] = 'my_app_id'
+  end
+
+  def teardown
+    ENV.delete('INTERCOM_APP_ID')
   end
   
   def test_no_user_present
@@ -63,6 +75,13 @@ class AutoIncludeFilterTest < ActionController::TestCase
     assert_includes @response.body, ENV['INTERCOM_APP_ID']
     assert_includes @response.body, "ben@intercom.io"
     assert_includes @response.body, "Ben McRedmond"
+  end
+
+  def test_user_instance_variable_present_with_body_tag_and_custom_data
+    get :with_user_instance_variable_and_custom_data, :body => "<body>Hello world</body>"
+    assert_includes @response.body, "<script>"
+    assert_includes @response.body, "custom_data"
+    assert_includes @response.body, "testing_stuff"
   end
 
   def test_current_user_method_present_with_body_tag

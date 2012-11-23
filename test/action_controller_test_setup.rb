@@ -10,6 +10,7 @@ end
 
 class ActionController::Base
 
+  include IntercomRails::CustomDataHelper
   after_filter IntercomRails::AutoIncludeFilter
 
   include TestRoutes.url_helpers

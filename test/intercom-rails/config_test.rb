@@ -27,4 +27,25 @@ class ConfigTest < MiniTest::Unit::TestCase
     assert_equal IntercomRails.config.app_id, "4567"
   end
 
+  def test_custom_data_rejects_non_proc_or_symbol_attributes
+    exception = assert_raises ArgumentError do 
+      IntercomRails.config.custom_data = {
+        'foo' => Proc.new {},
+        'bar' => 'heyheyhey!'
+      }
+    end 
+
+    assert_equal "all custom_data attributes should be either a Proc or a symbol", exception.message
+  end
+
+  def test_setting_custom_data
+    custom_data_config = {
+      'foo' => Proc.new {},
+      'bar' => :method_name
+    }
+
+    IntercomRails.config.custom_data = custom_data_config
+    assert_equal custom_data_config, IntercomRails.config.custom_data
+  end
+
 end

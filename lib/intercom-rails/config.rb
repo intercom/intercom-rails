@@ -54,6 +54,19 @@ module IntercomRails
       InboxConfig
     end
 
+    def self.custom_data=(value)
+      raise ArgumentError, "custom_data should be a hash" unless value.kind_of?(Hash)
+      unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?
+        raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+      end
+
+      @custom_data = value
+    end
+
+    def self.custom_data
+      @custom_data
+    end
+
   end
 
   module InboxConfig

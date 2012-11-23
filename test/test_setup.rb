@@ -33,3 +33,12 @@ class Object
 end
 
 RSpec::Mocks::setup(Object.new)
+
+module InterTest
+
+  def setup
+    IntercomRails::Config.reset!
+    super
+  end
+
+end

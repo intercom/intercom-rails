@@ -2,6 +2,14 @@ module IntercomRails
 
   module Config
 
+    def self.reset!
+      [self, InboxConfig].each do |configer|
+        configer.instance_variables.each do |var|
+          configer.send(:remove_instance_variable, var)
+        end
+      end
+    end
+
     # Your Intercom app_id
     def self.app_id=(value)
       @app_id = value
@@ -50,13 +58,42 @@ module IntercomRails
     end
 
     # Widget options
-    def self.inbox=(value)
-      raise ArgumentError, "inbox must be one of :default or :custom" unless [:default, :custom].include?(value)
-      @inbox = value
+    def self.inbox
+      InboxConfig
     end
 
-    def self.inbox
-      @inbox
+    def self.custom_data=(value)
+      raise ArgumentError, "custom_data should be a hash" unless value.kind_of?(Hash)
+      unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?
+        raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+      end
+
+      @custom_data = value
+    end
+
+    def self.custom_data
+      @custom_data
+    end
+
+  end
+
+  module InboxConfig
+
+    def self.style=(value)
+      raise ArgumentError, "inbox.style must be one of :default or :custom" unless [:default, :custom].include?(value)
+      @style = value
+    end
+
+    def self.style
+      @style 
+    end
+
+    def self.counter=(value)
+      @counter = value
+    end
+
+    def self.counter
+      @counter
     end
 
   end

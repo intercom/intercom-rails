@@ -14,7 +14,7 @@ module IntercomRails
 
     def initialize(options = {})
       self.secret = options[:secret] || Config.api_secret
-      self.widget_options = options[:widget] || widget_options_from_config
+      self.widget_options = widget_options_from_config.merge(options[:widget] || {})
       self.controller = options[:controller]
       self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details] 
     end
@@ -62,15 +62,15 @@ module IntercomRails
       @user_details = @user_details.with_indifferent_access.tap do |u|
         [:email, :name, :user_id].each { |k| u.delete(k) if u[k].nil? }
 
-        u[:user_hash] ||= user_hash if secret.present?
+        u[:user_hash] ||= user_hash if secret.present? && (u[:user_id] || u[:email]).present?
         u[:app_id] ||= app_id
       end
     end
 
     def find_current_user_details
       return {} unless controller.present?
-      CurrentUser.locate_and_prepare_for_intercom(controller)
-    rescue CurrentUserNotFoundError
+      UserProxy.from_current_user_in_object(controller).to_hash
+    rescue NoUserFoundError 
       {}
     end
 
@@ -88,16 +88,21 @@ module IntercomRails
     end
 
     def widget_options_from_config 
-      return nil unless Config.inbox
+      config = {}
 
-      activator = case Config.inbox
+      activator = case Config.inbox.style
       when :default
         '#IntercomDefaultWidget'
       when :custom
         '#Intercom'
+      else
+        nil
       end
 
-      {:activator => activator}
+      config[:activator] = activator if activator
+      config[:use_counter] = Config.inbox.counter if Config.inbox.counter
+
+      config
     end
 
     def convert_dates_to_unix_timestamps(object)

@@ -3,7 +3,13 @@ require 'test_setup'
 
 class ScriptTagTest < MiniTest::Unit::TestCase
 
+  include InterTest
   include IntercomRails
+
+  def setup
+    super
+    IntercomRails.config.app_id = 'script_tag_test'
+  end
 
   def test_output_is_html_safe?
     assert_equal true, ScriptTag.generate({}).html_safe?
@@ -58,5 +64,28 @@ class ScriptTagTest < MiniTest::Unit::TestCase
     script_tag = ScriptTag.new(:user_details => {:email => 'ben@intercom.io'}, :secret => '1234')
     assert_equal Digest::SHA1.hexdigest('1234' + 'ben@intercom.io'), script_tag.intercom_settings[:user_hash]
   end
+
+  def test_inbox_default_style
+    IntercomRails.config.inbox.style = :default
+    script_tag = ScriptTag.new
+    expected_widget_settings= {'activator' => '#IntercomDefaultWidget'}
+    assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
+  end
+
+  def test_inbox_custom_style
+    IntercomRails.config.inbox.style = :custom
+    script_tag = ScriptTag.new
+    expected_widget_settings = {'activator' => '#Intercom'}
+    assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
+  end
+
+  def test_inbox_custom_style_with_counter
+    IntercomRails.config.inbox.style = :custom
+    IntercomRails.config.inbox.counter = true
+    script_tag = ScriptTag.new
+    expected_widget_settings = {'activator' => '#Intercom', 'use_counter' => true}
+    assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
+  end
+
 
 end

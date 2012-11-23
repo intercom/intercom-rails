@@ -34,14 +34,21 @@ IntercomRails.config do |config|
   #
   # config.user_model = Proc.new { User }
   
-  # == Inbox 
+  # == Inbox Style
   # This enables the Intercom inbox which allows your users to read their
-  # past conversations with your app, as well as start new ones.
+  # past conversations with your app, as well as start new ones. It is 
+  # disabled by default.
   #   * :default shows a small tab with a question mark icon on it
   #   * :custom attaches the inbox open event to an anchor with an
   #             id of #Intercom.
   #
-  # config.inbox = :default 
-  # config.inbox = :custom
+  # config.inbox.style = :default 
+  # config.inbox.style = :custom
+
+  # == Inbox Counter
+  # If you're using the custom inbox style, you can request that Intercom
+  # insert an `em` element into your anchor with the count of unread messages
+  #
+  # config.inbox.counter = true
 
 end

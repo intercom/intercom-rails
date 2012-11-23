@@ -50,13 +50,29 @@ module IntercomRails
     end
 
     # Widget options
-    def self.inbox=(value)
-      raise ArgumentError, "inbox must be one of :default or :custom" unless [:default, :custom].include?(value)
-      @inbox = value
+    def self.inbox
+      InboxConfig
     end
 
-    def self.inbox
-      @inbox
+  end
+
+  module InboxConfig
+
+    def self.style=(value)
+      raise ArgumentError, "inbox.style must be one of :default or :custom" unless [:default, :custom].include?(value)
+      @style = value
+    end
+
+    def self.style
+      @style 
+    end
+
+    def self.counter=(value)
+      @counter = value
+    end
+
+    def self.counter
+      @counter
     end
 
   end

@@ -59,4 +59,27 @@ class ScriptTagTest < MiniTest::Unit::TestCase
     assert_equal Digest::SHA1.hexdigest('1234' + 'ben@intercom.io'), script_tag.intercom_settings[:user_hash]
   end
 
+  def test_inbox_default_style
+    IntercomRails.config.inbox.style = :default
+    script_tag = ScriptTag.new
+    expected_intercom_settings = {'app_id' => nil, 'widget' => {'activator' => '#IntercomDefaultWidget'}}
+    assert_equal expected_intercom_settings, script_tag.intercom_settings
+  end
+
+  def test_inbox_custom_style
+    IntercomRails.config.inbox.style = :custom
+    script_tag = ScriptTag.new
+    expected_intercom_settings = {'app_id' => nil, 'widget' => {'activator' => '#Intercom'}}
+    assert_equal expected_intercom_settings, script_tag.intercom_settings
+  end
+
+  def test_inbox_custom_style_with_counter
+    IntercomRails.config.inbox.style = :custom
+    IntercomRails.config.inbox.counter = true
+    script_tag = ScriptTag.new
+    expected_intercom_settings = {'app_id' => nil, 'widget' => {'activator' => '#Intercom', 'use_counter' => true}}
+    assert_equal expected_intercom_settings, script_tag.intercom_settings
+  end
+
+
 end

@@ -51,4 +51,26 @@ class CurrentUserTest < MiniTest::Unit::TestCase
     assert_equal DUMMY_USER, @current_user.user
   end
 
+  def test_includes_custom_data
+    DUMMY_USER.instance_eval do
+      def plan
+        'pro'
+      end
+    end
+
+    IntercomRails.config.custom_data = {
+      'plan' => :plan
+    }
+
+    object_with_instance_variable = Object.new
+    object_with_instance_variable.instance_eval do
+      @user = DUMMY_USER 
+    end
+
+    @current_user = CurrentUser.new(object_with_instance_variable)
+
+    expected_custom_data = {'plan' => 'pro'}
+    assert_equal expected_custom_data, @current_user.to_hash[:custom_data]
+  end
+
 end

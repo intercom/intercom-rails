@@ -49,7 +49,6 @@ module IntercomRails
     end
 
     def valid?
-      return false if user.blank?
       return true if user.respond_to?(:id) && user.id.present?
       return true if user.respond_to?(:email) && user.email.present?
       false

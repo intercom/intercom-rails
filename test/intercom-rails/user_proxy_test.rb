@@ -2,6 +2,7 @@ require 'test_setup'
 
 class UserProxyTest < MiniTest::Unit::TestCase
 
+  include InterTest
   include IntercomRails
 
   DUMMY_USER = dummy_user(:email => 'ciaran@intercom.io', :name => 'Ciaran Lee')
@@ -65,6 +66,10 @@ class UserProxyTest < MiniTest::Unit::TestCase
     @current_user = UserProxy.new(DUMMY_USER)
     expected_custom_data = {'plan' => 'pro'}
     assert_equal expected_custom_data, @current_user.to_hash[:custom_data]
+  end
+
+  def test_valid_returns_true_if_user_id_or_email
+    assert_equal true, UserProxy.new(DUMMY_USER).valid?
   end
 
 end

@@ -72,6 +72,7 @@ end
 
 class ImportNetworkTest < InterRunner::TestCase
 
+  include InterTest
   include ImportTest
 
   def api_path=(path)

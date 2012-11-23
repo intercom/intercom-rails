@@ -34,6 +34,8 @@ end
 
 class AutoIncludeFilterTest < ActionController::TestCase 
 
+  include InterTest
+
   tests TestController
 
   def setup

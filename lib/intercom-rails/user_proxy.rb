@@ -11,9 +11,8 @@ module IntercomRails
     def self.from_current_user_in_object(search_object)
       POTENTIAL_USER_OBJECTS.each do |potential_user|
         begin
-          user = search_object.instance_eval &potential_user
-          return new(user) if user.present? && 
-                              (user.email.present? || user.id.present?)
+          user_proxy = new(search_object.instance_eval(&potential_user))
+          return user_proxy if user_proxy.valid?
         rescue NameError
           next
         end
@@ -47,6 +46,13 @@ module IntercomRails
       Config.custom_data.reduce({}) do |custom_data, (k,v)|
         custom_data.merge(k => custom_data_value_from_proc_or_symbol(v))
       end
+    end
+
+    def valid?
+      return false if user.blank?
+      return true if user.respond_to?(:id) && user.id.present?
+      return true if user.respond_to?(:email) && user.email.present?
+      false
     end
 
     private

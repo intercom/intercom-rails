@@ -3,9 +3,11 @@ require 'test_setup'
 
 class ScriptTagTest < MiniTest::Unit::TestCase
 
+  include InterTest
   include IntercomRails
 
   def setup
+    super
     IntercomRails.config.app_id = 'script_tag_test'
   end
 

@@ -2,6 +2,14 @@ module IntercomRails
 
   module Config
 
+    def self.reset!
+      [self, InboxConfig].each do |configer|
+        configer.instance_variables.each do |var|
+          configer.send(:remove_instance_variable, var)
+        end
+      end
+    end
+
     # Your Intercom app_id
     def self.app_id=(value)
       @app_id = value

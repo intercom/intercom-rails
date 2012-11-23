@@ -2,6 +2,8 @@ require 'test_setup'
 
 class ConfigTest < MiniTest::Unit::TestCase 
 
+  include InterTest
+
   def test_setting_app_id
     IntercomRails.config.app_id = "1234"
     assert_equal IntercomRails.config.app_id, "1234"
@@ -46,6 +48,18 @@ class ConfigTest < MiniTest::Unit::TestCase
 
     IntercomRails.config.custom_data = custom_data_config
     assert_equal custom_data_config, IntercomRails.config.custom_data
+  end
+
+  def test_reset_clears_existing_config
+    IntercomRails.config.custom_data = {'muffin' => :muffin}
+    IntercomRails.config.reset!
+    assert_equal nil, IntercomRails.config.custom_data
+  end
+
+  def test_reset_clears_inbox_config_too
+    IntercomRails.config.inbox.style = :custom
+    IntercomRails.config.reset!
+    assert_equal nil, IntercomRails.config.inbox.style
   end
 
 end

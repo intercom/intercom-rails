@@ -68,23 +68,17 @@ module IntercomRails
     MAX_BATCH_SIZE = 100
     def batches
       user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
-        users_for_wire = users.map { |u| user_for_wire(u) }.compact
+        users_for_wire = users.map do |u| 
+          user_proxy = UserProxy.new(u)
+          user_proxy.valid? ? user_proxy.to_hash : nil
+        end.compact
+
         yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?
       end
     end
 
     def prepare_batch(batch)
       {:users => batch}.to_json
-    end
-
-    def user_for_wire(user)
-      wired = {}.tap do |h|
-        h[:user_id] = user.id if user.respond_to?(:id) && user.id.present?
-        h[:email] = user.email if user.respond_to?(:email) && user.email.present?
-        h[:name] = user.name if user.respond_to?(:name) && user.name.present?
-      end
-
-      (wired[:user_id] || wired[:email]) ? wired : nil
     end
 
     def user_klass

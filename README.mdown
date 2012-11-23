@@ -46,6 +46,13 @@ Feel free to mail us: team@intercom.io, if you're still having trouble.
 
 ## Configuration
 
+### API Secret
+If you want to use secure mode, ensure you set your API secret in `config/initializers/intercom.rb`:
+
+```ruby
+  config.api_secret = '123456'
+```
+
 ### Custom Data
 Custom data lets you associate any data, specific to your app, with a user in Intercom. For custom data variables you want updated on every request set them in `config/initializers/intercom.rb`. 
 
@@ -54,7 +61,7 @@ You can give either a:
   * `Proc` which will be passed the current user object
   * Or, a method which will be sent to the current user object 
   
-to generate the values of the custom data, e.g.
+to generate the values of the custom data:
 
 ```ruby
   config.custom_data = {
@@ -83,7 +90,7 @@ end
 ### Inbox
 Intercom includes an inbox which allows a user to read their past conversations with your app, and start new conversations. It's hidden by default, you can include a link to open it by adding a line to `config/initializers/intercom.rb`:
 
-To use the default link style, which includes a small question mark icon in the bottom right corner of your app. This option requires no extra config:
+To use the default link style, which requires no extra config and includes a small question mark icon in the bottom right corner of your app:
 
 ```ruby
   config.inbox.style = :default
@@ -111,9 +118,7 @@ Some situations may require manually inserting the Intercom script tag. If you s
   <%= intercom_script_tag %>
 ```
 
-This will behave exactly the same as the default auto-install.
-
-If for whatever reason you can't use auto-install, you can also provide a hash of user data as the first argument:
+This will behave exactly the same as the default auto-install. If for whatever reason you can't use auto-install, you can also provide a hash of user data as the first argument:
 
 ```erb
 <% if logged_in? %>
@@ -147,7 +152,7 @@ You can also override `IntercomRails::Config` options such as your `api_secret`,
 <% end %>
 ```
 
-The `intercom:install` rails generator can also add `intercom_script_tag` to your application layout.
+The `intercom:install` rails generator will add the `intercom_script_tag` to your application layout:
 
 ```
 rails g intercom:install YOUR-APP-ID

@@ -162,7 +162,7 @@ rails g intercom:install YOUR-APP-ID
 To get started faster with Intercom, `IntercomRails` includes a Rake task that will do an initial import of your users:
 
 ```
-  rake intercom:import
+rake intercom:import
 ```
 
 Any custom data defined in `config/initializers/intercom.rb` will also be sent.

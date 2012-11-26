@@ -50,6 +50,11 @@ class ConfigTest < MiniTest::Unit::TestCase
     assert_equal custom_data_config, IntercomRails.config.custom_data
   end
 
+  def test_setting_inbox_style
+    IntercomRails.config.inbox.style = :custom
+    assert_equal :custom, IntercomRails.config.inbox.style
+  end
+
   def test_reset_clears_existing_config
     IntercomRails.config.custom_data = {'muffin' => :muffin}
     IntercomRails.config.reset!

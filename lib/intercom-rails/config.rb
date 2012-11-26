@@ -72,10 +72,6 @@ module IntercomRails
         raise ArgumentError, "company.current should be a Proc" unless value.kind_of?(Proc)
       end
 
-      config_accessor :model do |value|
-        raise ArgumentError, "company.model should be a Proc" unless value.kind_of?(Proc)
-      end
-
       config_accessor :custom_data do |value|
         raise ArgumentError, "company.custom_data should be a hash" unless value.kind_of?(Hash)
         unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?

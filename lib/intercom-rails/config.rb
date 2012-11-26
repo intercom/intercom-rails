@@ -36,7 +36,10 @@ module IntercomRails
   module Config
 
     def self.reset!
-      [self, Inbox].each do |configer|
+      to_reset = self.constants.map {|c| const_get c}
+      to_reset << self
+
+      to_reset.each do |configer|
         configer.instance_variables.each do |var|
           configer.send(:remove_instance_variable, var)
         end

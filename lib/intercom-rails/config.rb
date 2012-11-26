@@ -71,6 +71,7 @@ module IntercomRails
       end
 
     end
+
   end
 
 end

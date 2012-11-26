@@ -93,7 +93,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
   end
 
   def test_setting_current_user_with_intercom_config
-    IntercomRails.config.current_user = Proc.new { @admin }
+    IntercomRails.config.user.current = Proc.new { @admin }
 
     get :with_admin_instance_variable, :body => "<body>Hello world</body>"
 

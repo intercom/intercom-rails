@@ -82,8 +82,8 @@ module IntercomRails
     end
 
     def user_klass
-      if IntercomRails.config.user_model.present?
-        IntercomRails.config.user_model.call
+      if IntercomRails.config.user.model.present?
+        IntercomRails.config.user.model.call
       else
         User
       end

@@ -3,7 +3,7 @@ module IntercomRails
   class UserProxy 
 
     POTENTIAL_USER_OBJECTS = [
-      Proc.new { instance_eval &IntercomRails.config.current_user if IntercomRails.config.current_user.present? },
+      Proc.new { instance_eval &IntercomRails.config.user.current if IntercomRails.config.user.current.present? },
       Proc.new { current_user },
       Proc.new { @user }
     ]
@@ -72,8 +72,8 @@ module IntercomRails
     end
 
     def custom_data_from_config 
-      return {} if Config.custom_data.blank?
-      Config.custom_data.reduce({}) do |custom_data, (k,v)|
+      return {} if IntercomRails.config.user.custom_data.blank?
+      IntercomRails.config.user.custom_data.reduce({}) do |custom_data, (k,v)|
         custom_data.merge(k => custom_data_value_from_proc_or_symbol(v))
       end
     end

@@ -43,7 +43,7 @@ class UserProxyTest < MiniTest::Unit::TestCase
       end
     end
 
-    IntercomRails.config.current_user = Proc.new { something_esoteric }
+    IntercomRails.config.user.current = Proc.new { something_esoteric }
     @user_proxy = UserProxy.from_current_user_in_object(object_from_config)
     assert_user_found 
   end
@@ -60,7 +60,7 @@ class UserProxyTest < MiniTest::Unit::TestCase
       end
     end
 
-    IntercomRails.config.custom_data = {
+    IntercomRails.config.user.custom_data = {
       'plan' => :plan
     }
 

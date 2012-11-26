@@ -50,29 +50,46 @@ module IntercomRails
     config_accessor :api_secret
     config_accessor :api_key
 
-    config_accessor :current_user do |value|
-      raise ArgumentError, "current_user should be a Proc" unless value.kind_of?(Proc)
-    end
+    config_group :user do
+      config_accessor :current do |value|
+        raise ArgumentError, "user.current should be a Proc" unless value.kind_of?(Proc)
+      end
 
-    config_accessor :user_model do |value|
-      raise ArgumentError, "user_model should be a Proc" unless value.kind_of?(Proc)
-    end
+      config_accessor :model do |value|
+        raise ArgumentError, "user.model should be a Proc" unless value.kind_of?(Proc)
+      end
 
-    config_accessor :custom_data do |value|
-      raise ArgumentError, "custom_data should be a hash" unless value.kind_of?(Hash)
-      unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?
-        raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+      config_accessor :custom_data do |value|
+        raise ArgumentError, "user.custom_data should be a hash" unless value.kind_of?(Hash)
+        unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?
+          raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+        end
+      end
+    end
+    
+    config_group :company do
+      config_accessor :current do |value|
+        raise ArgumentError, "company.current should be a Proc" unless value.kind_of?(Proc)
+      end
+
+      config_accessor :model do |value|
+        raise ArgumentError, "company.model should be a Proc" unless value.kind_of?(Proc)
+      end
+
+      config_accessor :custom_data do |value|
+        raise ArgumentError, "company.custom_data should be a hash" unless value.kind_of?(Hash)
+        unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?
+          raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+        end
       end
     end
 
     config_group :inbox do
-
       config_accessor :counter
 
       config_accessor :style do |value|
         raise ArgumentError, "inbox.style must be one of :default or :custom" unless [:default, :custom].include?(value)
       end
-
     end
 
   end

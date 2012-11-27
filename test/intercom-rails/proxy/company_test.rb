@@ -2,6 +2,8 @@ require 'test_setup'
 
 class CompanyTest < MiniTest::Unit::TestCase
 
+  include InterTest
+
   Company = IntercomRails::Proxy::Company
   DUMMY_COMPANY = dummy_company
 

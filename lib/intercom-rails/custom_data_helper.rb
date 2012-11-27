@@ -10,8 +10,7 @@ module IntercomRails
     #   ...
     # end
     def intercom_custom_data
-      return @_request_specific_intercom_custom_data if @_request_specific_intercom_custom_data
-      @_request_specific_intercom_custom_data = begin
+      @_request_specific_intercom_custom_data ||= begin
         s = Struct.new(:user, :company).new
         s.user = {}
         s.company = {}

@@ -87,5 +87,17 @@ class ScriptTagTest < MiniTest::Unit::TestCase
     assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
   end
 
+  def test_company_discovery_and_inclusion
+    IntercomRails.config.company.current = Proc.new { @app }
+    object_with_app_instance_variable = Object.new
+    object_with_app_instance_variable.instance_eval do
+      @app = dummy_company 
+    end
+
+    script_tag = ScriptTag.new(:controller => object_with_app_instance_variable,
+                               :find_current_company_details => true)
+    expected_company = {'id' => '6', 'name' => 'Intercom'}
+    assert_equal expected_company, script_tag.intercom_settings[:company]
+  end
 
 end

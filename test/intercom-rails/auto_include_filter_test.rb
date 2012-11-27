@@ -13,7 +13,7 @@ class TestController < ActionController::Base
   
   def with_user_instance_variable_and_custom_data
     @user = dummy_user
-    intercom_custom_data['testing_stuff'] = true 
+    intercom_custom_data.user['testing_stuff'] = true 
     render :text => params[:body], :content_type => 'text/html'
   end
 
@@ -94,7 +94,6 @@ class AutoIncludeFilterTest < ActionController::TestCase
 
   def test_setting_current_user_with_intercom_config
     IntercomRails.config.user.current = Proc.new { @admin }
-
     get :with_admin_instance_variable, :body => "<body>Hello world</body>"
 
     assert_includes @response.body, "<script>"
@@ -105,6 +104,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
   def test_auto_insert_with_api_secret_set
     IntercomRails.config.api_secret = 'abcd'
     get :with_current_user_method, :body => "<body>Hello world</body>"
+
     assert_includes @response.body, "<script>"
     assert_includes @response.body, "user_hash"
     assert_includes @response.body, Digest::SHA1.hexdigest('abcd' + @controller.current_user.email)

@@ -1,5 +1,7 @@
 require 'intercom-rails/exceptions'
-require 'intercom-rails/user_proxy'
+require 'intercom-rails/proxy'
+require 'intercom-rails/proxy/user'
+require 'intercom-rails/proxy/company'
 require 'intercom-rails/script_tag'
 require 'intercom-rails/script_tag_helper'
 require 'intercom-rails/custom_data_helper'

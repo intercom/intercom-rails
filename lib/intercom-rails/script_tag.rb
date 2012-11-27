@@ -69,7 +69,7 @@ module IntercomRails
 
     def find_current_user_details
       return {} unless controller.present?
-      UserProxy.from_current_user_in_object(controller).to_hash
+      Proxy::User.current_in_context(controller).to_hash
     rescue NoUserFoundError 
       {}
     end

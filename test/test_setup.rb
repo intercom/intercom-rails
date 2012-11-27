@@ -10,6 +10,13 @@ def dummy_user(options = {})
   user
 end
 
+def dummy_company(options = {})
+  company = Struct.new(:id, :name).new
+  company.id = options[:id] || '6'
+  company.name = options[:name] || 'Intercom'
+  company
+end
+
 def fake_action_view_class
   klass = Class.new(ActionView::Base)
   klass.class_eval do

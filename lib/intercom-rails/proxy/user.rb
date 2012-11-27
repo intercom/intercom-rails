@@ -10,6 +10,19 @@ module IntercomRails
         Proc.new { @user }
       ]
 
+      def self.current_in_context(search_object)
+        POTENTIAL_USER_OBJECTS.each do |potential_object|
+          begin
+            user_proxy = new(search_object.instance_eval(&potential_object), search_object)
+            return user_proxy if user_proxy.valid?
+          rescue NameError
+            next
+          end
+        end
+
+        raise NoUserFoundError
+      end
+
       def standard_data
         hsh = {}
 

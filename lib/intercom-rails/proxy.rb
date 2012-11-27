@@ -14,21 +14,6 @@ module IntercomRails
         end
       end
 
-      def self.current_in_context(search_object)
-        potential_objects = const_get("POTENTIAL_#{class_string.upcase}_OBJECTS")
-        potential_objects.each do |potential_object|
-          begin
-            proxy = new(search_object.instance_eval(&potential_object), search_object)
-            return proxy if proxy.valid?
-          rescue NameError
-            next
-          end
-        end
-
-        exception = IntercomRails.const_get("No#{class_string}FoundError")
-        raise exception 
-      end
-
       attr_reader :search_object, :proxied_object
 
       def initialize(object_to_proxy, search_object = nil)
@@ -50,18 +35,26 @@ module IntercomRails
         custom_data_from_config.merge custom_data_from_request
       end
 
-      def type
-        self.class.class_string.downcase.to_sym
-      end
-
       protected
 
       def attribute_present?(attribute)
         proxied_object.respond_to?(attribute) && proxied_object.send(attribute).present?
       end
 
-      def config
+      def self.type
+        self.class_string.downcase.to_sym
+      end
+
+      def type
+        self.class.type
+      end
+
+      def self.config
         IntercomRails.config.send(type)
+      end
+
+      def config
+        self.class.config
       end
 
       private

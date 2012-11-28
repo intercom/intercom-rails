@@ -46,7 +46,7 @@ module IntercomRails
     end
 
     def intercom_script_tag
-      @script_tag ||= ScriptTag.new(:find_current_user_details => true, :controller => controller)
+      @script_tag ||= ScriptTag.new(:find_current_user_details => true, :find_current_company_details => true, :controller => controller)
     end
 
   end

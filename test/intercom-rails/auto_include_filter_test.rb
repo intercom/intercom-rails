@@ -10,6 +10,12 @@ class TestController < ActionController::Base
     @user = dummy_user
     render :text => params[:body], :content_type => 'text/html'
   end
+
+  def with_user_and_app_instance_variables
+    @user = dummy_user
+    @app = dummy_company
+    render :text => params[:body], :content_type => 'text/html'
+  end
   
   def with_user_instance_variable_and_custom_data
     @user = dummy_user
@@ -124,6 +130,15 @@ class AutoIncludeFilterTest < ActionController::TestCase
 
     get :with_current_user_method, :body => "<body>Hello world</body>"
     assert_equal @response.body,  "<body>Hello world</body>"
+  end
+
+  def test_includes_company
+    IntercomRails.config.company.current = Proc.new { @app }
+    get :with_user_and_app_instance_variables, :body => "<body>Hello world</body>"
+
+    assert_includes @response.body, "<script>"
+    assert_includes @response.body, "company"
+    assert_includes @response.body, "6"
   end
 
 end

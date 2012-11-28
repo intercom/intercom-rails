@@ -23,7 +23,8 @@ module IntercomRails
       def standard_data
         hsh = {}
         hsh[:id] = company.id
-        hsh[:name] = company.name if company.respond_to?(:name)
+        hsh[:name] = company.name if attribute_present?(:name) 
+        hsh[:created_at] = company.created_at if attribute_present?(:created_at) 
         hsh
       end
 

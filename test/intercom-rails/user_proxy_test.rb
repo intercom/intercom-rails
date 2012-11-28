@@ -86,4 +86,10 @@ class UserProxyTest < MiniTest::Unit::TestCase
     assert_equal expected_custom_data, @user_proxy.to_hash[:custom_data]
   end
 
+  def test_valid_returns_false_for_nil
+    search_object = false 
+    search_object.stub(:id) { raise NameError }
+    assert_equal false, UserProxy.new(search_object).valid?
+  end
+
 end

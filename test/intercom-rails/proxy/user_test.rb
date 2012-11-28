@@ -1,6 +1,8 @@
 require 'test_setup'
 
-class UserProxyTest < MiniTest::Unit::TestCase
+class UserTest < MiniTest::Unit::TestCase
+
+  User = IntercomRails::Proxy::User
 
   include InterTest
   include IntercomRails
@@ -9,7 +11,7 @@ class UserProxyTest < MiniTest::Unit::TestCase
 
   def test_raises_error_when_no_user_found
     assert_raises(IntercomRails::NoUserFoundError) {
-      UserProxy.from_current_user_in_object(Object.new)
+      User.current_in_context(Object.new)
     }
   end
 
@@ -21,7 +23,7 @@ class UserProxyTest < MiniTest::Unit::TestCase
       end
     end
 
-    @user_proxy = UserProxy.from_current_user_in_object(object_with_current_user_method)
+    @user_proxy = User.current_in_context(object_with_current_user_method)
     assert_user_found 
   end
 
@@ -31,7 +33,7 @@ class UserProxyTest < MiniTest::Unit::TestCase
       @user = DUMMY_USER 
     end
 
-    @user_proxy = UserProxy.from_current_user_in_object(object_with_instance_variable)
+    @user_proxy = User.current_in_context(object_with_instance_variable)
     assert_user_found 
   end
 
@@ -43,8 +45,8 @@ class UserProxyTest < MiniTest::Unit::TestCase
       end
     end
 
-    IntercomRails.config.current_user = Proc.new { something_esoteric }
-    @user_proxy = UserProxy.from_current_user_in_object(object_from_config)
+    IntercomRails.config.user.current = Proc.new { something_esoteric }
+    @user_proxy = User.current_in_context(object_from_config)
     assert_user_found 
   end
 
@@ -60,36 +62,41 @@ class UserProxyTest < MiniTest::Unit::TestCase
       end
     end
 
-    IntercomRails.config.custom_data = {
+    IntercomRails.config.user.custom_data = {
       'plan' => :plan
     }
 
-    @user_proxy = UserProxy.new(plan_dummy_user)
-    expected_custom_data = {'plan' => 'pro'}
-    assert_equal expected_custom_data, @user_proxy.to_hash[:custom_data]
+    @user_proxy = User.new(plan_dummy_user)
+    assert_equal 'pro', @user_proxy.to_hash['plan']
   end
 
   def test_valid_returns_true_if_user_id_or_email
-    assert_equal true, UserProxy.new(DUMMY_USER).valid?
+    assert_equal true, User.new(DUMMY_USER).valid?
   end
 
   def test_includes_custom_data_from_intercom_custom_data
     object_with_intercom_custom_data = Object.new
     object_with_intercom_custom_data.instance_eval do
       def intercom_custom_data
-        {:ponies => :rainbows}
+        o = Object.new 
+        o.instance_eval do 
+          def user
+            {:ponies => :rainbows}
+          end
+        end 
+
+        o
       end
     end
 
-    @user_proxy = UserProxy.new(DUMMY_USER, object_with_intercom_custom_data) 
-    expected_custom_data = {:ponies => :rainbows}
-    assert_equal expected_custom_data, @user_proxy.to_hash[:custom_data]
+    @user_proxy = User.new(DUMMY_USER, object_with_intercom_custom_data) 
+    assert_equal :rainbows, @user_proxy.to_hash[:ponies]
   end
 
   def test_valid_returns_false_for_nil
     search_object = false 
     search_object.stub(:id) { raise NameError }
-    assert_equal false, UserProxy.new(search_object).valid?
+    assert_equal false, User.new(search_object).valid?
   end
 
 end

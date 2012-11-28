@@ -10,10 +10,16 @@ class TestController < ActionController::Base
     @user = dummy_user
     render :text => params[:body], :content_type => 'text/html'
   end
+
+  def with_user_and_app_instance_variables
+    @user = dummy_user
+    @app = dummy_company
+    render :text => params[:body], :content_type => 'text/html'
+  end
   
   def with_user_instance_variable_and_custom_data
     @user = dummy_user
-    intercom_custom_data['testing_stuff'] = true 
+    intercom_custom_data.user['testing_stuff'] = true 
     render :text => params[:body], :content_type => 'text/html'
   end
 
@@ -80,7 +86,6 @@ class AutoIncludeFilterTest < ActionController::TestCase
   def test_user_instance_variable_present_with_body_tag_and_custom_data
     get :with_user_instance_variable_and_custom_data, :body => "<body>Hello world</body>"
     assert_includes @response.body, "<script>"
-    assert_includes @response.body, "custom_data"
     assert_includes @response.body, "testing_stuff"
   end
 
@@ -93,8 +98,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
   end
 
   def test_setting_current_user_with_intercom_config
-    IntercomRails.config.current_user = Proc.new { @admin }
-
+    IntercomRails.config.user.current = Proc.new { @admin }
     get :with_admin_instance_variable, :body => "<body>Hello world</body>"
 
     assert_includes @response.body, "<script>"
@@ -105,6 +109,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
   def test_auto_insert_with_api_secret_set
     IntercomRails.config.api_secret = 'abcd'
     get :with_current_user_method, :body => "<body>Hello world</body>"
+
     assert_includes @response.body, "<script>"
     assert_includes @response.body, "user_hash"
     assert_includes @response.body, Digest::SHA1.hexdigest('abcd' + @controller.current_user.email)
@@ -124,6 +129,15 @@ class AutoIncludeFilterTest < ActionController::TestCase
 
     get :with_current_user_method, :body => "<body>Hello world</body>"
     assert_equal @response.body,  "<body>Hello world</body>"
+  end
+
+  def test_includes_company
+    IntercomRails.config.company.current = Proc.new { @app }
+    get :with_user_and_app_instance_variables, :body => "<body>Hello world</body>"
+
+    assert_includes @response.body, "<script>"
+    assert_includes @response.body, "company"
+    assert_includes @response.body, "6"
   end
 
 end

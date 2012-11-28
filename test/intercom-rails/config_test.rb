@@ -11,13 +11,13 @@ class ConfigTest < MiniTest::Unit::TestCase
 
   def test_setting_current_user
     current_user = Proc.new { @blah }
-    IntercomRails.config.current_user = current_user
-    assert_equal IntercomRails.config.current_user, current_user
+    IntercomRails.config.user.current = current_user
+    assert_equal IntercomRails.config.user.current, current_user
   end
 
   def test_setting_current_user_not_to_a_proc
     assert_raises ArgumentError do
-      IntercomRails.config.current_user = 1
+      IntercomRails.config.user.current = 1
     end
   end
 
@@ -31,7 +31,7 @@ class ConfigTest < MiniTest::Unit::TestCase
 
   def test_custom_data_rejects_non_proc_or_symbol_attributes
     exception = assert_raises ArgumentError do 
-      IntercomRails.config.custom_data = {
+      IntercomRails.config.user.custom_data = {
         'foo' => Proc.new {},
         'bar' => 'heyheyhey!'
       }
@@ -46,14 +46,19 @@ class ConfigTest < MiniTest::Unit::TestCase
       'bar' => :method_name
     }
 
-    IntercomRails.config.custom_data = custom_data_config
-    assert_equal custom_data_config, IntercomRails.config.custom_data
+    IntercomRails.config.user.custom_data = custom_data_config
+    assert_equal custom_data_config, IntercomRails.config.user.custom_data
+  end
+
+  def test_setting_inbox_style
+    IntercomRails.config.inbox.style = :custom
+    assert_equal :custom, IntercomRails.config.inbox.style
   end
 
   def test_reset_clears_existing_config
-    IntercomRails.config.custom_data = {'muffin' => :muffin}
+    IntercomRails.config.user.custom_data = {'muffin' => :muffin}
     IntercomRails.config.reset!
-    assert_equal nil, IntercomRails.config.custom_data
+    assert_equal nil, IntercomRails.config.user.custom_data
   end
 
   def test_reset_clears_inbox_config_too

@@ -9,7 +9,7 @@ module IntercomRails
       new(*args).output
     end
 
-    attr_reader :user_details
+    attr_reader :user_details, :company_details
     attr_accessor :secret, :widget_options, :controller
 
     def initialize(options = {})
@@ -17,6 +17,11 @@ module IntercomRails
       self.widget_options = widget_options_from_config.merge(options[:widget] || {})
       self.controller = options[:controller]
       self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details] 
+      self.company_details = if options[:find_current_company_details] 
+        find_current_company_details
+      elsif options[:user_details]
+        options[:user_details].delete(:company) if options[:user_details]
+      end
     end
 
     def valid?
@@ -24,10 +29,10 @@ module IntercomRails
     end
 
     def intercom_settings
-      options = {}
-      options[:widget] = widget_options if widget_options.present?
-
-      user_details.merge(options)
+      hsh = user_details
+      hsh[:widget] = widget_options if widget_options.present?
+      hsh[:company] = company_details if company_details.present?
+      hsh
     end
 
     def output 
@@ -69,8 +74,22 @@ module IntercomRails
 
     def find_current_user_details
       return {} unless controller.present?
-      UserProxy.from_current_user_in_object(controller).to_hash
+      Proxy::User.current_in_context(controller).to_hash
     rescue NoUserFoundError 
+      {}
+    end
+
+    def company_details=(company_details)
+      @company_details = convert_dates_to_unix_timestamps(company_details || {})
+      @company_details = @company_details.with_indifferent_access.tap do |c|
+        [:id, :name].each { |k| c.delete(k) if c[k].nil? }
+      end
+    end
+
+    def find_current_company_details
+      return {} unless controller.present?
+      Proxy::Company.current_in_context(controller).to_hash
+    rescue NoCompanyFoundError
       {}
     end
 

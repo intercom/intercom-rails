@@ -94,8 +94,13 @@ class UserTest < MiniTest::Unit::TestCase
   end
 
   def test_valid_returns_false_for_nil
-    search_object = false 
-    search_object.stub(:id) { raise NameError }
+    NilClass.class_eval do
+      def id
+        raise ArgumentError, "boo"
+      end
+    end
+
+    search_object = nil 
     assert_equal false, User.new(search_object).valid?
   end
 

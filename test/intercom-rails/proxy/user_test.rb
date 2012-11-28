@@ -93,4 +93,10 @@ class UserTest < MiniTest::Unit::TestCase
     assert_equal :rainbows, @user_proxy.to_hash[:ponies]
   end
 
+  def test_valid_returns_false_for_nil
+    search_object = false 
+    search_object.stub(:id) { raise NameError }
+    assert_equal false, UserProxy.new(search_object).valid?
+  end
+
 end

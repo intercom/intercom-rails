@@ -44,6 +44,7 @@ IntercomRails.config do |config|
   #   :favorite_color => :favorite_color
   # }
 
+  <%- if @app_id == 'tx2p130c' -%>
   # == Current company name
   # The method/variable that contains the current company for the current user,
   # in your controllers. 'Companies' are generic groupings of users, so this 
@@ -59,6 +60,7 @@ IntercomRails.config do |config|
   #   :number_of_messages => Proc.new { |app| app.messages.count },
   #   :is_interesting => :is_interesting?
   # }
+  <%- end -%>
  
   # == Inbox Style
   # This enables the Intercom inbox which allows your users to read their

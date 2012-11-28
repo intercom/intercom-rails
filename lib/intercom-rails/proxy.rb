@@ -76,7 +76,7 @@ module IntercomRails
         if proc_or_symbol.kind_of?(Symbol)
           proxied_object.send(proc_or_symbol)
         elsif proc_or_symbol.kind_of?(Proc)
-          proc_or_symbol.call(user)
+          proc_or_symbol.call(proxied_object)
         end
       end
 

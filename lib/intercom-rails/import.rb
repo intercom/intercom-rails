@@ -69,7 +69,7 @@ module IntercomRails
     def batches
       user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
         users_for_wire = users.map do |u| 
-          user_proxy = UserProxy.new(u)
+          user_proxy = Proxy::User.new(u)
           user_proxy.valid? ? user_proxy.to_hash : nil
         end.compact
 
@@ -82,8 +82,8 @@ module IntercomRails
     end
 
     def user_klass
-      if IntercomRails.config.user_model.present?
-        IntercomRails.config.user_model.call
+      if IntercomRails.config.user.model.present?
+        IntercomRails.config.user.model.call
       else
         User
       end

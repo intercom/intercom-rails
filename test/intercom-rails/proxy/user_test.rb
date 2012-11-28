@@ -96,7 +96,7 @@ class UserTest < MiniTest::Unit::TestCase
   def test_valid_returns_false_for_nil
     search_object = false 
     search_object.stub(:id) { raise NameError }
-    assert_equal false, UserProxy.new(search_object).valid?
+    assert_equal false, User.new(search_object).valid?
   end
 
 end

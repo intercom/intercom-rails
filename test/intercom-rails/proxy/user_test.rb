@@ -93,7 +93,7 @@ class UserTest < MiniTest::Unit::TestCase
     assert_equal :rainbows, @user_proxy.to_hash[:ponies]
   end
 
-  def test_valid_returns_false_for_nil
+  def test_whiny_nil
     NilClass.class_eval do
       def id
         raise ArgumentError, "boo"

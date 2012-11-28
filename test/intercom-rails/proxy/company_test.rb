@@ -18,4 +18,15 @@ class CompanyTest < MiniTest::Unit::TestCase
     assert_equal expected_hash, c.to_hash
   end
 
+  def test_whiny_nil
+    NilClass.class_eval do
+      def id
+        raise ArgumentError, "boo"
+      end
+    end
+
+    search_object = nil 
+    assert_equal false, Company.new(search_object).valid?
+  end
+
 end

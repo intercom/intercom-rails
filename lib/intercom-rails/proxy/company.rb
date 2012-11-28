@@ -17,7 +17,7 @@ module IntercomRails
       end
 
       def valid?
-        company.respond_to?(:id) && company.id.present?
+        company.present? && company.respond_to?(:id) && company.id.present?
       end
 
       def standard_data

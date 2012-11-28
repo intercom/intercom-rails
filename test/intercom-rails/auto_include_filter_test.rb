@@ -86,7 +86,6 @@ class AutoIncludeFilterTest < ActionController::TestCase
   def test_user_instance_variable_present_with_body_tag_and_custom_data
     get :with_user_instance_variable_and_custom_data, :body => "<body>Hello world</body>"
     assert_includes @response.body, "<script>"
-    assert_includes @response.body, "custom_data"
     assert_includes @response.body, "testing_stuff"
   end
 

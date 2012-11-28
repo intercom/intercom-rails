@@ -67,8 +67,7 @@ class UserTest < MiniTest::Unit::TestCase
     }
 
     @user_proxy = User.new(plan_dummy_user)
-    expected_custom_data = {'plan' => 'pro'}
-    assert_equal expected_custom_data, @user_proxy.to_hash[:custom_data]
+    assert_equal 'pro', @user_proxy.to_hash['plan']
   end
 
   def test_valid_returns_true_if_user_id_or_email
@@ -91,8 +90,7 @@ class UserTest < MiniTest::Unit::TestCase
     end
 
     @user_proxy = User.new(DUMMY_USER, object_with_intercom_custom_data) 
-    expected_custom_data = {:ponies => :rainbows}
-    assert_equal expected_custom_data, @user_proxy.to_hash[:custom_data]
+    assert_equal :rainbows, @user_proxy.to_hash[:ponies]
   end
 
 end

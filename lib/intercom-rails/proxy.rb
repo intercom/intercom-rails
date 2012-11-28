@@ -22,13 +22,7 @@ module IntercomRails
       end
 
       def to_hash
-        hsh = {}
-
-        hsh.merge! standard_data
-        hsh[:custom_data] = custom_data
-        hsh.delete(:custom_data) if hsh[:custom_data].blank?
-
-        hsh
+        standard_data.merge custom_data
       end
 
       def custom_data

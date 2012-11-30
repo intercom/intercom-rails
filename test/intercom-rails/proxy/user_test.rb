@@ -74,6 +74,14 @@ class UserTest < MiniTest::Unit::TestCase
     assert_equal true, User.new(DUMMY_USER).valid?
   end
 
+  def test_not_valid_if_new_record?
+    new_record_user = dummy_user(:email => 'not-saved@intercom.io', :name => 'New Record')
+    def new_record_user.new_record?
+      true
+    end
+    assert_equal false, User.new(new_record_user).valid?
+  end
+
   def test_includes_custom_data_from_intercom_custom_data
     object_with_intercom_custom_data = Object.new
     object_with_intercom_custom_data.instance_eval do

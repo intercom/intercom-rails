@@ -170,6 +170,7 @@ Any custom data defined in `config/initializers/intercom.rb` will also be sent.
 ## Contributors
 
 - Dr Nic Williams (@drnic) - provided a rails generator for adding the Intercom javascript tag into your layout.
+- Alexander Chaychuk (@sashich) - fixed bug in user detection when users not persisted (e.g. new session view with devise).
 
 ## License
 

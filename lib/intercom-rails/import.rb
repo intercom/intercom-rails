@@ -70,7 +70,13 @@ module IntercomRails
       user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
         users_for_wire = users.map do |u| 
           user_proxy = Proxy::User.new(u)
-          user_proxy.valid? ? user_proxy.to_hash : nil
+          next unless user_proxy.valid?
+          
+          for_wire = user_proxy.to_hash
+          companies = Proxy::Company.companies_for_user(user_proxy)
+          for_wire.merge!(:companies => companies.map(&:to_hash)) if companies.present?
+
+          for_wire
         end.compact
 
         yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?

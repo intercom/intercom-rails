@@ -29,4 +29,18 @@ class CompanyTest < MiniTest::Unit::TestCase
     assert_equal false, Company.new(search_object).valid?
   end
 
+  def test_companies_for_user
+    IntercomRails.config.user.company_association = Proc.new { |user| user.apps }
+    test_user = dummy_user
+    test_user.instance_eval do
+      def apps
+        [DUMMY_COMPANY, dummy_company(:name => "Prey", :id => "800")]
+      end
+    end
+
+    companies = Company.companies_for_user(IntercomRails::Proxy::User.new(test_user))
+    assert_equal 2, companies.length
+    assert_equal ["Intercom", "Prey"], companies.map(&:company).map(&:name)
+  end
+
 end

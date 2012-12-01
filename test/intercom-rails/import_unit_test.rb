@@ -70,4 +70,28 @@ output
     $stdout = @old_stdout
   end
 
+  def test_prepares_companies
+    @import = IntercomRails::Import.new
+
+    u = dummy_user
+    u.instance_eval do
+      def apps
+        [dummy_company]
+      end
+    end
+
+    User.stub(:find_in_batches).and_yield([u])
+
+    IntercomRails.config.user.company_association = Proc.new { |user| user.apps }
+
+    prepare_for_batch_users = nil
+    @import.stub(:prepare_batch) { |users| prepare_for_batch_users = users }
+    @import.stub(:send_users).and_return('failed' => [])
+
+    @import.run
+
+    assert_equal 1, prepare_for_batch_users[0][:companies].length
+    User.rspec_reset
+  end
+
 end

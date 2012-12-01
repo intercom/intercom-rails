@@ -45,6 +45,13 @@ IntercomRails.config do |config|
   # }
 
   <%- if @app_id == 'tx2p130c' -%>
+  # == User -> Company association
+  # A Proc that given a user returns an array of companies
+  # that the user belongs to.
+  # 
+  # config.user.company_association = Proc.new { |user| user.companies.to_a }
+  # config.user.company_association = Proc.new { |user| [user.company] }
+
   # == Current company name
   # The method/variable that contains the current company for the current user,
   # in your controllers. 'Companies' are generic groupings of users, so this 

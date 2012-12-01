@@ -43,12 +43,12 @@ module IntercomRails
         self.class.type
       end
 
-      def self.config
-        IntercomRails.config.send(type)
+      def self.config(type_override = nil)
+        IntercomRails.config.send(type_override || type)
       end
 
-      def config
-        self.class.config
+      def config(type_override = nil)
+        self.class.config(type_override)
       end
 
       private

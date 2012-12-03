@@ -50,6 +50,18 @@ class UserTest < MiniTest::Unit::TestCase
     assert_user_found 
   end
 
+  def test_finds_config_user_does_not_fallback_to_auto_find_users
+    IntercomRails.config.user.current = Proc.new { something_esoteric }
+    object_with_instance_variable = Object.new
+    object_with_instance_variable.instance_eval do
+      @user = DUMMY_USER 
+    end
+
+    assert_raises(IntercomRails::NoUserFoundError) {
+      User.current_in_context(object_with_instance_variable)
+    }
+  end
+
   def assert_user_found
     assert_equal DUMMY_USER, @user_proxy.user
   end

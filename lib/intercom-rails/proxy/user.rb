@@ -4,14 +4,21 @@ module IntercomRails
 
     class User < Proxy
 
-      POTENTIAL_USER_OBJECTS = [
-        Proc.new { instance_eval &IntercomRails.config.user.current if IntercomRails.config.user.current.present? },
+      PREDEFINED_POTENTIAL_USER_OBJECTS = [
         Proc.new { current_user },
         Proc.new { @user }
       ]
 
+      def self.potential_user_objects
+        if config.current.present?
+          [Proc.new { instance_eval &IntercomRails.config.user.current }]
+        else
+          PREDEFINED_POTENTIAL_USER_OBJECTS
+        end
+      end
+
       def self.current_in_context(search_object)
-        POTENTIAL_USER_OBJECTS.each do |potential_object|
+        potential_user_objects.each do |potential_object|
           begin
             user_proxy = new(search_object.instance_eval(&potential_object), search_object)
             return user_proxy if user_proxy.valid?

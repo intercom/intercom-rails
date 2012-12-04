@@ -64,7 +64,7 @@ You can give either a:
 to generate the values of the custom data:
 
 ```ruby
-  config.custom_data = {
+  config.user.custom_data = {
     :plan => Proc.new { |user| user.plan.name },
     :is_paid => Proc.new { |user| user.plan.present? },
     :email_verified => :email_verified?

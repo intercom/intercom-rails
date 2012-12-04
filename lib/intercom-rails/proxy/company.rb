@@ -32,7 +32,7 @@ module IntercomRails
         hsh = {}
         hsh[:id] = company.id
         hsh[:name] = company.name if attribute_present?(:name) 
-        hsh[:created_at] = company.created_at if attribute_present?(:created_at) 
+        hsh[:created_at] = company.created_at.to_i if attribute_present?(:created_at) 
         hsh
       end
 

@@ -49,6 +49,7 @@ module IntercomRails
     config_accessor :app_id
     config_accessor :api_secret
     config_accessor :api_key
+    config_accessor :library_url
 
     config_group :user do
       config_accessor :current do |value|

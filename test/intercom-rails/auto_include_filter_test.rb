@@ -52,11 +52,11 @@ class AutoIncludeFilterTest < ActionController::TestCase
 
   def setup
     super
-    ENV['INTERCOM_APP_ID'] = 'my_app_id'
+    IntercomRails.config.app_id = 'my_app_id'
   end
 
   def teardown
-    ENV.delete('INTERCOM_APP_ID')
+    IntercomRails.config.app_id = nil
   end
   
   def test_no_user_present
@@ -78,7 +78,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
     get :with_user_instance_variable, :body => "<body>Hello world</body>"
 
     assert_includes @response.body, "<script>"
-    assert_includes @response.body, ENV['INTERCOM_APP_ID']
+    assert_includes @response.body, IntercomRails.config.app_id 
     assert_includes @response.body, "ben@intercom.io"
     assert_includes @response.body, "Ben McRedmond"
   end
@@ -129,7 +129,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
   end
 
   def test_no_app_id_present
-    ENV.delete('INTERCOM_APP_ID')
+    IntercomRails.config.app_id = nil
     get :with_current_user_method, :body => "<body>Hello world</body>"
 
     assert_equal @response.body, "<body>Hello world</body>"

@@ -39,7 +39,7 @@ If it's not working make sure:
 * Your current user is accessible in your controllers as `current_user` or `@user`, if not in `config/initializers/intercom.rb`:
 
 ```ruby
-  config.current_user = Proc.new { current_user_object }
+  config.user.current = Proc.new { current_user_object }
 ```
 
 Feel free to mail us: team@intercom.io, if you're still having trouble.
@@ -76,12 +76,12 @@ In some situations you'll want to set some custom data specific to a request. Yo
 ```ruby
 class AppsController < ActionController::Base
   def activate
-    intercom_custom_data[:app_activated_at] = Time.now
+    intercom_custom_data.user[:app_activated_at] = Time.now
     ...
   end
 
   def destroy
-    intercom_custom_data[:app_deleted_at] = Time.now
+    intercom_custom_data.user[:app_deleted_at] = Time.now
     ...
   end
 end
@@ -123,11 +123,11 @@ This will behave exactly the same as the default auto-install. If for whatever r
 ```erb
 <% if logged_in? %>
   <%= intercom_script_tag({
-    :app_id => 'your-app-id'
-    :user_id => current_user.id
-    :email => current_user.email
-    :name => current_user.name
-    :created_at => current_user.created_at
+    :app_id => 'your-app-id',
+    :user_id => current_user.id,
+    :email => current_user.email,
+    :name => current_user.name,
+    :created_at => current_user.created_at,
     :custom_data => {
       'plan' => current_user.plan.name
     }
@@ -140,13 +140,13 @@ You can also override `IntercomRails::Config` options such as your `api_secret`,
 ```erb
 <% if logged_in? %>
   <%= intercom_script_tag({
-    :app_id => 'your-app-id'
-    :user_id => current_user.id
-    :email => current_user.email
-    :name => current_user.name
+    :app_id => 'your-app-id',
+    :user_id => current_user.id,
+    :email => current_user.email,
+    :name => current_user.name,
     :created_at => current_user.created_at
   }, {
-    :secret => 'your-apps-secret',
+    :secret => 'your-apps-api-secret',
     :widget => {:activator => '#Intercom'}
   }) %>
 <% end %>

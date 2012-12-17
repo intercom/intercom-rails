@@ -99,7 +99,6 @@ module IntercomRails
     end
 
     def app_id
-      return ENV['INTERCOM_APP_ID'] if ENV['INTERCOM_APP_ID'].present?
       return IntercomRails.config.app_id if IntercomRails.config.app_id.present?
       return 'abcd1234' if defined?(Rails) && Rails.env.development?
 

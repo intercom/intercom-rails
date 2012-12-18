@@ -59,9 +59,6 @@ class ConfigTest < MiniTest::Unit::TestCase
     assert_equal custom_data_config, IntercomRails.config.company.custom_data
   end
 
-  def test_setting_company_user_association
-  end
-
   def test_setting_inbox_style
     IntercomRails.config.inbox.style = :custom
     assert_equal :custom, IntercomRails.config.inbox.style

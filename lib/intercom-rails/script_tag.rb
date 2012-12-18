@@ -16,8 +16,8 @@ module IntercomRails
       self.secret = options[:secret] || Config.api_secret
       self.widget_options = widget_options_from_config.merge(options[:widget] || {})
       self.controller = options[:controller]
-      self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details] 
-      self.company_details = if options[:find_current_company_details] 
+      self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details]
+      self.company_details = if options[:find_current_company_details]
         find_current_company_details
       elsif options[:user_details]
         options[:user_details].delete(:company) if options[:user_details]
@@ -35,7 +35,7 @@ module IntercomRails
       hsh
     end
 
-    def output 
+    def output
       str = <<-INTERCOM_SCRIPT
 <script id="IntercomSettingsScriptTag">
   var intercomSettings = #{ActiveSupport::JSON.encode(intercom_settings)};
@@ -75,7 +75,7 @@ module IntercomRails
     def find_current_user_details
       return {} unless controller.present?
       Proxy::User.current_in_context(controller).to_hash
-    rescue NoUserFoundError 
+    rescue NoUserFoundError
       {}
     end
 
@@ -94,8 +94,7 @@ module IntercomRails
     end
 
     def user_hash
-      components = [secret, (user_details[:user_id] || user_details[:email])]
-      Digest::SHA1.hexdigest(components.join)
+      OpenSSL::HMAC.hexdigest("sha256", secret, (user_details[:user_id] || user_details[:email]))
     end
 
     def app_id
@@ -105,7 +104,7 @@ module IntercomRails
       nil
     end
 
-    def widget_options_from_config 
+    def widget_options_from_config
       config = {}
 
       activator = case Config.inbox.style

@@ -125,7 +125,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
 
     assert_includes @response.body, "<script>"
     assert_includes @response.body, "user_hash"
-    assert_includes @response.body, Digest::SHA1.hexdigest('abcd' + @controller.current_user.email)
+    assert_includes @response.body, OpenSSL::HMAC.hexdigest("sha256", 'abcd', @controller.current_user.email)
   end
 
   def test_no_app_id_present

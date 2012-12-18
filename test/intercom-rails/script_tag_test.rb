@@ -63,6 +63,8 @@ class ScriptTagTest < MiniTest::Unit::TestCase
     IntercomRails.config.api_secret = 'abcd'
     script_tag = ScriptTag.new(:user_details => {:email => 'ben@intercom.io'}, :secret => '1234')
     assert_equal OpenSSL::HMAC.hexdigest("sha256", '1234', 'ben@intercom.io'), script_tag.intercom_settings[:user_hash]
+    script_tag = ScriptTag.new(:user_details => {:user_id => 5678}, :secret => '1234')
+    assert_equal OpenSSL::HMAC.hexdigest("sha256", '1234', '5678'), script_tag.intercom_settings[:user_hash]
   end
 
   def test_inbox_default_style

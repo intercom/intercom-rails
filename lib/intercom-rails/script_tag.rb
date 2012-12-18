@@ -94,7 +94,7 @@ module IntercomRails
     end
 
     def user_hash
-      OpenSSL::HMAC.hexdigest("sha256", secret, (user_details[:user_id] || user_details[:email]))
+      OpenSSL::HMAC.hexdigest("sha256", secret, (user_details[:user_id] || user_details[:email]).to_s)
     end
 
     def app_id

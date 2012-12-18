@@ -40,29 +40,29 @@ class ScriptTagTest < MiniTest::Unit::TestCase
 
   def test_secure_mode_with_email
     script_tag = ScriptTag.new(:user_details => {:email => 'ciaran@intercom.io'}, :secret => 'abcdefgh')
-    assert_equal Digest::SHA1.hexdigest('abcdefgh' + 'ciaran@intercom.io'), script_tag.intercom_settings[:user_hash]
+    assert_equal OpenSSL::HMAC.hexdigest("sha256", 'abcdefgh', 'ciaran@intercom.io'), script_tag.intercom_settings[:user_hash]
   end
 
   def test_secure_mode_with_user_id
     script_tag = ScriptTag.new(:user_details => {:user_id => '1234'}, :secret => 'abcdefgh')
-    assert_equal Digest::SHA1.hexdigest('abcdefgh' + '1234'), script_tag.intercom_settings[:user_hash]
+    assert_equal OpenSSL::HMAC.hexdigest("sha256", 'abcdefgh', '1234'), script_tag.intercom_settings[:user_hash]
   end
 
   def test_secure_mode_with_email_and_user_id
     script_tag = ScriptTag.new(:user_details => {:user_id => '1234', :email => 'ciaran@intercom.io'}, :secret => 'abcdefgh')
-    assert_equal Digest::SHA1.hexdigest('abcdefgh' + '1234'), script_tag.intercom_settings[:user_hash]
+    assert_equal OpenSSL::HMAC.hexdigest("sha256", 'abcdefgh', '1234'), script_tag.intercom_settings[:user_hash]
   end
 
   def test_secure_mode_with_secret_from_config
     IntercomRails.config.api_secret = 'abcd'
     script_tag = ScriptTag.new(:user_details => {:email => 'ben@intercom.io'})
-    assert_equal Digest::SHA1.hexdigest('abcd' + 'ben@intercom.io'), script_tag.intercom_settings[:user_hash]
+    assert_equal OpenSSL::HMAC.hexdigest("sha256", 'abcd', 'ben@intercom.io'), script_tag.intercom_settings[:user_hash]
   end
 
   def test_secure_mode_chooses_passed_secret_over_config
     IntercomRails.config.api_secret = 'abcd'
     script_tag = ScriptTag.new(:user_details => {:email => 'ben@intercom.io'}, :secret => '1234')
-    assert_equal Digest::SHA1.hexdigest('1234' + 'ben@intercom.io'), script_tag.intercom_settings[:user_hash]
+    assert_equal OpenSSL::HMAC.hexdigest("sha256", '1234', 'ben@intercom.io'), script_tag.intercom_settings[:user_hash]
   end
 
   def test_inbox_default_style

@@ -1,39 +1,39 @@
-class Module
-
-  def config_accessor(*args, &block)
-    config_reader(*args)
-    config_writer(*args, &block)
-  end
-
-  def config_reader(name)
-    self.send(:define_singleton_method, name) do
-      instance_variable_get("@#{name}")
-    end
-  end
-
-  def config_writer(name, &block)
-    self.send(:define_singleton_method, "#{name}=") do |value|
-      block.call(value) if block
-      instance_variable_set("@#{name}", value)
-    end
-  end
-
-  def config_group(name, &block)
-    camelized_name = name.to_s.split('_').map { |s| s[0].upcase + s[1..-1] }.join('')
-    group = self.const_set(camelized_name, Module.new)
-
-    self.send(:define_singleton_method, name) do
-      group
-    end
-
-    group.instance_eval(&block)
-  end
-
-end
-
 module IntercomRails
 
-  module Config
+  class ConfigSingleton 
+
+    def self.config_accessor(*args, &block)
+      config_reader(*args)
+      config_writer(*args, &block)
+    end
+
+    def self.config_reader(name)
+      self.send(:define_singleton_method, name) do
+        instance_variable_get("@#{name}")
+      end
+    end
+
+    def self.config_writer(name, &block)
+      self.send(:define_singleton_method, "#{name}=") do |value|
+        block.call(value) if block
+        instance_variable_set("@#{name}", value)
+      end
+    end
+
+    def self.config_group(name, &block)
+      camelized_name = name.to_s.split('_').map { |s| s[0].upcase + s[1..-1] }.join('')
+      group = self.const_set(camelized_name, Class.new(ConfigSingleton))
+
+      self.send(:define_singleton_method, name) do
+        group
+      end
+
+      group.instance_eval(&block)
+    end
+
+  end
+
+  class Config < ConfigSingleton
 
     def self.reset!
       to_reset = self.constants.map {|c| const_get c}

@@ -22,7 +22,7 @@ module IntercomRails
 
     def self.config_group(name, &block)
       camelized_name = name.to_s.split('_').map { |s| s[0].upcase + s[1..-1] }.join('')
-      group = self.const_set(camelized_name, Class.new(ConfigSingleton))
+      group = self.const_set(camelized_name, Class.new(self))
 
       self.send(:define_singleton_method, name) do
         group

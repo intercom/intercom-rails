@@ -50,6 +50,18 @@ class ConfigTest < MiniTest::Unit::TestCase
     assert_equal custom_data_config, IntercomRails.config.user.custom_data
   end
 
+  def test_setting_company_custom_data
+    custom_data_config = {
+      'the_local' => Proc.new { 'club 93' }
+    }
+
+    IntercomRails.config.company.custom_data = custom_data_config
+    assert_equal custom_data_config, IntercomRails.config.company.custom_data
+  end
+
+  def test_setting_company_user_association
+  end
+
   def test_setting_inbox_style
     IntercomRails.config.inbox.style = :custom
     assert_equal :custom, IntercomRails.config.inbox.style

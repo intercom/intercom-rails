@@ -4,6 +4,11 @@ module IntercomRails
 
     class User < Proxy
 
+      proxy_delegator :id, :identity => true
+      proxy_delegator :email, :identity => true
+      proxy_delegator :name
+      proxy_delegator :created_at
+
       PREDEFINED_POTENTIAL_USER_OBJECTS = [
         Proc.new { current_user },
         Proc.new { @user }
@@ -31,21 +36,14 @@ module IntercomRails
       end
 
       def standard_data
-        hsh = {}
-
-        hsh[:user_id] = user.id if attribute_present?(:id) 
-        [:email, :name, :created_at].each do |attribute|
-          hsh[attribute] = user.send(attribute) if attribute_present?(attribute)
+        super.tap do |hsh|
+          hsh[:user_id] = hsh.delete(:id) if hsh.has_key?(:id)
         end
-
-        hsh
       end
 
       def valid?
         return false if user.blank? || user.respond_to?(:new_record?) && user.new_record?
-        return true if user.respond_to?(:id) && user.id.present?
-        return true if user.respond_to?(:email) && user.email.present?
-        false
+        identity_present?
       end
 
     end

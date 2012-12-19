@@ -4,6 +4,13 @@ module IntercomRails
 
     class Company < Proxy
 
+      proxy_delegator :id, :identity => true
+      proxy_delegator :name
+      proxy_delegator :created_at
+
+      config_delegator :plan
+      config_delegator :monthly_spend
+
       def self.companies_for_user(user)
         return unless config(:user).company_association.present?
         companies = config(:user).company_association.call(user.user)
@@ -25,15 +32,7 @@ module IntercomRails
       end
 
       def valid?
-        company.present? && company.respond_to?(:id) && company.id.present?
-      end
-
-      def standard_data
-        hsh = {}
-        hsh[:id] = company.id
-        hsh[:name] = company.name if attribute_present?(:name) 
-        hsh[:created_at] = company.created_at.to_i if attribute_present?(:created_at) 
-        hsh
+        company.present? && identity_present? 
       end
 
     end

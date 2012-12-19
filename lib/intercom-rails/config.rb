@@ -1,3 +1,5 @@
+require 'active_support/inflector'
+
 module IntercomRails
 
   class ConfigSingleton 
@@ -48,7 +50,7 @@ module IntercomRails
   class Config < ConfigSingleton
 
     CUSTOM_DATA_VALIDATOR = Proc.new do |custom_data, field_name|
-      raise ArgumentError, "#{field_name} custom_data should be a hash" unless value.kind_of?(Hash)
+      raise ArgumentError, "#{field_name} custom_data should be a hash" unless custom_data.kind_of?(Hash)
       unless custom_data.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
         raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
       end

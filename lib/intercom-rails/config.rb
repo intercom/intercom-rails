@@ -27,7 +27,7 @@ module IntercomRails
     end
 
     def self.config_group(name, &block)
-      camelized_name = name.to_s.split('_').map { |s| s[0].upcase + s[1..-1] }.join('')
+      camelized_name = name.to_s.classify
       group = self.const_set(camelized_name, Class.new(self))
 
       self.send(:define_singleton_method, name) do
@@ -47,9 +47,9 @@ module IntercomRails
 
   class Config < ConfigSingleton
 
-    CUSTOM_DATA_VALIDATOR = Proc.new do |value, field_name|
+    CUSTOM_DATA_VALIDATOR = Proc.new do |custom_data, field_name|
       raise ArgumentError, "#{field_name} custom_data should be a hash" unless value.kind_of?(Hash)
-      unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?
+      unless custom_data.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
         raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
       end
     end

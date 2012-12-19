@@ -1,39 +1,64 @@
-class Module
-
-  def config_accessor(*args, &block)
-    config_reader(*args)
-    config_writer(*args, &block)
-  end
-
-  def config_reader(name)
-    self.send(:define_singleton_method, name) do
-      instance_variable_get("@#{name}")
-    end
-  end
-
-  def config_writer(name, &block)
-    self.send(:define_singleton_method, "#{name}=") do |value|
-      block.call(value) if block
-      instance_variable_set("@#{name}", value)
-    end
-  end
-
-  def config_group(name, &block)
-    camelized_name = name.to_s.split('_').map { |s| s[0].upcase + s[1..-1] }.join('')
-    group = self.const_set(camelized_name, Module.new)
-
-    self.send(:define_singleton_method, name) do
-      group
-    end
-
-    group.instance_eval(&block)
-  end
-
-end
+require 'active_support/inflector'
 
 module IntercomRails
 
-  module Config
+  class ConfigSingleton 
+
+    def self.config_accessor(*args, &block)
+      config_reader(*args)
+      config_writer(*args, &block)
+    end
+
+    def self.config_reader(name)
+      self.send(:define_singleton_method, name) do
+        instance_variable_get("@#{name}")
+      end
+    end
+
+    def self.config_writer(name, &block)
+      self.send(:define_singleton_method, "#{name}=") do |value|
+        block.call(value) if block && (block.arity <= 1)
+
+        if block && (block.arity > 1)
+          field_name = underscored_class_name ? "#{underscored_class_name}.#{name}" : name
+          block.call(value, field_name) 
+        end
+
+        instance_variable_set("@#{name}", value)
+      end
+    end
+
+    def self.config_group(name, &block)
+      camelized_name = name.to_s.classify
+      group = self.const_set(camelized_name, Class.new(self))
+
+      self.send(:define_singleton_method, name) do
+        group
+      end
+
+      group.send(:instance_variable_set, :@underscored_class_name, name)
+      group.instance_eval(&block)
+    end
+
+    private
+    def self.underscored_class_name
+      @underscored_class_name
+    end
+
+  end
+
+  class Config < ConfigSingleton
+
+    CUSTOM_DATA_VALIDATOR = Proc.new do |custom_data, field_name|
+      raise ArgumentError, "#{field_name} custom_data should be a hash" unless custom_data.kind_of?(Hash)
+      unless custom_data.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
+        raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+      end
+    end
+
+    IS_PROC_VALIDATOR = Proc.new do |value, field_name|
+      raise ArgumentError, "#{field_name} is not a proc" unless value.kind_of?(Proc)
+    end
 
     def self.reset!
       to_reset = self.constants.map {|c| const_get c}
@@ -52,42 +77,21 @@ module IntercomRails
     config_accessor :library_url
 
     config_group :user do
-      config_accessor :current do |value|
-        raise ArgumentError, "user.current should be a Proc" unless value.kind_of?(Proc)
-      end
-
-      config_accessor :model do |value|
-        raise ArgumentError, "user.model should be a Proc" unless value.kind_of?(Proc)
-      end
-
-      config_accessor :company_association do |value|
-        raise ArgumentError, "company_association should be a Proc" unless value.kind_of?(Proc)
-      end
-
-      config_accessor :custom_data do |value|
-        raise ArgumentError, "user.custom_data should be a hash" unless value.kind_of?(Hash)
-        unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?
-          raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
-        end
-      end
+      config_accessor :current, &IS_PROC_VALIDATOR 
+      config_accessor :model, &IS_PROC_VALIDATOR
+      config_accessor :company_association, &IS_PROC_VALIDATOR
+      config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
     end
     
     config_group :company do
-      config_accessor :current do |value|
-        raise ArgumentError, "company.current should be a Proc" unless value.kind_of?(Proc)
-      end
-
-      config_accessor :custom_data do |value|
-        raise ArgumentError, "company.custom_data should be a hash" unless value.kind_of?(Hash)
-        unless value.reject { |_,v| v.kind_of?(Proc) || v.kind_of?(Symbol) }.count.zero?
-          raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
-        end
-      end
+      config_accessor :current, &IS_PROC_VALIDATOR
+      config_accessor :plan, &IS_PROC_VALIDATOR 
+      config_accessor :monthly_spend, &IS_PROC_VALIDATOR
+      config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
     end
 
     config_group :inbox do
       config_accessor :counter
-
       config_accessor :style do |value|
         raise ArgumentError, "inbox.style must be one of :default or :custom" unless [:default, :custom].include?(value)
       end

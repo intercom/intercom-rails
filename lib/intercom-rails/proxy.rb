@@ -91,7 +91,9 @@ module IntercomRails
 
         send(:define_method, attribute_name) do
           return nil unless config.send(attribute_name).present?
-          return current_value if (current_value = instance_variable_get(instance_variable_name))
+
+          current_value = instance_variable_get(instance_variable_name)
+          return current_value if current_value
 
           getter = config.send(attribute_name)
           value = getter.call(proxied_object)

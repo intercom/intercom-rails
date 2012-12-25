@@ -52,6 +52,7 @@ module IntercomRails
   if (window.attachEvent) {
     window.attachEvent('onload', async_load);
   } else {
+    window.addEventListener('page:change', async_load, false);
     window.addEventListener('load', async_load, false);
   }
 })();

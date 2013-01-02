@@ -2,6 +2,8 @@ require 'action_controller_test_setup'
 
 class TestController < ActionController::Base
 
+  skip_after_filter :intercom_rails_auto_include, :only => :with_user_instance_variable_after_filter_skipped
+
   def without_user 
     render :text => params[:body], :content_type => 'text/html'
   end
@@ -9,6 +11,10 @@ class TestController < ActionController::Base
   def with_user_instance_variable
     @user = dummy_user
     render :text => params[:body], :content_type => 'text/html'
+  end
+
+  def with_user_instance_variable_after_filter_skipped
+    with_user_instance_variable
   end
 
   def with_user_and_app_instance_variables
@@ -151,6 +157,11 @@ class AutoIncludeFilterTest < ActionController::TestCase
     assert_includes @response.body, "<script>"
     assert_includes @response.body, "company"
     assert_includes @response.body, "6"
+  end
+
+  def test_skip_after_filter
+    get :with_user_instance_variable_after_filter_skipped, :body => "<body>Hello world</body>"
+    assert_equal @response.body, "<body>Hello world</body>"
   end
 
 end

@@ -11,7 +11,8 @@ end
 class ActionController::Base
 
   include IntercomRails::CustomDataHelper
-  after_filter IntercomRails::AutoIncludeFilter
+  include IntercomRails::AutoInclude
+  after_filter :intercom_rails_auto_include
 
   include TestRoutes.url_helpers
   include TestRoutes.mounted_helpers

@@ -4,7 +4,7 @@ module IntercomRails
       ActionView::Base.send :include, ScriptTagHelper
       ActionController::Base.send :include, CustomDataHelper
       ActionController::Base.send :include, AutoInclude
-      ActionController::Base.after_filter, :intercom_rails_auto_include
+      ActionController::Base.after_filter :intercom_rails_auto_include
     end
 
     rake_tasks do

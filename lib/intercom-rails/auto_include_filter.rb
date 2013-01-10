@@ -1,8 +1,10 @@
 module IntercomRails
 
   module AutoInclude
-    def intercom_rails_auto_include
-      Filter.filter(self)
+    module Method
+      def intercom_rails_auto_include
+        IntercomRails::AutoInclude::Filter.filter(self)
+      end
     end
 
     class Filter

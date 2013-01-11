@@ -151,13 +151,6 @@ You can also override `IntercomRails::Config` options such as your `api_secret`,
   }) %>
 <% end %>
 ```
-
-The `intercom:install` rails generator will add the `intercom_script_tag` to your application layout:
-
-```
-rails g intercom:install YOUR-APP-ID
-```
-
 ## Importing your users
 To get started faster with Intercom, `IntercomRails` includes a Rake task that will do an initial import of your users:
 

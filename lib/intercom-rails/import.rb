@@ -2,6 +2,8 @@ require 'net/http'
 require 'json'
 require 'uri'
 
+require 'util/method_catcher'
+
 module IntercomRails
 
   class Import
@@ -65,11 +67,14 @@ module IntercomRails
     end
 
     private
-    MAX_BATCH_SIZE = 100
+    MAX_BATCH_SIZE = 1000
     def batches
-      user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
-        users_for_wire = users.map do |u| 
-          user_proxy = Proxy::User.new(u)
+      options = {:batch_size => MAX_BATCH_SIZE}
+      users = users_with_all_associations_eager_loaded
+
+      users.find_in_batches(options) do |batch|
+        users_for_wire = batch.map do |user| 
+          user_proxy = Proxy::User.new(user)
           next unless user_proxy.valid?
           
           for_wire = user_proxy.to_hash
@@ -85,6 +90,30 @@ module IntercomRails
 
     def prepare_batch(batch)
       {:users => batch}.to_json
+    end
+
+    def find_company_association(user_associations)
+      method_catcher = Util::MethodCatcher.new
+      IntercomRails.config.user.company_association.call(method_catcher)
+
+      possible_associations = (method_catcher & user_associations)
+      (possible_associations.count == 1) ? possible_associations.first : nil
+    rescue NoMethodError
+      nil
+    end
+
+    def users_with_all_associations_eager_loaded 
+      associations = user_klass.reflect_on_all_associations.map(&:name)
+       
+      if(IntercomRails.config.user.company_association.present? &&
+         (company_association = find_company_association) &&
+         (company_klass = company_association.to_s.classify.constantize rescue nil))
+        company_associations = company_klass.reflect_on_all_associations.map(&:name)
+        assocations.remove(company_association) 
+        assocations << {company_association => company_associations}
+      end
+
+      users = user_klass.includes(associations)
     end
 
     def user_klass

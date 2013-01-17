@@ -11,7 +11,7 @@ module IntercomRails
       config_delegator :plan
       config_delegator :monthly_spend
 
-      def self.companies_for_user(user)
+      def self.companies_for_user(user, eagerly_load_associations = false)
         return unless config(:user).company_association.present?
         companies = config(:user).company_association.call(user.user)
         return unless companies.kind_of?(Array)

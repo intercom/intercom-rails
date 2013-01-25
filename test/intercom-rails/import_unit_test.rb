@@ -48,7 +48,7 @@ class ImportUnitTest < MiniTest::Unit::TestCase
   def test_status_output
     @import = IntercomRails::Import.new(:status_enabled => true)
     @import.stub(:send_users).and_return('failed' => [1])
-    @import.should_receive(:batches).and_yield(nil, 3)
+    @import.stub(:hashify_batch).and_return([1,1,1])
 
     $stdout.flush
     @old_stdout = $stdout.dup
@@ -58,7 +58,7 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     expected_output = <<-output
 * Found user class: User
 * Intercom API key found
-* Sending users in batches of 100:
+* Sending users in batches of 1000:
 ..F
 * Successfully created 2 users
 * Failed to create 1 user, this is likely due to bad data
@@ -84,13 +84,15 @@ output
 
     IntercomRails.config.user.company_association = Proc.new { |user| user.apps }
 
-    prepare_for_batch_users = nil
-    @import.stub(:prepare_batch) { |users| prepare_for_batch_users = users }
-    @import.stub(:send_users).and_return('failed' => [])
+    prepared_users = nil
+    @import.stub(:send_users) do |users_json|
+      prepared_users = JSON.parse(users_json)['users']
+      {'failed' => []}
+    end
 
     @import.run
 
-    assert_equal 1, prepare_for_batch_users[0][:companies].length
+    assert_equal 1, prepared_users[0]['companies'].length
     User.rspec_reset
   end
 

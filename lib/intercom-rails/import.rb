@@ -42,18 +42,26 @@ module IntercomRails
       info "Intercom API key found"
     end
 
+    MAX_BATCH_SIZE = 1000
     def run
       assert_runnable
-
       info "Sending users in batches of #{MAX_BATCH_SIZE}:"
-      batches do |batch, number_in_batch|
-        failures = send_users(batch)['failed']
-        self.failed += failures
+
+      user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
+        hashed_users = hashify_batch(users) 
+        number_in_batch = hashed_users.count
+        next if number_in_batch.zero?
+
+        jsonified_users = {:users => hashed_users}.to_json
+        response = send_users(jsonified_users)
+
+        self.failed += response['failed'] 
         self.total_sent += number_in_batch
 
-        progress '.' * (number_in_batch - failures.count)
-        progress 'F' * failures.count
+        progress '.' * (number_in_batch - response['failed'].count)
+        progress 'F' * response['failed'].count
       end
+
       info "Successfully created #{self.total_sent - self.failed.count} users", :new_line => true
       info "Failed to create #{self.failed.count} #{(self.failed.count == 1) ? 'user' : 'users'}, this is likely due to bad data" unless failed.count.zero?
       
@@ -65,26 +73,17 @@ module IntercomRails
     end
 
     private
-    MAX_BATCH_SIZE = 100
-    def batches
-      user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
-        users_for_wire = users.map do |u| 
-          user_proxy = Proxy::User.new(u)
-          next unless user_proxy.valid?
-          
-          for_wire = user_proxy.to_hash
-          companies = Proxy::Company.companies_for_user(user_proxy)
-          for_wire.merge!(:companies => companies.map(&:to_hash)) if companies.present?
+    def hashify_batch(batch)
+      batch.map do |user| 
+        user_proxy = Proxy::User.new(user)
+        next unless user_proxy.valid?
+        
+        for_wire = user_proxy.to_hash
+        companies = Proxy::Company.companies_for_user(user_proxy)
+        for_wire.merge!(:companies => companies.map(&:to_hash)) if companies.present?
 
-          for_wire
-        end.compact
-
-        yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?
-      end
-    end
-
-    def prepare_batch(batch)
-      {:users => batch}.to_json
+        for_wire
+      end.compact
     end
 
     def user_klass

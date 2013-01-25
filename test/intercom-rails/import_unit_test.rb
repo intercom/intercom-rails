@@ -96,4 +96,18 @@ output
     User.rspec_reset
   end
 
+  def test_eager_loads_user_associations
+    @import = IntercomRails::Import.new
+    stub_send_users
+
+    User.stub(:reflect_on_all_associations).and_return([MockAssociation.new(:hobbies)])
+    User.should_receive(:includes).with([:hobbies]).and_return(User)
+    @import.run
+  end
+
+  private
+  def stub_send_users
+    @import.stub(:send_users).and_return({'failed' => []})
+  end
+
 end

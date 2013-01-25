@@ -52,6 +52,15 @@ class User
 
 end
 
+class MockAssociation
+
+  attr_reader :name
+  def initialize(name)
+    @name = name
+  end
+
+end
+
 module ImportTest
 
   def setup

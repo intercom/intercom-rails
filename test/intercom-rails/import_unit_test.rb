@@ -105,6 +105,21 @@ output
     @import.run
   end
 
+  def test_finds_company_association
+    @import = IntercomRails::Import.new
+    stub_send_users
+
+    IntercomRails.config.user.company_association = Proc.new { |user| user.company }
+    IntercomRails.config.company.model = Proc.new { Company }
+
+    User.stub(:reflect_on_all_associations).and_return([MockAssociation.new(:hobbies), MockAssociation.new(:company)])
+
+    Company.should_receive(:reflect_on_all_associations).and_return([MockAssociation.new(:projects)])
+    User.should_receive(:includes).with([:hobbies, {:company => [:projects]}]).and_return(User)
+
+    @import.run
+  end
+
   private
   def stub_send_users
     @import.stub(:send_users).and_return({'failed' => []})

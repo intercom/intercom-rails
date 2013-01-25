@@ -50,6 +50,12 @@ class User
     self
   end
 
+  def company
+  end
+
+end
+
+class Company
 end
 
 class MockAssociation
@@ -72,6 +78,7 @@ module ImportTest
     super
     Rails.rspec_reset
     User.rspec_reset
+    Company.rspec_reset
     IntercomRails::Import.rspec_reset
     IntercomRails::Import.unstub_all_instance_methods
   end

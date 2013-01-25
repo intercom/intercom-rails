@@ -104,7 +104,7 @@ module IntercomRails
 
       if(user_to_company_association = find_user_to_company_association(associations_to_load))
         company_associations = company_klass.reflect_on_all_associations.map(&:name)
-        associations_to_load.remove(user_to_company_association)
+        associations_to_load.delete(user_to_company_association)
         associations_to_load << {user_to_company_association => company_associations}
       end
 

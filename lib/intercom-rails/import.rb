@@ -2,6 +2,8 @@ require 'net/http'
 require 'json'
 require 'uri'
 
+require 'intercom-rails/util/method_catcher'
+
 module IntercomRails
 
   class Import
@@ -47,7 +49,7 @@ module IntercomRails
       assert_runnable
       info "Sending users in batches of #{MAX_BATCH_SIZE}:"
 
-      user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
+      user_klass_with_loaded_associations.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
         hashed_users = hashify_batch(users) 
         number_in_batch = hashed_users.count
         next if number_in_batch.zero?
@@ -86,6 +88,29 @@ module IntercomRails
       end.compact
     end
 
+    def find_user_to_company_association(user_associations)
+      return nil if (company_association_proc = IntercomRails.config.user.company_association).nil?
+      method_catcher = Util::MethodCatcher.new
+      company_association_proc.call(method_catcher)
+
+      possible_company_asssociations = (method_catcher & user_associations )
+      (possible_company_asssociations.length == 1) ? possible_company_asssociations.first : nil
+    rescue NoMethodError
+      nil
+    end
+
+    def user_klass_with_loaded_associations 
+      associations_to_load = user_klass.reflect_on_all_associations.map(&:name)
+
+      if(user_to_company_association = find_user_to_company_association(associations_to_load))
+        company_associations = company_klass.reflect_on_all_associations.map(&:name)
+        associations_to_load.remove(user_to_company_association)
+        associations_to_load << {user_to_company_association => company_associations}
+      end
+
+      user_klass.includes(associations_to_load)
+    end
+
     def user_klass
       if IntercomRails.config.user.model.present?
         IntercomRails.config.user.model.call
@@ -95,6 +120,11 @@ module IntercomRails
     rescue NameError
       # Rails lazy loads constants, so this is how we check 
       nil
+    end
+
+    def company_klass
+      return nil if IntercomRails.config.company.model.nil?
+      IntercomRails.config.company.model.call
     end
 
     def send_users(users)

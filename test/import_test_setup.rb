@@ -42,6 +42,14 @@ class User
     other == ActiveRecord::Base
   end
 
+  def self.reflect_on_all_associations
+    []
+  end
+
+  def self.includes(associations_to_load)
+    self
+  end
+
 end
 
 module ImportTest

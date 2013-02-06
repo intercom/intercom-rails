@@ -102,4 +102,10 @@ class ScriptTagTest < MiniTest::Unit::TestCase
     assert_equal expected_company, script_tag.intercom_settings[:company]
   end
 
+  def test_escapes_html_attributes
+    nasty_email = "</script><script>alert('sup?');</script>"
+    script_tag = ScriptTag.new(:user_details => {:email => nasty_email})
+    assert !script_tag.output.include?(nasty_email), "script tag included"
+  end
+
 end

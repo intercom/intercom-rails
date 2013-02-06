@@ -37,7 +37,7 @@ module IntercomRails
       raise ImportError, "You can only import your users from your production environment" unless Rails.env.production?
       raise ImportError, "We couldn't find your user class, please set one in config/initializers/intercom_rails.rb" unless user_klass.present?
       info "Found user class: #{user_klass}"
-      raise ImportError, "Only ActiveRecord models are supported" unless (user_klass < ActiveRecord::Base)
+      raise ImportError, "Only ActiveRecord models are supported" unless defined?(ActiveRecord::Base) && (user_klass < ActiveRecord::Base)
       raise ImportError, "Please add an Intercom API Key to config/initializers/intercom.rb" unless IntercomRails.config.api_key.present?
       info "Intercom API key found"
     end

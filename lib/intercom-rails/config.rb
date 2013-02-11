@@ -9,14 +9,18 @@ module IntercomRails
       config_writer(*args, &block)
     end
 
+    def self.meta_class
+      class << self; self end
+    end
+
     def self.config_reader(name)
-      self.send(:define_singleton_method, name) do
+      meta_class.send(:define_method, name) do
         instance_variable_get("@#{name}")
       end
     end
 
     def self.config_writer(name, &block)
-      self.send(:define_singleton_method, "#{name}=") do |value|
+      meta_class.send(:define_method, "#{name}=") do |value|
         block.call(value) if block && (block.arity <= 1)
 
         if block && (block.arity > 1)
@@ -32,7 +36,7 @@ module IntercomRails
       camelized_name = name.to_s.classify
       group = self.const_set(camelized_name, Class.new(self))
 
-      self.send(:define_singleton_method, name) do
+      meta_class.send(:define_method, name) do
         group
       end
 

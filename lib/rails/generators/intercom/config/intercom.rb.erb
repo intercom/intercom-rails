@@ -48,7 +48,6 @@ IntercomRails.config do |config|
   #   :favorite_color => :favorite_color
   # }
 
-  <%- if @app_id == 'tx2p130c' -%>
   # == User -> Company association
   # A Proc that given a user returns an array of companies
   # that the user belongs to.
@@ -84,7 +83,6 @@ IntercomRails.config do |config|
   #
   # config.company.monthly_spend = Proc.new { |current_company| current_company.plan.price }
   # config.company.monthly_spend = Proc.new { |current_company| (current_company.plan.price - current_company.subscription.discount) }
-  <%- end -%>
  
   # == Inbox Style
   # This enables the Intercom inbox which allows your users to read their

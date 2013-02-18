@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    intercom-rails (0.2.14)
+    intercom-rails (0.2.16)
       activesupport (> 3.0)
 
 GEM

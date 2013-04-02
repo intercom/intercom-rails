@@ -25,6 +25,8 @@ rails generate intercom:config YOUR-APP-ID
 
 To make installing Intercom as easy as possible, where possible a `<script>` tag **will be automatically inserted before the closing `</body>` tag**. For most Rails apps, **you won't need to do any extra config**. Having trouble? Check out troubleshooting below. 
 
+### Disabling automatic insertion
+
 To disable automatic insertion for a particular controller or action you can:
 
 ```ruby

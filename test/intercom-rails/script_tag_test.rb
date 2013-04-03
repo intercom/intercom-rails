@@ -1,4 +1,5 @@
 require 'active_support/core_ext/string/output_safety'
+require 'active_support/time'
 require 'test_setup'
 
 class ScriptTagTest < MiniTest::Unit::TestCase
@@ -23,6 +24,12 @@ class ScriptTagTest < MiniTest::Unit::TestCase
     now = Time.now
     nested_time = ScriptTag.new(:user_details => {:custom_data => {"something" => now}})
     assert_equal now.to_i, nested_time.intercom_settings[:custom_data]["something"]
+
+    utc_time = Time.utc(2013,04,03)
+    time_zone = ActiveSupport::TimeZone.new('London')
+    time_with_zone = ActiveSupport::TimeWithZone.new(utc_time, time_zone)
+    time_from_time_with_zone = ScriptTag.new(:user_details => {:created_at => time_with_zone})
+    assert_equal utc_time.to_i, time_from_time_with_zone.intercom_settings[:created_at]
   end
 
   def test_strips_out_nil_entries_for_standard_attributes

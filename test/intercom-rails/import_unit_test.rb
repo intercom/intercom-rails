@@ -25,14 +25,14 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     assert_equal exception.message, "We couldn't find your user class, please set one in config/initializers/intercom_rails.rb"
   end
 
-  def test_run_with_non_activerecord_user_class
+  def test_run_with_unsupported_user_class
     IntercomRails::Import.any_instance.stub(:user_klass).and_return(Class)
 
     exception = assert_raises IntercomRails::ImportError do
       IntercomRails::Import.run
     end
     
-    assert_equal exception.message, "Only ActiveRecord models are supported"
+    assert_equal exception.message, "Only ActiveRecord and Mongoid models are supported"
   end
 
   def test_run_with_no_api_key

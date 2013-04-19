@@ -33,11 +33,17 @@ module IntercomRails
       end
     end
 
+    # Check for ActiveRecord OR Mongoid
+    def supported_orm?(user_klass)
+      (defined?(ActiveRecord::Base) && (user_klass < ActiveRecord::Base)) ||
+          (defined?(Mongoid::Document) && user_klass.ancestors.select{|o| o == Mongoid::Document}.any?)
+    end
+
     def assert_runnable
       #raise ImportError, "You can only import your users from your production environment" unless Rails.env.production?
       raise ImportError, "We couldn't find your user class, please set one in config/initializers/intercom_rails.rb" unless user_klass.present?
       info "Found user class: #{user_klass}"
-      raise ImportError, "Only ActiveRecord models are supported" unless defined?(ActiveRecord::Base) && (user_klass < ActiveRecord::Base)
+      raise ImportError, "Only ActiveRecord and Mongoid models are supported" unless supported_orm?(user_klass)
       raise ImportError, "Please add an Intercom API Key to config/initializers/intercom.rb" unless IntercomRails.config.api_key.present?
       info "Intercom API key found"
     end

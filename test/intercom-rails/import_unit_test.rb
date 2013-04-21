@@ -62,7 +62,7 @@ class ImportUnitTest < MiniTest::Unit::TestCase
 ..F
 * Successfully created 2 users
 * Failed to create 1 user, this is likely due to bad data
-output
+    output
     $stdout.flush
 
     assert_equal expected_output, @output.string

@@ -34,13 +34,20 @@ module IntercomRails
     end
 
     # Check for ActiveRecord OR Mongoid
+    def active_record?(user_klass)
+      (defined?(ActiveRecord::Base) && (user_klass < ActiveRecord::Base))
+    end
+
+    def mongoid?(user_klass)
+      (defined?(Mongoid::Document) && user_klass.ancestors.select{|o| o == Mongoid::Document}.any?)
+    end
+
     def supported_orm?(user_klass)
-      (defined?(ActiveRecord::Base) && (user_klass < ActiveRecord::Base)) ||
-          (defined?(Mongoid::Document) && user_klass.ancestors.select{|o| o == Mongoid::Document}.any?)
+      active_record?(user_klass) || mongoid?(user_klass)
     end
 
     def assert_runnable
-      #raise ImportError, "You can only import your users from your production environment" unless Rails.env.production?
+      raise ImportError, "You can only import your users from your production environment" unless Rails.env.production?
       raise ImportError, "We couldn't find your user class, please set one in config/initializers/intercom_rails.rb" unless user_klass.present?
       info "Found user class: #{user_klass}"
       raise ImportError, "Only ActiveRecord and Mongoid models are supported" unless supported_orm?(user_klass)
@@ -73,20 +80,31 @@ module IntercomRails
     private
     MAX_BATCH_SIZE = 100
     def batches
-      user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
-        users_for_wire = users.map do |u| 
-          user_proxy = Proxy::User.new(u)
-          next unless user_proxy.valid?
-          
-          for_wire = user_proxy.to_hash
-          companies = Proxy::Company.companies_for_user(user_proxy)
-          for_wire.merge!(:companies => companies.map(&:to_hash)) if companies.present?
+      if active_record?(user_klass)
+        user_klass.find_in_batches(:batch_size => MAX_BATCH_SIZE) do |users|
+          users_for_wire = map_to_users_for_wire(users)
 
-          for_wire
-        end.compact
-
-        yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?
+          yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?
+        end
+      elsif mongoid?(user_klass)
+        0.step(user_klass.all.count, MAX_BATCH_SIZE) do |offset|
+          users_for_wire = map_to_users_for_wire(user_klass.limit(MAX_BATCH_SIZE).skip(offset))
+          yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?
+        end
       end
+    end
+
+    def map_to_users_for_wire(users)
+      users.map do |u|
+        user_proxy = Proxy::User.new(u)
+        next unless user_proxy.valid?
+
+        for_wire = user_proxy.to_hash
+        companies = Proxy::Company.companies_for_user(user_proxy)
+        for_wire.merge!(:companies => companies.map(&:to_hash)) if companies.present?
+
+        for_wire
+      end.compact
     end
 
     def prepare_batch(batch)

@@ -5,3 +5,4 @@ pkg/
 TODO
 *.gem
 .DS_Store
+.idea/

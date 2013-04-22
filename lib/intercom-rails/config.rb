@@ -89,6 +89,7 @@ module IntercomRails
     
     config_group :company do
       config_accessor :current, &IS_PROC_VALIDATOR
+      config_accessor :model, &IS_PROC_VALIDATOR
       config_accessor :plan, &IS_PROC_VALIDATOR 
       config_accessor :monthly_spend, &IS_PROC_VALIDATOR
       config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR

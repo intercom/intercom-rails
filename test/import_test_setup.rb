@@ -42,6 +42,29 @@ class User
     other == ActiveRecord::Base
   end
 
+  def self.reflect_on_all_associations
+    []
+  end
+
+  def self.includes(associations_to_load)
+    self
+  end
+
+  def company
+  end
+
+end
+
+class Company
+end
+
+class MockAssociation
+
+  attr_reader :name
+  def initialize(name)
+    @name = name
+  end
+
 end
 
 module ImportTest
@@ -55,6 +78,7 @@ module ImportTest
     super
     Rails.rspec_reset
     User.rspec_reset
+    Company.rspec_reset
     IntercomRails::Import.rspec_reset
     IntercomRails::Import.unstub_all_instance_methods
   end

@@ -11,6 +11,28 @@ module ActiveRecord
   class Base; end
 end
 
+module Mongoid
+  module Document 
+    def self.included(klass)
+      klass.extend ClassMethods
+    end
+
+    module ClassMethods
+      def all
+        @_users ||= User.all
+      end
+
+      def limit(*args)
+        self
+      end
+
+      def skip(*args)
+        all
+      end
+    end
+  end
+end
+
 class User
 
   attr_reader :id, :email, :name

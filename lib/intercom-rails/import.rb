@@ -39,7 +39,7 @@ module IntercomRails
     end
 
     def mongoid?(user_klass)
-      (defined?(Mongoid::Document) && user_klass.ancestors.select{|o| o == Mongoid::Document}.any?)
+      (defined?(Mongoid::Document) && (user_klass < Mongoid::Document))
     end
 
     def supported_orm?(user_klass)

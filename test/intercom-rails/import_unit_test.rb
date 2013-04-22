@@ -45,6 +45,19 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     assert_equal exception.message, "Please add an Intercom API Key to config/initializers/intercom.rb"
   end
 
+  def test_mongoid
+    klass = Class.new
+    klass.class_eval do
+      include Mongoid::Document
+    end
+    IntercomRails::Import.any_instance.stub(:user_klass).and_return(klass)
+
+    @import = IntercomRails::Import.new
+    @import.should_receive(:map_to_users_for_wire).with(klass.all).and_call_original
+    @import.should_receive(:send_users).and_return('failed' => [])
+    @import.run
+  end
+
   def test_status_output
     @import = IntercomRails::Import.new(:status_enabled => true)
     @import.stub(:send_users).and_return('failed' => [1])

@@ -15,7 +15,7 @@ module IntercomRails
       new(*args).run
     end
 
-    attr_reader :uri, :http
+    attr_reader :uri, :http, :max_batch_size
     attr_accessor :failed, :total_sent
 
     def initialize(options = {})
@@ -23,7 +23,7 @@ module IntercomRails
       @http = Net::HTTP.new(@uri.host, @uri.port)
       @failed = []
       @total_sent = 0
-      @max_batch_size = options[:max_batch_size] || 100
+      @max_batch_size = [(options[:max_batch_size] || 100), 100].min
 
       @status_enabled = !!options[:status_enabled]
 
@@ -59,7 +59,7 @@ module IntercomRails
     def run
       assert_runnable
 
-      info "Sending users in batches of #{@max_batch_size}:"
+      info "Sending users in batches of #{max_batch_size}:"
       batches do |batch, number_in_batch|
         failures = send_users(batch)['failed']
         self.failed += failures
@@ -82,14 +82,14 @@ module IntercomRails
 
     def batches
       if active_record?(user_klass)
-        user_klass.find_in_batches(:batch_size => @max_batch_size) do |users|
+        user_klass.find_in_batches(:batch_size => max_batch_size) do |users|
           users_for_wire = map_to_users_for_wire(users)
 
           yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?
         end
       elsif mongoid?(user_klass)
-        0.step(user_klass.all.count, @max_batch_size) do |offset|
-          users_for_wire = map_to_users_for_wire(user_klass.limit(@max_batch_size).skip(offset))
+        0.step(user_klass.all.count, max_batch_size) do |offset|
+          users_for_wire = map_to_users_for_wire(user_klass.limit(max_batch_size).skip(offset))
           yield(prepare_batch(users_for_wire), users_for_wire.count) unless users_for_wire.count.zero?
         end
       end

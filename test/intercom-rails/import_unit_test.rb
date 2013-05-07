@@ -107,4 +107,19 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     User.rspec_reset
   end
 
+  def test_max_batch_size_default
+    @import = IntercomRails::Import.new
+    assert_equal 100, @import.max_batch_size
+  end
+
+  def test_max_batch_size_settable
+    @import = IntercomRails::Import.new(:max_batch_size => 50)
+    assert_equal 50, @import.max_batch_size
+  end
+
+  def test_max_batch_size_hard_limit
+    @import = IntercomRails::Import.new(:max_batch_size => 101)
+    assert_equal 100, @import.max_batch_size
+  end
+
 end

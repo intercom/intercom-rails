@@ -22,7 +22,8 @@ module IntercomRails
       end
 
       def to_hash
-        standard_data.merge custom_data
+        data = standard_data.merge(custom_data)
+        DateHelper.convert_dates_to_unix_timestamps(data)
       end
 
       def standard_data

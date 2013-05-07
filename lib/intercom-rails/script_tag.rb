@@ -51,7 +51,7 @@ module IntercomRails
 
     private
     def user_details=(user_details)
-      @user_details = convert_dates_to_unix_timestamps(user_details || {})
+      @user_details = DateHelper.convert_dates_to_unix_timestamps(user_details || {})
       @user_details = @user_details.with_indifferent_access.tap do |u|
         [:email, :name, :user_id].each { |k| u.delete(k) if u[k].nil? }
 
@@ -68,7 +68,7 @@ module IntercomRails
     end
 
     def company_details=(company_details)
-      @company_details = convert_dates_to_unix_timestamps(company_details || {})
+      @company_details = DateHelper.convert_dates_to_unix_timestamps(company_details || {})
       @company_details = @company_details.with_indifferent_access.tap do |c|
         [:id, :name].each { |k| c.delete(k) if c[k].nil? }
       end
@@ -109,13 +109,6 @@ module IntercomRails
 
       config
     end
-
-    def convert_dates_to_unix_timestamps(object)
-      return Hash[object.map { |k, v| [k, convert_dates_to_unix_timestamps(v)] }] if object.is_a?(Hash)
-      return object.to_i if object.is_a?(Time) || object.is_a?(DateTime)
-      object
-    end
-
   end
 
 end

@@ -1,4 +1,5 @@
 require 'intercom-rails/exceptions'
+require 'intercom-rails/date_helper'
 require 'intercom-rails/proxy'
 require 'intercom-rails/proxy/user'
 require 'intercom-rails/proxy/company'

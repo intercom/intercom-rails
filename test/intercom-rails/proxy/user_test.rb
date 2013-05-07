@@ -82,6 +82,22 @@ class UserTest < MiniTest::Unit::TestCase
     assert_equal 'pro', @user_proxy.to_hash['plan']
   end
 
+  def test_converts_dates_to_timestamps
+    plan_dummy_user = DUMMY_USER.dup
+    plan_dummy_user.instance_eval do
+      def some_date
+        Time.at(5)
+      end
+    end
+
+    IntercomRails.config.user.custom_data = {
+      'some_date' => :some_date
+    }
+
+    @user_proxy = User.new(plan_dummy_user)
+    assert_equal 5, @user_proxy.to_hash['some_date']
+  end
+
   def test_valid_returns_true_if_user_id_or_email
     assert_equal true, User.new(DUMMY_USER).valid?
   end

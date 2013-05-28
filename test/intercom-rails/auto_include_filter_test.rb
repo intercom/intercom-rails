@@ -115,7 +115,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
   def test_library_url_default
     get :with_current_user_method, :body => "<body>Hello world</body>"
     assert_includes @response.body, "<script>"
-    assert_includes @response.body, "s.src='https://api.intercom.io/api/js/library.js"
+    assert_includes @response.body, "s.src='https://static.intercomcdn.com/intercom.v1.js"
   end
 
   def test_library_url_override

@@ -29,7 +29,7 @@ module IntercomRails
       end
 
       def include_javascript?
-        is_enabled_for_environment? &&
+        enabled_for_environment? &&
         !intercom_script_tag_called_manually? &&
         html_content_type? &&
         response_has_closing_body_tag? &&
@@ -57,8 +57,8 @@ module IntercomRails
         @script_tag ||= ScriptTag.new(:find_current_user_details => true, :find_current_company_details => true, :controller => controller)
       end
 
-      def is_enabled_for_environment?
-        IntercomRails.config.environments_enabled_for.include?(Rails.env)
+      def enabled_for_environment?
+        IntercomRails.config.enabled_environments.include?(Rails.env)
       end
 
     end

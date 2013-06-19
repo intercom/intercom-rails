@@ -59,7 +59,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
   def setup
     super
     IntercomRails.config.app_id = 'my_app_id'
-    IntercomRails.config.environments_enabled_for = ["production"]
+    IntercomRails.config.enabled_environments = ["production"]
   end
 
   def teardown
@@ -168,7 +168,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
 
   def test_running_in_development_but_only_enabled_for_production
     Rails.stub(:env) { ActiveSupport::StringInquirer.new("development") }
-    IntercomRails.config.environments_enabled_for = ["production"]
+    IntercomRails.config.enabled_environments = ["production"]
     get :with_user_instance_variable, :body => "<body>Hello world</body>"
 
     assert_equal @response.body, "<body>Hello world</body>"
@@ -176,7 +176,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
 
   def test_only_enabled_for_production
     # default Rails.env is to run in production
-    IntercomRails.config.environments_enabled_for = ["production"]
+    IntercomRails.config.enabled_environments = ["production"]
     get :with_user_instance_variable, :body => "<body>Hello world</body>"
 
     assert_includes @response.body, "<script>"

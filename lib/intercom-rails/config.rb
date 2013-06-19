@@ -83,7 +83,7 @@ module IntercomRails
     config_accessor :api_secret
     config_accessor :api_key
     config_accessor :library_url
-    config_accessor :environments_enabled_for, &ARRAY_VALIDATOR
+    config_accessor :enabled_environments, &ARRAY_VALIDATOR
 
     config_group :user do
       config_accessor :current, &IS_PROC_VALIDATOR 

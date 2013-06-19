@@ -104,10 +104,10 @@ If you want to customize the style of the link that opens the inbox:
   config.inbox.style = :custom
 ```
 
-This option attaches the inbox open event to the click event of an element with an id of `#Intercom`. So the simplest option here would be to add something like the following to your layout:
+This option attaches the inbox open event to the click event of an element with an id of `Intercom`. So the simplest option here would be to add something like the following to your layout:
 
 ```html
-  <a id="#Intercom">Support</a>
+  <a id="Intercom">Support</a>
 ```
 
 You can read more about configuring the Inbox within Intercom (Config menu -> Inbox Link).

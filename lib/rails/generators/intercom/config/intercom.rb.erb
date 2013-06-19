@@ -23,6 +23,11 @@ IntercomRails.config do |config|
   # config.api_key = "..."
   <%- end -%>
 
+  # == Environments Enabled For
+  # Define which rails environments you would like automatic insertion of Intercom
+  #
+  config.environments_enabled_for = ["development", "production"]
+
   # == Curent user name
   # The method/variable that contains the logged in user in your controllers.
   # If it is `current_user` or `@user`, then you can ignore this

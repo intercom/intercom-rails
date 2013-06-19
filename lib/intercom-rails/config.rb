@@ -60,6 +60,10 @@ module IntercomRails
       end
     end
 
+    ARRAY_VALIDATOR = Proc.new do |data, field_name|
+      raise ArgumentError, "#{field_name} data should be an Array" unless data.kind_of?(Array)
+    end
+
     IS_PROC_VALIDATOR = Proc.new do |value, field_name|
       raise ArgumentError, "#{field_name} is not a proc" unless value.kind_of?(Proc)
     end
@@ -79,6 +83,7 @@ module IntercomRails
     config_accessor :api_secret
     config_accessor :api_key
     config_accessor :library_url
+    config_accessor :environments_enabled_for, &ARRAY_VALIDATOR
 
     config_group :user do
       config_accessor :current, &IS_PROC_VALIDATOR 

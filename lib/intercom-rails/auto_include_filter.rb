@@ -58,7 +58,9 @@ module IntercomRails
       end
 
       def enabled_for_environment?
-        IntercomRails.config.enabled_environments.include?(Rails.env)
+        enabled_environments = IntercomRails.config.enabled_environments
+        return true if enabled_environments.nil?
+        enabled_environments.include?(Rails.env)
       end
 
     end

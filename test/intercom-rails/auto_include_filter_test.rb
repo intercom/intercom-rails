@@ -59,12 +59,10 @@ class AutoIncludeFilterTest < ActionController::TestCase
   def setup
     super
     IntercomRails.config.app_id = 'my_app_id'
-    IntercomRails.config.enabled_environments = ["production"]
   end
 
   def teardown
     IntercomRails.config.app_id = nil
-    Rails.stub(:env) { ActiveSupport::StringInquirer.new("production") }
   end
   
   def test_no_user_present
@@ -166,16 +164,17 @@ class AutoIncludeFilterTest < ActionController::TestCase
     assert_equal @response.body, "<body>Hello world</body>"
   end
 
-  def test_running_in_development_but_only_enabled_for_production
+  def test_disabled_in_development
     Rails.stub(:env) { ActiveSupport::StringInquirer.new("development") }
     IntercomRails.config.enabled_environments = ["production"]
     get :with_user_instance_variable, :body => "<body>Hello world</body>"
 
     assert_equal @response.body, "<body>Hello world</body>"
+    Rails.unstub(:env)
   end
 
-  def test_only_enabled_for_production
-    # default Rails.env is to run in production
+  def test_enabled_in_production
+    # Rails.env defaults to "production"
     IntercomRails.config.enabled_environments = ["production"]
     get :with_user_instance_variable, :body => "<body>Hello world</body>"
 
@@ -183,6 +182,6 @@ class AutoIncludeFilterTest < ActionController::TestCase
     assert_includes @response.body, IntercomRails.config.app_id
     assert_includes @response.body, "ben@intercom.io"
     assert_includes @response.body, "Ben McRedmond"
-
   end
+
 end

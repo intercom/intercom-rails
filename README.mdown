@@ -112,6 +112,14 @@ This option attaches the inbox open event to the click event of an element with 
 
 You can read more about configuring the Inbox within Intercom (Config menu -> Inbox Link).
 
+### Environments
+
+By default Intercom will be automatically inserted in all Rails environments. If you would like to specify the environments in which Intercom should be inserted, you can do so as follows:
+
+```ruby
+  config.enabled_environments = ["production"]
+```
+
 ### Manually Inserting the Intercom Javascript 
 
 Some situations may require manually inserting the Intercom script tag. If you simply wish to place the Intercom javascript in a different place within the page or, on a page without a closing `</body>` tag:

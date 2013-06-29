@@ -28,7 +28,7 @@ IntercomRails.config do |config|
   #
   config.enabled_environments = ["development", "production"]
 
-  # == Curent user name
+  # == Curent user method/variable
   # The method/variable that contains the logged in user in your controllers.
   # If it is `current_user` or `@user`, then you can ignore this
   #
@@ -60,12 +60,12 @@ IntercomRails.config do |config|
   # config.user.company_association = Proc.new { |user| user.companies.to_a }
   # config.user.company_association = Proc.new { |user| [user.company] }
 
-  # == Current company name
+  # == Current company method/variable
   # The method/variable that contains the current company for the current user,
   # in your controllers. 'Companies' are generic groupings of users, so this 
   # could be a company, app or group.
   #
-  # config.company.current = Proc.new { @app }
+  # config.company.current = Proc.new { current_company }
 
   # == Company Custom Data
   # A hash of additional data you wish to send about a company.

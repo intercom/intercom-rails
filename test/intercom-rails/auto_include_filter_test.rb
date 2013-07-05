@@ -70,11 +70,6 @@ class AutoIncludeFilterTest < ActionController::TestCase
     assert_equal @response.body, "<body>Hello world</body>"
   end
 
-  def test_user_present_with_no_body_tag
-    get :with_user_instance_variable, :body => "Hello world"
-    assert_equal @response.body, "Hello world"
-  end
-
   def test_user_present_but_unusuable
     get :with_unusable_user_instance_variable, :body => "Hello world"
     assert_equal @response.body, "Hello world"
@@ -101,7 +96,28 @@ class AutoIncludeFilterTest < ActionController::TestCase
     assert_includes @response.body, "<script>"
     assert_includes @response.body, "ciaran@intercom.io"
     assert_includes @response.body, "Ciaran Lee"
+    assert @response.body.match(%r{</script>[\n.]*</body>}), "script tag in right place"
   end
+
+  def test_current_user_method_present_with_html_tag
+    get :with_current_user_method, :body => "<html>Hello world</html>"
+
+    assert_includes @response.body, "<script>"
+    assert_includes @response.body, "ciaran@intercom.io"
+    assert_includes @response.body, "Ciaran Lee"
+    assert @response.body.match(%r{</script>[\n.]*</html>}), "script tag in right place"
+  end
+
+  def test_current_user_method_present_no_html_or_body_tag_appends
+    get :with_current_user_method, :body => "Hello world"
+
+    assert_includes @response.body, "<script>"
+    assert_includes @response.body, "ciaran@intercom.io"
+    assert_includes @response.body, "Ciaran Lee"
+    assert @response.body.match(%r{\n<script>}), "script tag in right place"
+    assert @response.body.match(%r{</script>\n\\0\Z}), "script tag in right place"
+  end
+
 
   def test_setting_current_user_with_intercom_config
     IntercomRails.config.user.current = Proc.new { @admin }

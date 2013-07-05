@@ -10,6 +10,7 @@ module IntercomRails
     class Filter
 
       CLOSING_BODY_TAG = %r{</body>}
+      CLOSING_HTML_TAG = %r{</html>}
 
       def self.filter(controller)
         auto_include_filter = new(controller)
@@ -25,14 +26,19 @@ module IntercomRails
       end
 
       def include_javascript! 
-        response.body = response.body.gsub(CLOSING_BODY_TAG, intercom_script_tag.output + '\\0')
+        if response_has_closing_body_tag?
+          response.body = response.body.gsub(CLOSING_BODY_TAG, intercom_script_tag.output + '\\0')
+        elsif response_has_closing_html_tag?
+          response.body = response.body.gsub(CLOSING_HTML_TAG, intercom_script_tag.output + '\\0')
+        else
+          response.body = response.body + "\n" + intercom_script_tag.output + '\\0'
+        end
       end
 
       def include_javascript?
         enabled_for_environment? &&
         !intercom_script_tag_called_manually? &&
         html_content_type? &&
-        response_has_closing_body_tag? &&
         intercom_script_tag.valid?
       end
 
@@ -47,6 +53,10 @@ module IntercomRails
 
       def response_has_closing_body_tag?
         !!(response.body[CLOSING_BODY_TAG])
+      end
+
+      def response_has_closing_html_tag?
+        !!(response.body[CLOSING_HTML_TAG])
       end
 
       def intercom_script_tag_called_manually?

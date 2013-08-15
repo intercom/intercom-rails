@@ -89,6 +89,9 @@ class AppsController < ActionController::Base
 end
 ```
 
+Attributes must be accessible in order to sync with intercom. Additionally, attriutes ending in "_at" will be parsed as times.
+
+
 ### Inbox
 Intercom includes an inbox which allows a user to read their past conversations with your app, and start new conversations. It's hidden by default, you can include a link to open it by adding a line to `config/initializers/intercom.rb`:
 

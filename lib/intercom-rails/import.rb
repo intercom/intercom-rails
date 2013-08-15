@@ -48,7 +48,7 @@ module IntercomRails
     end
 
     def assert_runnable
-      raise ImportError, "You can only import your users from your production environment" unless Rails.env.production?
+      raise ImportError, "You can only import your users from your production environment" unless (Rails.env.production? || Rails.env.staging?)
       raise ImportError, "We couldn't find your user class, please set one in config/initializers/intercom_rails.rb" unless user_klass.present?
       info "Found user class: #{user_klass}"
       raise ImportError, "Only ActiveRecord and Mongoid models are supported" unless supported_orm?(user_klass)

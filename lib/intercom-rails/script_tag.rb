@@ -105,8 +105,6 @@ module IntercomRails
       end
 
       config[:activator] = activator if activator
-      config[:use_counter] = Config.inbox.counter if Config.inbox.counter
-
       config
     end
   end

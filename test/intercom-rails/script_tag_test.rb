@@ -88,14 +88,6 @@ class ScriptTagTest < MiniTest::Unit::TestCase
     assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
   end
 
-  def test_inbox_custom_style_with_counter
-    IntercomRails.config.inbox.style = :custom
-    IntercomRails.config.inbox.counter = true
-    script_tag = ScriptTag.new
-    expected_widget_settings = {'activator' => '#Intercom', 'use_counter' => true}
-    assert_equal expected_widget_settings, script_tag.intercom_settings['widget']
-  end
-
   def test_company_discovery_and_inclusion
     IntercomRails.config.company.current = Proc.new { @app }
     object_with_app_instance_variable = Object.new

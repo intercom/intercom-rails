@@ -89,7 +89,7 @@ class AppsController < ActionController::Base
 end
 ```
 
-Attributes must be accessible in order to sync with intercom. Additionally, attriutes ending in "_at" will be parsed as times.
+Attributes must be accessible in order to sync with intercom. Additionally, attributes ending in "_at" will be parsed as times.
 
 
 ### Inbox

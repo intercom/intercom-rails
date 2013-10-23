@@ -100,6 +100,9 @@ module IntercomRails
         user_proxy = Proxy::User.new(u)
         next unless user_proxy.valid?
 
+        user_proxy.class.proxy_delegator :last_seen_ip
+        user_proxy.class.proxy_delegator :last_request_at
+
         for_wire = user_proxy.to_hash
         companies = Proxy::Company.companies_for_user(user_proxy)
         for_wire.merge!(:companies => companies.map(&:to_hash)) if companies.present?

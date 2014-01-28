@@ -37,7 +37,7 @@ To disable automatic insertion for a particular controller or action you can:
 If it's not working make sure:
 
 * You've generated a config file with your `app_id` as detailed above.
-* Your user object responds to an `id` or `email` method.
+* Your user object responds to an `id` or `email` method. This method should return a string. If you are using MongoDB or similar, see below section on Custom Data.
 * Your current user is accessible in your controllers as `current_user` or `@user`, if not in `config/initializers/intercom.rb`:
 
 ```ruby
@@ -70,6 +70,14 @@ to generate the values of the custom data:
     :plan => Proc.new { |user| user.plan.name },
     :is_paid => Proc.new { |user| user.plan.present? },
     :email_verified => :email_verified?
+  }
+```
+
+If you are using MongoDB for example, setup your `user_id` by:
+
+```ruby
+  config.user.custom_data = {
+     :user_id => Proc.new { |user| user.id.to_s }
   }
 ```
 

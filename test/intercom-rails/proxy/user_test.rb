@@ -82,6 +82,40 @@ class UserTest < MiniTest::Unit::TestCase
     assert_equal 'pro', @user_proxy.to_hash['plan']
   end
 
+  def test_can_work_with_proc_custom_data
+    plan_dummy_user = DUMMY_USER.dup
+    plan_dummy_user.instance_eval do
+      def custom_data
+        {
+          'plan' => 'pro',
+          'registered_at' => Time.at(5),
+        }
+      end
+    end
+
+    IntercomRails.config.user.custom_data = Proc.new { |u| u.custom_data }
+
+    @user_proxy = User.new(plan_dummy_user)
+    assert_equal 'pro', @user_proxy.to_hash['plan']
+  end
+
+  def test_can_work_with_symbol_custom_data
+    plan_dummy_user = DUMMY_USER.dup
+    plan_dummy_user.instance_eval do
+      def custom_data
+        {
+          'plan' => 'pro',
+          'registered_at' => Time.at(5),
+        }
+      end
+    end
+
+    IntercomRails.config.user.custom_data = :custom_data
+
+    @user_proxy = User.new(plan_dummy_user)
+    assert_equal 'pro', @user_proxy.to_hash['plan']
+  end
+
   def test_converts_dates_to_timestamps
     plan_dummy_user = DUMMY_USER.dup
     plan_dummy_user.instance_eval do

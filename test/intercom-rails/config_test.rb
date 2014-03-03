@@ -29,6 +29,14 @@ class ConfigTest < MiniTest::Unit::TestCase
     assert_equal IntercomRails.config.app_id, "4567"
   end
 
+  def test_custom_data_rejects_non_proc_non_symbol_non_hash_value
+    exception = assert_raises ArgumentError do
+      IntercomRails.config.user.custom_data = 'foo'
+    end
+
+    assert_equal "custom_data custom_data should be either be a hash or a Proc/Symbol that returns a hash when called", exception.message
+  end
+
   def test_custom_data_rejects_non_proc_or_symbol_attributes
     exception = assert_raises ArgumentError do 
       IntercomRails.config.user.custom_data = {
@@ -38,6 +46,17 @@ class ConfigTest < MiniTest::Unit::TestCase
     end 
 
     assert_equal "all custom_data attributes should be either a Proc or a symbol", exception.message
+  end
+
+  def test_setting_custom_data_with_proc
+    custom_data = {
+      'foo' => 'bar',
+      'bar' => 'baz'
+    }
+    custom_data_config = Proc.new { custom_data }
+
+    IntercomRails.config.user.custom_data = custom_data_config
+    assert_equal custom_data, IntercomRails.config.user.custom_data.call
   end
 
   def test_setting_custom_data

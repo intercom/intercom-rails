@@ -21,13 +21,7 @@ module IntercomRails
 
     def self.config_writer(name, &block)
       meta_class.send(:define_method, "#{name}=") do |value|
-        block.call(value) if block && (block.arity <= 1)
-
-        if block && (block.arity > 1)
-          field_name = underscored_class_name ? "#{underscored_class_name}.#{name}" : name
-          block.call(value, field_name)
-        end
-
+        validate(name, value, block)
         instance_variable_set("@#{name}", value)
       end
     end
@@ -45,6 +39,17 @@ module IntercomRails
     end
 
     private
+
+    def self.validate(name, value, block)
+      return unless block
+      args = [value]
+      if block.arity > 1
+        field_name = underscored_class_name ? "#{underscored_class_name}.#{name}" : name
+        args << field_name
+      end
+      block.call(*args)
+    end
+
     def self.underscored_class_name
       @underscored_class_name
     end

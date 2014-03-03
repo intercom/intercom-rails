@@ -68,6 +68,26 @@ describe IntercomRails do
     end
   end
 
+  it 'custom data rejects non proc non symbol non hash value' do
+    exception = assert_raises ArgumentError do
+      IntercomRails.config.user.custom_data = 'foo'
+    end
+
+    assert_equal "custom_data custom_data should be either be a hash or a Proc/Symbol that returns a hash when called", exception.message
+  end
+
+  it 'setting custom data with proc'
+    custom_data = {
+      'foo' => 'bar',
+      'bar' => 'baz'
+    }
+    custom_data_config = Proc.new { custom_data }
+
+    IntercomRails.config.user.custom_data = custom_data_config
+    assert_equal custom_data, IntercomRails.config.user.custom_data.call
+  end
+
+
   it 'can be reset!' do
     IntercomRails.config.inbox.style = :custom
     IntercomRails.config.user.custom_data = {'muffin' => :muffin}

@@ -54,9 +54,14 @@ module IntercomRails
   class Config < ConfigSingleton
 
     CUSTOM_DATA_VALIDATOR = Proc.new do |custom_data, field_name|
-      raise ArgumentError, "#{field_name} custom_data should be a hash" unless custom_data.kind_of?(Hash)
-      unless custom_data.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
-        raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+      case custom_data
+      when Hash
+        unless custom_data.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
+          raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+        end
+      when Proc, Symbol
+      else
+        raise ArgumentError, "#{field_name} custom_data should be either be a hash or a Proc/Symbol that returns a hash when called"
       end
     end
 

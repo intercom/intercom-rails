@@ -21,13 +21,7 @@ module IntercomRails
 
     def self.config_writer(name, &block)
       meta_class.send(:define_method, "#{name}=") do |value|
-        block.call(value) if block && (block.arity <= 1)
-
-        if block && (block.arity > 1)
-          field_name = underscored_class_name ? "#{underscored_class_name}.#{name}" : name
-          block.call(value, field_name) 
-        end
-
+        validate(name, value, block)
         instance_variable_set("@#{name}", value)
       end
     end
@@ -45,6 +39,17 @@ module IntercomRails
     end
 
     private
+
+    def self.validate(name, value, block)
+      return unless block
+      args = [value]
+      if block.arity > 1
+        field_name = underscored_class_name ? "#{underscored_class_name}.#{name}" : name
+        args << field_name
+      end
+      block.call(*args)
+    end
+
     def self.underscored_class_name
       @underscored_class_name
     end
@@ -54,9 +59,14 @@ module IntercomRails
   class Config < ConfigSingleton
 
     CUSTOM_DATA_VALIDATOR = Proc.new do |custom_data, field_name|
-      raise ArgumentError, "#{field_name} custom_data should be a hash" unless custom_data.kind_of?(Hash)
-      unless custom_data.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
-        raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+      case custom_data
+      when Hash
+        unless custom_data.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
+          raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+        end
+      when Proc, Symbol
+      else
+        raise ArgumentError, "#{field_name} custom_data should be either be a hash or a Proc/Symbol that returns a hash when called"
       end
     end
 

@@ -117,7 +117,7 @@ You can read more about configuring the Inbox within Intercom (Config menu -> In
 
 ### Environments
 
-By default Intercom will be automatically inserted in all Rails environments. If you would like to specify the environments in which Intercom should be inserted, you can do so as follows:
+By default Intercom will be automatically inserted in development and production Rails environments. If you would like to specify the environments in which Intercom should be inserted, you can do so as follows:
 
 ```ruby
   config.enabled_environments = ["production"]

@@ -89,13 +89,19 @@ module IntercomRails
       config_accessor :current, &IS_PROC_VALIDATOR 
       config_accessor :model, &IS_PROC_VALIDATOR
       config_accessor :company_association, &IS_PROC_VALIDATOR
+      config_accessor :id, &IS_PROC_VALIDATOR
+      config_accessor :email, &IS_PROC_VALIDATOR
+      config_accessor :name, &IS_PROC_VALIDATOR
+      config_accessor :created_at, &IS_PROC_VALIDATOR
       config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
     end
     
     config_group :company do
       config_accessor :current, &IS_PROC_VALIDATOR
-      config_accessor :plan, &IS_PROC_VALIDATOR 
+      config_accessor :plan, &IS_PROC_VALIDATOR
       config_accessor :name, &IS_PROC_VALIDATOR
+      config_accessor :id, &IS_PROC_VALIDATOR
+      config_accessor :created_at, &IS_PROC_VALIDATOR
       config_accessor :monthly_spend, &IS_PROC_VALIDATOR
       config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
     end

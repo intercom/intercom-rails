@@ -8,7 +8,9 @@ module IntercomRails
       proxy_delegator :name
       proxy_delegator :created_at
 
+      config_delegator :id, :identity => true
       config_delegator :name
+      config_delegator :created_at
 
       def self.companies_for_user(user)
         return unless config(:user).company_association.present?

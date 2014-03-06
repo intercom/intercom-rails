@@ -8,6 +8,9 @@ module IntercomRails
       proxy_delegator :name
       proxy_delegator :created_at
 
+      config_delegator :id, :identity => true
+      config_delegator :name
+      config_delegator :created_at
       config_delegator :plan
       config_delegator :monthly_spend
 

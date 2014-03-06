@@ -86,9 +86,10 @@ module IntercomRails
         end
       end
 
-      def self.config_delegator(attribute_name)
+      def self.config_delegator(attribute_name, options = {})
         instance_variable_name = :"@_config_#{attribute_name}_delegated_value"
         standard_data_config_attributes << attribute_name
+        identity_attributes << attribute_name if options[:identity]
 
         send(:define_method, attribute_name) do
           return nil unless config.send(attribute_name).present?

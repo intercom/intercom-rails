@@ -8,6 +8,11 @@ module IntercomRails
       proxy_delegator :email, :identity => true
       proxy_delegator :name
       proxy_delegator :created_at
+      
+      config_delegator :id, :identity => true
+      config_delegator :email, :identity => true
+      config_delegator :name
+      config_delegator :created_at
 
       PREDEFINED_POTENTIAL_USER_OBJECTS = [
         Proc.new { current_user },

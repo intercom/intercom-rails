@@ -17,7 +17,7 @@ module Intercom
         @api_key = api_key
 
         introduction = <<-desc
-Intercom will automatically insert its javascript before the closing '</body>' 
+Intercom will automatically insert its javascript before the closing '</body>'
 tag on every page where it can find a logged-in user. Intercom by default
 looks for logged-in users, in the controller, via 'current_user' and '@user'.
 
@@ -25,9 +25,9 @@ Is the logged-in user accessible via either 'current_user' or '@user'? [Yn]
         desc
 
         print "#{introduction.strip} "
-        default_ok = $stdin.gets.strip.downcase 
+        default_ok = $stdin.gets.strip.downcase
 
-        if FALSEY_RESPONSES.include?(default_ok) 
+        if FALSEY_RESPONSES.include?(default_ok)
           custom_current_user_question = <<-desc
 
 How do you access the logged-in user in your controllers? This can be

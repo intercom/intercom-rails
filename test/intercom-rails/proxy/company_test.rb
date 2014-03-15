@@ -9,7 +9,7 @@ class CompanyTest < MiniTest::Unit::TestCase
 
   def test_finds_current_company
     IntercomRails.config.company.current = Proc.new { @app }
-    object_with_app_instance_var = Object.new 
+    object_with_app_instance_var = Object.new
     object_with_app_instance_var.instance_variable_set(:@app, DUMMY_COMPANY)
 
     c = Company.current_in_context(object_with_app_instance_var)
@@ -25,7 +25,7 @@ class CompanyTest < MiniTest::Unit::TestCase
       end
     end
 
-    search_object = nil 
+    search_object = nil
     assert_equal false, Company.new(search_object).valid?
   end
 

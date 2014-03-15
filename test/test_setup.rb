@@ -31,7 +31,7 @@ class Object
   def self.unstub_all_instance_methods
     public_instance_methods.each do |method|
       begin
-        self.any_instance.unstub(method) 
+        self.any_instance.unstub(method)
       rescue RSpec::Mocks::MockExpectationError
         next
       end

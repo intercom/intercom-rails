@@ -3,7 +3,7 @@ module IntercomRails
 
   module ScriptTagHelper
     # Generate an intercom script tag.
-    # 
+    #
     # @param user_details [Hash] a customizable hash of user details
     # @param options [Hash] an optional hash for secure mode and widget customisation
     # @option user_details [String] :app_id Your application id
@@ -12,7 +12,7 @@ module IntercomRails
     # @option user_details [String] :name the users name, _optional_ but useful for identify people in the Intercom App.
     # @option user_details [Hash] :custom_data custom attributes you'd like saved for this user on Intercom.
     # @option options [String] :widget a hash containing a css selector for an element which when clicked should show the Intercom widget
-    # @option options [String] :secret Your app secret for secure mode 
+    # @option options [String] :secret Your app secret for secure mode
     # @return [String] Intercom script tag
     # @example basic example
     #   <%= intercom_script_tag({ :app_id => "your-app-id",

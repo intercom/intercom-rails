@@ -2,7 +2,7 @@ require 'active_support/inflector'
 
 module IntercomRails
 
-  class ConfigSingleton 
+  class ConfigSingleton
 
     def self.config_accessor(*args, &block)
       config_reader(*args)
@@ -25,7 +25,7 @@ module IntercomRails
 
         if block && (block.arity > 1)
           field_name = underscored_class_name ? "#{underscored_class_name}.#{name}" : name
-          block.call(value, field_name) 
+          block.call(value, field_name)
         end
 
         instance_variable_set("@#{name}", value)
@@ -78,7 +78,7 @@ module IntercomRails
         end
       end
     end
- 
+
     config_accessor :app_id
     config_accessor :api_secret
     config_accessor :api_key
@@ -86,15 +86,15 @@ module IntercomRails
     config_accessor :enabled_environments, &ARRAY_VALIDATOR
 
     config_group :user do
-      config_accessor :current, &IS_PROC_VALIDATOR 
+      config_accessor :current, &IS_PROC_VALIDATOR
       config_accessor :model, &IS_PROC_VALIDATOR
       config_accessor :company_association, &IS_PROC_VALIDATOR
       config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
     end
-    
+
     config_group :company do
       config_accessor :current, &IS_PROC_VALIDATOR
-      config_accessor :plan, &IS_PROC_VALIDATOR 
+      config_accessor :plan, &IS_PROC_VALIDATOR
       config_accessor :monthly_spend, &IS_PROC_VALIDATOR
       config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
     end

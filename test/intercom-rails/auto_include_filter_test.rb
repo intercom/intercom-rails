@@ -4,7 +4,7 @@ class TestController < ActionController::Base
 
   skip_after_filter :intercom_rails_auto_include, :only => :with_user_instance_variable_after_filter_skipped
 
-  def without_user 
+  def without_user
     render :text => params[:body], :content_type => 'text/html'
   end
 
@@ -22,10 +22,10 @@ class TestController < ActionController::Base
     @app = dummy_company
     render :text => params[:body], :content_type => 'text/html'
   end
-  
+
   def with_user_instance_variable_and_custom_data
     @user = dummy_user
-    intercom_custom_data.user['testing_stuff'] = true 
+    intercom_custom_data.user['testing_stuff'] = true
     render :text => params[:body], :content_type => 'text/html'
   end
 
@@ -50,7 +50,7 @@ class TestController < ActionController::Base
 
 end
 
-class AutoIncludeFilterTest < ActionController::TestCase 
+class AutoIncludeFilterTest < ActionController::TestCase
 
   include InterTest
 
@@ -64,7 +64,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
   def teardown
     IntercomRails.config.app_id = nil
   end
-  
+
   def test_no_user_present
     get :without_user, :body => "<body>Hello world</body>"
     assert_equal @response.body, "<body>Hello world</body>"
@@ -84,7 +84,7 @@ class AutoIncludeFilterTest < ActionController::TestCase
     get :with_user_instance_variable, :body => "<body>Hello world</body>"
 
     assert_includes @response.body, "<script>"
-    assert_includes @response.body, IntercomRails.config.app_id 
+    assert_includes @response.body, IntercomRails.config.app_id
     assert_includes @response.body, "ben@intercom.io"
     assert_includes @response.body, "Ben McRedmond"
   end

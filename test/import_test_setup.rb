@@ -12,7 +12,7 @@ module ActiveRecord
 end
 
 module Mongoid
-  module Document 
+  module Document
     def self.included(klass)
       klass.extend ClassMethods
     end

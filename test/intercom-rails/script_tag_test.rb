@@ -92,7 +92,7 @@ class ScriptTagTest < MiniTest::Unit::TestCase
     IntercomRails.config.company.current = Proc.new { @app }
     object_with_app_instance_variable = Object.new
     object_with_app_instance_variable.instance_eval do
-      @app = dummy_company 
+      @app = dummy_company
     end
 
     script_tag = ScriptTag.new(:controller => object_with_app_instance_variable,

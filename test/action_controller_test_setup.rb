@@ -25,5 +25,5 @@ class ActionController::TestCase
     super
     @routes = TestRoutes
   end
-  
+
 end

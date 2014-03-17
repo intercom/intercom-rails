@@ -1,6 +1,6 @@
 require 'import_test_setup'
 
-class ImportUnitTest < MiniTest::Unit::TestCase 
+class ImportUnitTest < MiniTest::Unit::TestCase
 
   include InterTest
   include ImportTest
@@ -21,7 +21,7 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     exception = assert_raises IntercomRails::ImportError do
       IntercomRails::Import.run
     end
-    
+
     assert_equal exception.message, "We couldn't find your user class, please set one in config/initializers/intercom_rails.rb"
   end
 
@@ -31,7 +31,7 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     exception = assert_raises IntercomRails::ImportError do
       IntercomRails::Import.run
     end
-    
+
     assert_equal exception.message, "Only ActiveRecord and Mongoid models are supported"
   end
 
@@ -41,7 +41,7 @@ class ImportUnitTest < MiniTest::Unit::TestCase
     exception = assert_raises IntercomRails::ImportError do
       IntercomRails::Import.run
     end
-    
+
     assert_equal exception.message, "Please add an Intercom API Key to config/initializers/intercom.rb"
   end
 

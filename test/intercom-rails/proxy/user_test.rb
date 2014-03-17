@@ -24,17 +24,17 @@ class UserTest < MiniTest::Unit::TestCase
     end
 
     @user_proxy = User.current_in_context(object_with_current_user_method)
-    assert_user_found 
+    assert_user_found
   end
 
   def test_finds_user_instance_variable
     object_with_instance_variable = Object.new
     object_with_instance_variable.instance_eval do
-      @user = DUMMY_USER 
+      @user = DUMMY_USER
     end
 
     @user_proxy = User.current_in_context(object_with_instance_variable)
-    assert_user_found 
+    assert_user_found
   end
 
   def test_finds_config_user
@@ -47,14 +47,14 @@ class UserTest < MiniTest::Unit::TestCase
 
     IntercomRails.config.user.current = Proc.new { something_esoteric }
     @user_proxy = User.current_in_context(object_from_config)
-    assert_user_found 
+    assert_user_found
   end
 
   def test_finds_config_user_does_not_fallback_to_auto_find_users
     IntercomRails.config.user.current = Proc.new { something_esoteric }
     object_with_instance_variable = Object.new
     object_with_instance_variable.instance_eval do
-      @user = DUMMY_USER 
+      @user = DUMMY_USER
     end
 
     assert_raises(IntercomRails::NoUserFoundError) {
@@ -114,18 +114,18 @@ class UserTest < MiniTest::Unit::TestCase
     object_with_intercom_custom_data = Object.new
     object_with_intercom_custom_data.instance_eval do
       def intercom_custom_data
-        o = Object.new 
-        o.instance_eval do 
+        o = Object.new
+        o.instance_eval do
           def user
             {:ponies => :rainbows}
           end
-        end 
+        end
 
         o
       end
     end
 
-    @user_proxy = User.new(DUMMY_USER, object_with_intercom_custom_data) 
+    @user_proxy = User.new(DUMMY_USER, object_with_intercom_custom_data)
     assert_equal :rainbows, @user_proxy.to_hash[:ponies]
   end
 
@@ -136,7 +136,7 @@ class UserTest < MiniTest::Unit::TestCase
       end
     end
 
-    search_object = nil 
+    search_object = nil
     assert_equal false, User.new(search_object).valid?
   end
 

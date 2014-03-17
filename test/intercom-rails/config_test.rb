@@ -1,6 +1,6 @@
 require 'test_setup'
 
-class ConfigTest < MiniTest::Unit::TestCase 
+class ConfigTest < MiniTest::Unit::TestCase
 
   include InterTest
 
@@ -30,12 +30,12 @@ class ConfigTest < MiniTest::Unit::TestCase
   end
 
   def test_custom_data_rejects_non_proc_or_symbol_attributes
-    exception = assert_raises ArgumentError do 
+    exception = assert_raises ArgumentError do
       IntercomRails.config.user.custom_data = {
         'foo' => Proc.new {},
         'bar' => 'heyheyhey!'
       }
-    end 
+    end
 
     assert_equal "all custom_data attributes should be either a Proc or a symbol", exception.message
   end

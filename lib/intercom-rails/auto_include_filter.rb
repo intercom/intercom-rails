@@ -21,10 +21,10 @@ module IntercomRails
       attr_reader :controller
 
       def initialize(kontroller)
-        @controller = kontroller 
+        @controller = kontroller
       end
 
-      def include_javascript! 
+      def include_javascript!
         response.body = response.body.gsub(CLOSING_BODY_TAG, intercom_script_tag.output + '\\0')
       end
 

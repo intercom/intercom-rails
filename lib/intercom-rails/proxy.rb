@@ -10,7 +10,7 @@ module IntercomRails
 
       def self.inherited(subclass)
         subclass.class_eval do
-          attr_reader class_string.downcase.to_s 
+          attr_reader class_string.downcase.to_s
         end
       end
 
@@ -76,7 +76,7 @@ module IntercomRails
         identity_attributes << attribute_name if options[:identity]
 
         send(:define_method, attribute_name) do
-          return nil unless proxied_object.respond_to?(attribute_name) 
+          return nil unless proxied_object.respond_to?(attribute_name)
 
           current_value = instance_variable_get(instance_variable_name)
           return current_value if current_value
@@ -116,13 +116,13 @@ module IntercomRails
 
       private
 
-      def custom_data_from_request 
+      def custom_data_from_request
         search_object.intercom_custom_data.send(type)
       rescue NoMethodError
         {}
       end
 
-      def custom_data_from_config 
+      def custom_data_from_config
         return {} if config.custom_data.blank?
         config.custom_data.reduce({}) do |custom_data, (k,v)|
           custom_data.merge(k => custom_data_value_from_proc_or_symbol(v))

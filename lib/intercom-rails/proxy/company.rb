@@ -22,17 +22,17 @@ module IntercomRails
       def self.current_in_context(search_object)
         begin
           if config.current.present?
-            company_proxy = new(search_object.instance_eval(&config.current), search_object) 
+            company_proxy = new(search_object.instance_eval(&config.current), search_object)
             return company_proxy if company_proxy.valid?
           end
         rescue NameError
         end
 
-        raise NoCompanyFoundError 
+        raise NoCompanyFoundError
       end
 
       def valid?
-        company.present? && identity_present? 
+        company.present? && identity_present?
       end
 
     end

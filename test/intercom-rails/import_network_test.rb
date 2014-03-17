@@ -15,7 +15,7 @@ class MockIntercom < Sinatra::Base
   end
 
   post '/all_successful' do
-    {:failed => []}.to_json 
+    {:failed => []}.to_json
   end
 
   post '/one_failure' do
@@ -37,7 +37,7 @@ end
 class InterRunner < MiniTest::Unit
 
   self.runner = self.new
-  
+
   def _run(*args)
     @mock_intercom_pid = start_mock_intercom
     super
@@ -49,7 +49,7 @@ class InterRunner < MiniTest::Unit
   private
 
   def start_mock_intercom
-    pid = fork do 
+    pid = fork do
       MockIntercom.run!(:port => 46837) do |server|
         server.silent = true
       end
@@ -102,7 +102,7 @@ class ImportNetworkTest < InterRunner::TestCase
   def test_raises_import_error_on_bad_auth
     self.api_path = '/bad_auth'
 
-    exception = assert_raises(IntercomRails::ImportError) { 
+    exception = assert_raises(IntercomRails::ImportError) {
       @import.run
     }
 

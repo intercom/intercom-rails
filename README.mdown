@@ -23,7 +23,7 @@ Take note of your `app_id` from [here](https://app.intercom.io/apps/api_keys) an
 rails generate intercom:config YOUR-APP-ID
 ```
 
-To make installing Intercom as easy as possible, where possible a `<script>` tag **will be automatically inserted before the closing `</body>` tag**. For most Rails apps, **you won't need to do any extra config**. Having trouble? Check out troubleshooting below. 
+To make installing Intercom as easy as possible, where possible a `<script>` tag **will be automatically inserted before the closing `</body>` tag**. For most Rails apps, **you won't need to do any extra config**. Having trouble? Check out troubleshooting below.
 
 ### Disabling automatic insertion
 
@@ -56,13 +56,13 @@ If you want to use secure mode, ensure you set your API secret in `config/initia
 ```
 
 ### Custom Data
-Custom data lets you associate any data, specific to your app, with a user in Intercom. For custom data variables you want updated on every request set them in `config/initializers/intercom.rb`. 
+Custom data lets you associate any data, specific to your app, with a user in Intercom. For custom data variables you want updated on every request set them in `config/initializers/intercom.rb`.
 
 You can give either a:
 
   * `Proc` which will be passed the current user object
-  * Or, a method which will be sent to the current user object 
-  
+  * Or, a method which will be sent to the current user object
+
 to generate the values of the custom data:
 
 ```ruby
@@ -123,7 +123,7 @@ By default Intercom will be automatically inserted in development and production
   config.enabled_environments = ["production"]
 ```
 
-### Manually Inserting the Intercom Javascript 
+### Manually Inserting the Intercom Javascript
 
 Some situations may require manually inserting the Intercom script tag. If you simply wish to place the Intercom javascript in a different place within the page or, on a page without a closing `</body>` tag:
 
@@ -179,5 +179,9 @@ Any custom data defined in `config/initializers/intercom.rb` will also be sent.
 - Alexander Chaychuk (@sashich) - fixed bug in user detection when users not persisted (e.g. new session view with devise).
 
 ## License
+
+intercom-rails is released under the [MIT License](http://www.opensource.org/licenses/MIT).
+
+## Copyright
 
 Copyright (c) 2011-2012 Intercom, Inc.  All rights reserved.

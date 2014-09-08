@@ -100,6 +100,7 @@ module IntercomRails
     end
 
     config_group :inbox do
+      config_accessor :turbolinks
       config_accessor :counter # Keep this for backwards compatibility
       config_accessor :style do |value|
         raise ArgumentError, "inbox.style must be one of :default or :custom" unless [:default, :custom].include?(value)

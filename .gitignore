@@ -6,3 +6,5 @@ TODO
 *.gem
 .DS_Store
 .idea/
+.ruby-version
+.rbenv-version

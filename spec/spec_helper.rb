@@ -1,7 +1,6 @@
 require 'intercom-rails'
-require 'minitest/autorun'
-require 'rspec/mocks'
-require 'pry'
+require 'rspec'
+require 'active_support/core_ext/string/output_safety'
 
 def dummy_user(options = {})
   user = Struct.new(:email, :name).new
@@ -18,7 +17,7 @@ def dummy_company(options = {})
 end
 
 def fake_action_view_class
-  klass = Class.new(ActionView::Base)
+  klass = Class.new(Object)
   klass.class_eval do
     include IntercomRails::ScriptTagHelper
     attr_reader :controller
@@ -26,26 +25,8 @@ def fake_action_view_class
   klass
 end
 
-class Object
-  # any_instance.rspec_reset does not work
-  def self.unstub_all_instance_methods
-    public_instance_methods.each do |method|
-      begin
-        self.any_instance.unstub(method)
-      rescue RSpec::Mocks::MockExpectationError
-        next
-      end
-    end
-  end
-end
-
-RSpec::Mocks::setup(Object.new)
-
-module InterTest
-
-  def setup
+RSpec.configure do |config|
+  config.before(:each) do
     IntercomRails::Config.reset!
-    super
   end
-
 end

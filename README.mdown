@@ -173,6 +173,17 @@ rake intercom:import
 
 Any custom data defined in `config/initializers/intercom.rb` will also be sent.
 
+## Running tests/specs
+
+specs should run on a clean clone of this repo, using the following commands. (developed against ruby 2.1.2 and 1.9.3)
+
+```
+bundle install
+bundle exec rake spec
+or
+bundle exec rspec spec/
+```
+
 ## Contributors
 
 - Dr Nic Williams (@drnic) - provided a rails generator for adding the Intercom javascript tag into your layout.

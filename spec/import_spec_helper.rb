@@ -1,7 +1,7 @@
-require 'test_setup'
+require 'spec_helper'
 require 'active_support/string_inquirer'
 
-class Rails
+module Rails
   def self.env
     ActiveSupport::StringInquirer.new("production")
   end
@@ -31,6 +31,10 @@ module Mongoid
       end
     end
   end
+end
+
+class ExampleMongoidUserModel
+  include Mongoid::Document
 end
 
 class User
@@ -63,22 +67,31 @@ class User
   def self.<(other)
     other == ActiveRecord::Base
   end
-
 end
 
-module ImportTest
-
-  def setup
-    super
-    IntercomRails.config.stub(:api_key).and_return("abcd")
+RSpec.configure do |config|
+  config.before(:each) do
+    IntercomRails.config.api_key = "abcd"
   end
+end
 
-  def teardown
-    super
-    Rails.rspec_reset
-    User.rspec_reset
-    IntercomRails::Import.rspec_reset
-    IntercomRails::Import.unstub_all_instance_methods
-  end
+def capturing_stdout
+  $stdout.flush
+  old = $stdout.dup
+  $stdout = @output = StringIO.new
 
+  yield
+
+  $stdout.flush
+  @output.string
+ensure
+  $stdout = old
+end
+
+def suppressing_stderr
+  old = $stderr.dup
+  $stderr = StringIO.new
+  yield
+ensure
+  $stderr = old
 end

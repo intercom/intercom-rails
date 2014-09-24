@@ -1,24 +1,21 @@
-require 'test_setup'
+require 'spec_helper'
 
-class CompanyTest < MiniTest::Unit::TestCase
-
-  include InterTest
-
-  Company = IntercomRails::Proxy::Company
+describe IntercomRails::Proxy::Company do
+  ProxyCompany = IntercomRails::Proxy::Company
   DUMMY_COMPANY = dummy_company
 
-  def test_finds_current_company
+  it 'finds current company' do
     IntercomRails.config.company.current = Proc.new { @app }
     object_with_app_instance_var = Object.new
     object_with_app_instance_var.instance_variable_set(:@app, DUMMY_COMPANY)
 
-    c = Company.current_in_context(object_with_app_instance_var)
-    assert_equal true, c.valid?
+    c = ProxyCompany.current_in_context(object_with_app_instance_var)
+    expect(c.valid?).to eq(true)
     expected_hash = {:id => '6', :name => 'Intercom'}
-    assert_equal expected_hash, c.to_hash
+    expect(c.to_hash).to eq(expected_hash)
   end
 
-  def test_whiny_nil
+  it 'is invalid if whiny nil' do
     NilClass.class_eval do
       def id
         raise ArgumentError, "boo"
@@ -26,10 +23,10 @@ class CompanyTest < MiniTest::Unit::TestCase
     end
 
     search_object = nil
-    assert_equal false, Company.new(search_object).valid?
+    expect(ProxyCompany.new(search_object).valid?).to eq(false)
   end
 
-  def test_companies_for_user
+  it 'does companies for user' do
     IntercomRails.config.user.company_association = Proc.new { |user| user.apps }
     test_user = dummy_user
     test_user.instance_eval do
@@ -38,9 +35,8 @@ class CompanyTest < MiniTest::Unit::TestCase
       end
     end
 
-    companies = Company.companies_for_user(IntercomRails::Proxy::User.new(test_user))
-    assert_equal 2, companies.length
-    assert_equal ["Intercom", "Prey"], companies.map(&:company).map(&:name)
+    companies = ProxyCompany.companies_for_user(IntercomRails::Proxy::User.new(test_user))
+    expect(companies.length).to eq(2)
+    expect(companies.map(&:company).map(&:name)).to eq(["Intercom", "Prey"])
   end
-
 end

@@ -55,15 +55,16 @@ If you want to use secure mode, ensure you set your API secret in `config/initia
   config.api_secret = '123456'
 ```
 
-### Custom Data
-Custom data lets you associate any data, specific to your app, with a user in Intercom. For custom data variables you want updated on every request set them in `config/initializers/intercom.rb`.
+### User Custom data attributes
+You can associate any attributes, specific to your app, with a user in Intercom.
+For custom data attributes you want updated on every request set them in `config/initializers/intercom.rb`, the latest value will be sent to Intercom on each page visit.
 
-You can give either a:
+Configure what attributes will be sent using either a:
 
   * `Proc` which will be passed the current user object
   * Or, a method which will be sent to the current user object
 
-to generate the values of the custom data:
+e.g.
 
 ```ruby
   config.user.custom_data = {
@@ -73,7 +74,8 @@ to generate the values of the custom data:
   }
 ```
 
-In some situations you'll want to set some custom data specific to a request. You can do this using the `intercom_custom_data` helper available in your controllers:
+In some situations you'll want to set some custom data attribute specific to a request.
+You can do this using the `intercom_custom_data` helper available in your controllers:
 
 ```ruby
 class AppsController < ActionController::Base
@@ -89,8 +91,29 @@ class AppsController < ActionController::Base
 end
 ```
 
-Attributes must be accessible in order to sync with intercom. Additionally, attributes ending in "_at" will be parsed as times.
+Attributes must be accessible in order to sync with intercom.
+Additionally, attributes ending in "_at" will be parsed as times.
 
+### Companies
+
+By default, Intercom treats all Users as unrelated individuals. If for example you know users are part of a company, you can group them as such.
+
+Read more about it here http://docs.intercom.io/configuring-Intercom/grouping-users-by-company
+
+Basic usage is as follows - in `config/initializers/intercom.rb`
+
+```ruby
+config.company.current = Proc.new { current_company }
+```
+
+and like with Users, you can set custom attribute on companies too:
+
+```ruby
+config.company.custom_data = {
+  :number_of_messages => Proc.new { |app| app.messages.count },
+  :is_interesting => :is_interesting?
+}
+```
 
 ### Inbox
 Intercom includes an inbox which allows a user to read their past conversations with your app, and start new conversations. It's hidden by default, you can include a link to open it by adding a line to `config/initializers/intercom.rb`:

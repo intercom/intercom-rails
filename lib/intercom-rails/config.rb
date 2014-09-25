@@ -87,6 +87,7 @@ module IntercomRails
 
     config_group :user do
       config_accessor :current, &IS_PROC_VALIDATOR
+      config_accessor :exclude_if, &IS_PROC_VALIDATOR
       config_accessor :model, &IS_PROC_VALIDATOR
       config_accessor :company_association, &IS_PROC_VALIDATOR
       config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR

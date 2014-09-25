@@ -107,6 +107,14 @@ describe TestController, type: :controller do
     expect(response.body).to include("Eoghan McCabe")
   end
 
+  it 'excludes users if necessary' do
+    IntercomRails.config.user.exclude_if = Proc.new {|user| user.email.start_with?('ciaran')}
+    get :with_current_user_method, :body => "<body>Hello world</body>"
+    expect(response.body).not_to include("<script>")
+    expect(response.body).not_to include("ciaran@intercom.io")
+    expect(response.body).not_to include("Ciaran Lee")
+  end
+
   it 'uses default library_url' do
     get :with_current_user_method, :body => "<body>Hello world</body>"
     expect(response.body).to include("<script>")

@@ -86,6 +86,14 @@ describe IntercomRails::Import do
       expect(import.total_sent).to eq(2)
     end
 
+    it 'excludes users if necessary' do
+      set_api_path "all_successful"
+      IntercomRails.config.user.exclude_if = Proc.new {|user| user.email.start_with?('ben')}
+      import.run
+      expect(import.failed).to eq([])
+      expect(import.total_sent).to eq(1)
+    end
+
     it 'handles one failure' do
       set_api_path "one_failure"
       import.run

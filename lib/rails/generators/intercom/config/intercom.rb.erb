@@ -43,6 +43,12 @@ IntercomRails.config do |config|
   #
   # config.user.model = Proc.new { User }
 
+  # == Exclude users
+  # A Proc that given a user returns true if the user should be excluded
+  # from imports and Javascript inclusion, false otherwise.
+  #
+  # config.user.exclude_if = Proc.new { |user| user.deleted? }
+
   # == User Custom Data
   # A hash of additional data you wish to send about your users.
   # You can provide either a method name which will be sent to the current

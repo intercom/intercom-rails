@@ -23,6 +23,11 @@ module IntercomRails
 
       def to_hash
         data = standard_data.merge(custom_data)
+        [:id, :user_id].each do |id_key|
+          if(data[id_key] && !data[id_key].is_a?(Numeric))
+            data[id_key] = data[id_key].to_s
+          end
+        end
         DateHelper.convert_dates_to_unix_timestamps(data)
       end
 

@@ -9,6 +9,18 @@ def dummy_user(options = {})
   user
 end
 
+class DummyBSONId
+  def initialize(id)
+    @id = id
+  end
+  def as_json(_)
+    {:oid => @id}
+  end
+  def to_s
+    @id
+  end
+end
+
 def dummy_company(options = {})
   company = Struct.new(:id, :name).new
   company.id = options[:id] || '6'

@@ -33,6 +33,20 @@ class TestController < ActionController::Base
     render :text => params[:body], :content_type => 'text/html'
   end
 
+  def with_mongo_like_user
+    @user = Struct.new(:id).new.tap do |user|
+      user.id = DummyBSONId.new('deadbeaf1234mongo')
+    end
+    render :text => params[:body], :content_type => 'text/html'
+  end
+
+  def with_numeric_user_id
+    @user = Struct.new(:id).new.tap do |user|
+      user.id = 123
+    end
+    render :text => params[:body], :content_type => 'text/html'
+  end
+
   def with_current_user_method
     render :text => params[:body], :content_type => 'text/html'
   end
@@ -104,6 +118,18 @@ describe TestController, type: :controller do
     get :with_current_user_method, :body => "<body>Hello world</body>"
     expect(response.body).to include("<script>")
     expect(response.body).to include("s.src='http://a.b.c.d/library.js")
+  end
+
+  it 'to_s non numeric user_id to avoid nested structure for bson ids' do
+    get :with_mongo_like_user, :body => "<body>Hello world</body>"
+    expect(response.body).not_to include("oid")
+    expect(response.body).to include('"user_id":"deadbeaf1234mongo"')
+  end
+
+  it 'leaves numeric user_id alone to avoid unintended consequences' do
+    get :with_numeric_user_id, :body => "<body>Hello world</body>"
+    expect(response.body).not_to include("oid")
+    expect(response.body).to include('"user_id":123')
   end
 
   it 'defaults to have no user_hash' do

@@ -29,6 +29,7 @@ GEM
     diff-lcs (1.2.5)
     erubis (2.7.0)
     eventmachine (1.0.3)
+    gem-release (0.7.3)
     hike (1.2.3)
     i18n (0.6.1)
     journey (1.0.4)
@@ -101,6 +102,7 @@ PLATFORMS
 
 DEPENDENCIES
   actionpack (> 3.2.12)
+  gem-release
   intercom-rails!
   pry
   rake

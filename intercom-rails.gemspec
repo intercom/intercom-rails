@@ -26,4 +26,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sinatra', '~> 1.4.5'
   s.add_development_dependency 'thin', '~> 1.6.2'
   s.add_development_dependency 'tzinfo'
+  s.add_development_dependency 'gem-release'
 end

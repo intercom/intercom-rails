@@ -43,6 +43,7 @@ module IntercomRails
 
       def valid?
         return false if user.blank? || user.respond_to?(:new_record?) && user.new_record?
+        return false if config.user.exclude_if.present? && config.user.exclude_if.call(user)
         identity_present?
       end
 

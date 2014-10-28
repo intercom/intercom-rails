@@ -118,7 +118,7 @@ describe TestController, type: :controller do
   it 'uses default library_url' do
     get :with_current_user_method, :body => "<body>Hello world</body>"
     expect(response.body).to include("<script>")
-    expect(response.body).to include("s.src='https://static.intercomcdn.com/intercom.v1.js")
+    expect(response.body).to include("s.src='https://widget.intercom.io/widget/abc123'")
   end
 
   it 'allows library_url override' do

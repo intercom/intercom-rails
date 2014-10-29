@@ -115,28 +115,22 @@ config.company.custom_data = {
 }
 ```
 
-### Inbox
-Intercom includes an inbox which allows a user to read their past conversations with your app, and start new conversations. It's hidden by default, you can include a link to open it by adding a line to `config/initializers/intercom.rb`:
+### Messenger
+Intercom includes an in-app messenger which allows a user to read messages and start conversations.
 
-To use the default link style, which requires no extra config and includes a small question mark icon in the bottom right corner of your app:
-
-```ruby
-  config.inbox.style = :default
-```
-
-If you want to customize the style of the link that opens the inbox:
+By default Intercom will add a button that opens the messenger to the page. If you want to customize the style of the link that opens the messenger:
 
 ```ruby
   config.inbox.style = :custom
 ```
 
-This option attaches the inbox open event to the click event of an element with an id of `Intercom`. So the simplest option here would be to add something like the following to your layout:
+With this option enabled, clicks on any element with an id of `Intercom` will open the messenger. So the simplest option here would be to add something like the following to your layout:
 
 ```html
   <a id="Intercom">Support</a>
 ```
 
-You can read more about configuring the Inbox within Intercom (Config menu -> Inbox Link).
+You can read more about configuring the messenger in your applications settings, within Intercom.
 
 ### Environments
 

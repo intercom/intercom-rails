@@ -95,14 +95,11 @@ IntercomRails.config do |config|
   # config.company.monthly_spend = Proc.new { |current_company| current_company.plan.price }
   # config.company.monthly_spend = Proc.new { |current_company| (current_company.plan.price - current_company.subscription.discount) }
 
-  # == Inbox Style
-  # This enables the Intercom inbox which allows your users to read their
-  # past conversations with your app, as well as start new ones. It is
-  # disabled by default.
-  #   * :default shows a small tab with a question mark icon on it
-  #   * :custom attaches the inbox open event to an anchor with an
-  #             id of #Intercom.
+  # == Custom Style
+  # By default, Intercom will add a button that opens the messenger to
+  # the page. If you'd like to use your own link to open the messenger,
+  # uncomment this line and clicks on any element with id 'Intercom' will
+  # open the messenger.
   #
-  # config.inbox.style = :default
   # config.inbox.style = :custom
 end

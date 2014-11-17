@@ -136,14 +136,14 @@ module IntercomRails
     MAX_REQUEST_ATTEMPTS = 3
     def perform_request(request, attempts = 0, error = {})
       if (attempts > 0) && (attempts < MAX_REQUEST_ATTEMPTS)
-        sleep(0.5)
+        sleep(5)
       elsif error.present?
         raise error[:exception] if error[:exception]
         raise exception_for_failed_response(error[:failed_response])
       end
 
       response = http.request(request)
-
+      sleep(0.005)
       return response if successful_response?(response)
       perform_request(request, attempts + 1, :failed_response => response)
     rescue Timeout::Error, Errno::ECONNREFUSED, EOFError => e

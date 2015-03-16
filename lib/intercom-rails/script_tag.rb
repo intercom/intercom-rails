@@ -100,6 +100,8 @@ module IntercomRails
         '#IntercomDefaultWidget'
       when :custom
         '#Intercom'
+      when :none, false
+        nil
       else
         nil
       end

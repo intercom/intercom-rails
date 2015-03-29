@@ -8,7 +8,7 @@ module IntercomRails
 
     def self.bulk_create_api_endpoint
       host = (ENV['INTERCOM_RAILS_DEV'] ? "http://api.intercom.dev" : "https://api.intercom.io")
-      URI.parse(host + "/v1/users/bulk_create")
+      URI.parse(host + "/users/bulk")
     end
 
     def self.run(*args)
@@ -127,10 +127,11 @@ module IntercomRails
       request = Net::HTTP::Post.new(uri.request_uri)
       request.basic_auth(IntercomRails.config.app_id, IntercomRails.config.api_key)
       request["Content-Type"] = "application/json"
+      request["Accept"] = "application/json"
       request.body = users
 
       response = perform_request(request)
-      JSON.parse(response.body)
+      response.body && response.body.length >= 2 ? JSON.parse(response.body) : {"failed" => []}
     end
 
     MAX_REQUEST_ATTEMPTS = 3

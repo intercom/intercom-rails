@@ -10,13 +10,14 @@ module IntercomRails
       new(*args).output
     end
 
-    attr_reader :user_details, :company_details
+    attr_reader :user_details, :company_details, :show_everywhere
     attr_accessor :secret, :widget_options, :controller
 
     def initialize(options = {})
       self.secret = options[:secret] || Config.api_secret
       self.widget_options = widget_options_from_config.merge(options[:widget] || {})
       self.controller = options[:controller]
+      @show_everywhere = options[:show_everywhere]
       self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details]
       self.company_details = if options[:find_current_company_details]
         find_current_company_details
@@ -26,7 +27,11 @@ module IntercomRails
     end
 
     def valid?
-      user_details[:app_id].present? && (user_details[:user_id] || user_details[:email]).present?
+      valid = user_details[:app_id].present?
+      unless @show_everywhere
+        valid = valid && (user_details[:user_id] || user_details[:email]).present?
+      end
+      valid
     end
 
     def intercom_settings

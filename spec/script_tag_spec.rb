@@ -115,4 +115,16 @@ describe IntercomRails::ScriptTag do
       expect(script_tag.intercom_settings[:company]).to eq({'id' => '6', 'name' => 'Intercom'})
     end
   end
+
+  context 'without user details' do
+    it 'should be valid when show_everywhere is set' do
+      script_tag = ScriptTag.new(:show_everywhere => true)
+      expect(script_tag.valid?).to eq(true)
+    end
+
+    it 'should not be valid when show_everywhere is not set' do
+      script_tag = ScriptTag.new()
+      expect(script_tag.valid?).to eq(false)
+    end
+  end
 end

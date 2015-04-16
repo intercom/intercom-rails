@@ -15,6 +15,7 @@ module Intercom
         @app_id = app_id
         @api_secret = api_secret
         @api_key = api_key
+        @include_for_logged_out_users = false
 
         introduction = <<-desc
 Intercom will automatically insert its javascript before the closing '</body>'

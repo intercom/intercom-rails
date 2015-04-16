@@ -39,6 +39,7 @@ If it's not working make sure:
 * You've generated a config file with your `app_id` as detailed above.
 * Your user object responds to an `id` or `email` method.
 * Your current user is accessible in your controllers as `current_user` or `@user`, if not in `config/initializers/intercom.rb`:
+* If you want the Intercom Messenger to be available when there is no current user,  set `config.include_for_logged_out_users = true` in your config and sign up for the [Acquire](https://www.intercom.io/live-chat) package.
 
 ```ruby
   config.user.current = Proc.new { current_user_object }
@@ -113,6 +114,13 @@ config.company.custom_data = {
   :number_of_messages => Proc.new { |app| app.messages.count },
   :is_interesting => :is_interesting?
 }
+```
+
+### Live Chat / Acquire
+With our [Acquire package](https://www.intercom.io/live-chat), Intercom Messenger now works with logged out users and visitors to your web site. Include the Intercom snippet on every page by setting:
+
+```ruby
+  config.include_for_logged_out_users = true
 ```
 
 ### Messenger

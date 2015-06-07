@@ -198,6 +198,24 @@ rake intercom:import
 
 Any custom data defined in `config/initializers/intercom.rb` will also be sent.
 
+## Deleting your users
+If you delete a user from your system, you should also delete them from Intercom lest they still receive messages.
+
+You can do this using the [intercom-ruby](https://github.com/intercom/intercom-ruby) gem. In the example below we're using an ActiveJob to perform the delete in the background.
+
+```
+class User
+  after_destroy { DeleteFromIntercom.perform_later(self)
+end
+
+class DeleteFromIntercom < ApplicationJob
+  def perform(user)
+    intercom = Intercom::Client.new
+    intercom.users.find(email: user.email).delete
+  end
+end
+```
+
 ## Running tests/specs
 
 specs should run on a clean clone of this repo, using the following commands. (developed against ruby 2.1.2 and 1.9.3)

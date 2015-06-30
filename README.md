@@ -68,7 +68,7 @@ Configure what attributes will be sent using either a:
 e.g.
 
 ```ruby
-  config.user.custom_data = {
+  config.user.custom_attributes = {
     :plan => Proc.new { |user| user.plan.name },
     :is_paid => Proc.new { |user| user.plan.present? },
     :email_verified => :email_verified?
@@ -76,17 +76,17 @@ e.g.
 ```
 
 In some situations you'll want to set some custom data attribute specific to a request.
-You can do this using the `intercom_custom_data` helper available in your controllers:
+You can do this using the `intercom_custom_attributes` helper available in your controllers:
 
 ```ruby
 class AppsController < ActionController::Base
   def activate
-    intercom_custom_data.user[:app_activated_at] = Time.now
+    intercom_custom_attributes.user[:app_activated_at] = Time.now
     ...
   end
 
   def destroy
-    intercom_custom_data.user[:app_deleted_at] = Time.now
+    intercom_custom_attributes.user[:app_deleted_at] = Time.now
     ...
   end
 end
@@ -110,7 +110,7 @@ config.company.current = Proc.new { current_company }
 and like with Users, you can set custom attribute on companies too:
 
 ```ruby
-config.company.custom_data = {
+config.company.custom_attributes = {
   :number_of_messages => Proc.new { |app| app.messages.count },
   :is_interesting => :is_interesting?
 }
@@ -166,7 +166,7 @@ This will behave exactly the same as the default auto-install. If for whatever r
     :email => current_user.email,
     :name => current_user.name,
     :created_at => current_user.created_at,
-    :custom_data => {
+    :custom_attributes => {
       'plan' => current_user.plan.name
     }
   }) %>
@@ -208,6 +208,11 @@ bundle exec rake spec
 or
 bundle exec rspec spec/
 ```
+
+## Upgrading from 0.x.x to 1.0.0
+
+Anywhere that you reference `custom_data` should be updated to `custom_attributes` instead.
+
 
 ## Contributors
 

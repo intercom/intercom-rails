@@ -22,9 +22,9 @@ class TestController < ActionController::Base
     render :text => params[:body], :content_type => 'text/html'
   end
 
-  def with_user_instance_variable_and_custom_data
+  def with_user_instance_variable_and_custom_attributes
     @user = dummy_user
-    intercom_custom_data.user['testing_stuff'] = true
+    intercom_custom_attributes.user['testing_stuff'] = true
     render :text => params[:body], :content_type => 'text/html'
   end
 
@@ -88,7 +88,7 @@ describe TestController, type: :controller do
   end
 
   it 'includes custom data' do
-    get :with_user_instance_variable_and_custom_data, :body => "<body>Hello world</body>"
+    get :with_user_instance_variable_and_custom_attributes, :body => "<body>Hello world</body>"
     expect(response.body).to include("testing_stuff")
   end
 

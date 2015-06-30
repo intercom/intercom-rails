@@ -6,9 +6,12 @@ module IntercomRails
 
   class Import
 
+    MAX_BATCH_SIZE = 50
+    MAX_REQUEST_ATTEMPTS = 3
+
     def self.bulk_create_api_endpoint
       host = (ENV['INTERCOM_RAILS_DEV'] ? "http://api.intercom.dev" : "https://api.intercom.io")
-      URI.parse(host + "/v1/users/bulk_create")
+      URI.parse(host + "/users/bulk")
     end
 
     def self.run(*args)
@@ -23,7 +26,7 @@ module IntercomRails
       @http = Net::HTTP.new(@uri.host, @uri.port)
       @failed = []
       @total_sent = 0
-      @max_batch_size = [(options[:max_batch_size] || 100), 100].min
+      @max_batch_size = [options.fetch(:max_batch_size, MAX_BATCH_SIZE), MAX_BATCH_SIZE].min
 
       @status_enabled = !!options[:status_enabled]
 
@@ -133,10 +136,9 @@ module IntercomRails
       JSON.parse(response.body)
     end
 
-    MAX_REQUEST_ATTEMPTS = 3
     def perform_request(request, attempts = 0, error = {})
       if (attempts > 0) && (attempts < MAX_REQUEST_ATTEMPTS)
-        sleep(0.5)
+        sleep(3 * attempts)
       elsif error.present?
         raise error[:exception] if error[:exception]
         raise exception_for_failed_response(error[:failed_response])

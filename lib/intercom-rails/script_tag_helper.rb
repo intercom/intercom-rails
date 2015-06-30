@@ -10,7 +10,7 @@ module IntercomRails
     # @option user_details [String] :user_id unique id of this user within your application
     # @option user_details [String] :email email address for this user
     # @option user_details [String] :name the users name, _optional_ but useful for identify people in the Intercom App.
-    # @option user_details [Hash] :custom_data custom attributes you'd like saved for this user on Intercom.
+    # @option user_details [Hash] :custom_attributes custom attributes you'd like saved for this user on Intercom.
     # @option options [String] :widget a hash containing a css selector for an element which when clicked should show the Intercom widget
     # @option options [String] :secret Your app secret for secure mode
     # @return [String] Intercom script tag
@@ -18,13 +18,13 @@ module IntercomRails
     #   <%= intercom_script_tag({ :app_id => "your-app-id",
     #                             :user_id => current_user.id,
     #                             :email => current_user.email,
-    #                             :custom_data => { :plan => current_user.plan.name },
+    #                             :custom_attributes => { :plan => current_user.plan.name },
     #                             :name => current_user.name }) %>
     # @example with widget activator for launching then widget when an element matching the css selector '#Intercom' is clicked.
     #   <%= intercom_script_tag({ :app_id => "your-app-id",
     #                             :user_id => current_user.id,
     #                             :email => current_user.email,
-    #                             :custom_data => { :plan => current_user.plan.name },
+    #                             :custom_attributes => { :plan => current_user.plan.name },
     #                             :name => current_user.name },
     #                             {:widget => {:activator => "#Intercom"}},) %>
     def intercom_script_tag(user_details = nil, options={})

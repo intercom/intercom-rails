@@ -22,7 +22,7 @@ module IntercomRails
       end
 
       def to_hash
-        data = standard_data.merge(custom_data)
+        data = standard_data.merge(custom_attributes)
         [:id, :user_id].each do |id_key|
           if(data[id_key] && !data[id_key].is_a?(Numeric))
             data[id_key] = data[id_key].to_s
@@ -45,8 +45,8 @@ module IntercomRails
         proxied_values.merge(configured_values)
       end
 
-      def custom_data
-        custom_data_from_config.merge custom_data_from_request
+      def custom_attributes
+        custom_attributes_from_config.merge custom_attributes_from_request
       end
 
       protected
@@ -121,20 +121,20 @@ module IntercomRails
 
       private
 
-      def custom_data_from_request
-        search_object.intercom_custom_data.send(type)
+      def custom_attributes_from_request
+        search_object.intercom_custom_attributes.send(type)
       rescue NoMethodError
         {}
       end
 
-      def custom_data_from_config
-        return {} if config.custom_data.blank?
-        config.custom_data.reduce({}) do |custom_data, (k,v)|
-          custom_data.merge(k => custom_data_value_from_proc_or_symbol(v))
+      def custom_attributes_from_config
+        return {} if config.custom_attributes.blank?
+        config.custom_attributes.reduce({}) do |custom_attributes, (k,v)|
+          custom_attributes.merge(k => custom_attributes_value_from_proc_or_symbol(v))
         end
       end
 
-      def custom_data_value_from_proc_or_symbol(proc_or_symbol)
+      def custom_attributes_value_from_proc_or_symbol(proc_or_symbol)
         if proc_or_symbol.kind_of?(Symbol)
           proxied_object.send(proc_or_symbol)
         elsif proc_or_symbol.kind_of?(Proc)

@@ -54,7 +54,7 @@ describe IntercomRails::Proxy::User do
     expect { ProxyUser.current_in_context(object_with_instance_variable) }.to raise_error(IntercomRails::NoUserFoundError)
   end
 
-  it 'includes custom_data' do
+  it 'includes custom_attributes' do
     plan_dummy_user = DUMMY_USER.dup
     plan_dummy_user.instance_eval do
       def plan
@@ -62,7 +62,7 @@ describe IntercomRails::Proxy::User do
       end
     end
 
-    IntercomRails.config.user.custom_data = {
+    IntercomRails.config.user.custom_attributes = {
       'plan' => :plan
     }
 
@@ -78,7 +78,7 @@ describe IntercomRails::Proxy::User do
       end
     end
 
-    IntercomRails.config.user.custom_data = {
+    IntercomRails.config.user.custom_attributes = {
       'some_date' => :some_date
     }
 
@@ -101,9 +101,9 @@ describe IntercomRails::Proxy::User do
   end
 
   it 'includes custom data from intercom custom data' do
-    object_with_intercom_custom_data = Object.new
-    object_with_intercom_custom_data.instance_eval do
-      def intercom_custom_data
+    object_with_intercom_custom_attributes = Object.new
+    object_with_intercom_custom_attributes.instance_eval do
+      def intercom_custom_attributes
         Object.new.tap do |o|
           o.instance_eval do
             def user
@@ -114,7 +114,7 @@ describe IntercomRails::Proxy::User do
       end
     end
 
-    @user_proxy = ProxyUser.new(DUMMY_USER, object_with_intercom_custom_data)
+    @user_proxy = ProxyUser.new(DUMMY_USER, object_with_intercom_custom_attributes)
     expect(@user_proxy.to_hash[:ponies]).to eql(:rainbows)
   end
 

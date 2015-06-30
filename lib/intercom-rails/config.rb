@@ -53,10 +53,10 @@ module IntercomRails
 
   class Config < ConfigSingleton
 
-    CUSTOM_DATA_VALIDATOR = Proc.new do |custom_data, field_name|
-      raise ArgumentError, "#{field_name} custom_data should be a hash" unless custom_data.kind_of?(Hash)
-      unless custom_data.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
-        raise ArgumentError, "all custom_data attributes should be either a Proc or a symbol"
+    CUSTOM_ATTRIBUTES_VALIDATOR = Proc.new do |custom_attributes, field_name|
+      raise ArgumentError, "#{field_name} custom_attributes should be a hash" unless custom_attributes.kind_of?(Hash)
+      unless custom_attributes.values.all? { |value| value.kind_of?(Proc) || value.kind_of?(Symbol) }
+        raise ArgumentError, "all custom_attributes attributes should be either a Proc or a symbol"
       end
     end
 
@@ -91,14 +91,14 @@ module IntercomRails
       config_accessor :exclude_if, &IS_PROC_VALIDATOR
       config_accessor :model, &IS_PROC_VALIDATOR
       config_accessor :company_association, &IS_PROC_VALIDATOR
-      config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
+      config_accessor :custom_attributes, &CUSTOM_ATTRIBUTES_VALIDATOR
     end
 
     config_group :company do
       config_accessor :current, &IS_PROC_VALIDATOR
       config_accessor :plan, &IS_PROC_VALIDATOR
       config_accessor :monthly_spend, &IS_PROC_VALIDATOR
-      config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
+      config_accessor :custom_attributes, &CUSTOM_ATTRIBUTES_VALIDATOR
     end
 
     config_group :inbox do

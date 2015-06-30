@@ -17,8 +17,8 @@ describe IntercomRails::ScriptTag do
     expect(top_level_time.intercom_settings[:created_at]).to eq(time.to_i)
 
     now = Time.now
-    nested_time = ScriptTag.new(:user_details => {:custom_data => {"something" => now}})
-    expect(nested_time.intercom_settings[:custom_data]["something"]).to eq(now.to_i)
+    nested_time = ScriptTag.new(:user_details => {:custom_attributes => {"something" => now}})
+    expect(nested_time.intercom_settings[:custom_attributes]["something"]).to eq(now.to_i)
 
     utc_time = Time.utc(2013, 04, 03)
     time_zone = ActiveSupport::TimeZone.new('London')

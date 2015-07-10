@@ -1,6 +1,6 @@
 module IntercomRails
 
-  module CustomDataHelper
+  module CustomAttributesHelper
 
     # This helper allows custom data attributes to be added to a user
     # for the current request from within the controller. e.g.

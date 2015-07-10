@@ -30,7 +30,7 @@ To make installing Intercom as easy as possible, where possible a `<script>` tag
 To disable automatic insertion for a particular controller or action you can:
 
 ```ruby
-  skip_after_filter :intercom_rails_auto_include
+  skip_after_action :intercom_rails_auto_include
 ```
 
 ### Troubleshooting

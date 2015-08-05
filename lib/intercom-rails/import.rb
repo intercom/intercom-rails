@@ -129,6 +129,7 @@ module IntercomRails
     def send_users(users)
       request = Net::HTTP::Post.new(uri.request_uri)
       request.basic_auth(IntercomRails.config.app_id, IntercomRails.config.api_key)
+      request["Accept"] = "application/json"
       request["Content-Type"] = "application/json"
       request.body = users
 

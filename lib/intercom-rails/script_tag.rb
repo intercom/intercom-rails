@@ -100,11 +100,12 @@ module IntercomRails
     def widget_options_from_config
       config = {}
 
+      custom_activator = Config.inbox.custom_activator
       activator = case Config.inbox.style
       when :default
         '#IntercomDefaultWidget'
       when :custom
-        '#Intercom'
+        custom_activator || '#Intercom'
       else
         nil
       end

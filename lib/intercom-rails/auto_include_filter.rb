@@ -10,8 +10,10 @@ module IntercomRails
     class Filter
 
       CLOSING_BODY_TAG = %r{</body>}
+      BLACKLISTED_CONTROLLER_NAMES = ["Devise::PasswordsController"]
 
       def self.filter(controller)
+        return if BLACKLISTED_CONTROLLER_NAMES.include?(controller.class.name)
         auto_include_filter = new(controller)
         return unless auto_include_filter.include_javascript?
 

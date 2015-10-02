@@ -167,6 +167,12 @@ describe TestController, type: :controller do
     expect(response.body).to eq("<body>Hello world</body>")
   end
 
+  it 'does not inject if blacklisted controller' do
+    stub_const("IntercomRails::AutoInclude::Filter::BLACKLISTED_CONTROLLER_NAMES", ["TestController"])
+    get :with_current_user_method, :body => "<body>Hello world</body>"
+    expect(response.body).to eq("<body>Hello world</body>")
+  end
+
   it 'includes company' do
     IntercomRails.config.company.current = Proc.new { @app }
     get :with_user_and_app_instance_variables, :body => "<body>Hello world</body>"

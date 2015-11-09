@@ -9,6 +9,12 @@ describe IntercomRails::ScriptTagHelper do
     intercom_script_tag({})
   end
 
+  it 'does not use dummy data if app_id is set in development' do
+    allow(Rails).to receive(:development?).and_return true
+    output = intercom_script_tag({app_id: 'thisismyappid', email:'foo'})
+    expect(output).to include("/widget/thisismyappid")
+  end
+
   it 'sets instance variable to record that it was called' do
     fake_action_view = fake_action_view_class.new
     obj = Object.new

@@ -11,6 +11,9 @@ module ActiveRecord
   class Base; end
 end
 
+module NotARealUser
+end
+
 module Mongoid
   module Document
     def self.included(klass)

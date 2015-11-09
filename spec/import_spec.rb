@@ -32,6 +32,11 @@ describe IntercomRails::Import do
         expect(error.message).to eq("Please add an Intercom API Key to config/initializers/intercom.rb")
       end
     end
+
+    it 'does not try to use a module as a user class' do
+      allow_any_instance_of(IntercomRails::Import).to receive(:user_klass_name).and_return(NotARealUser)
+      expect(IntercomRails::Import.new.send(:user_klass)).to eq nil
+    end
   end
 
   context 'mongoid' do

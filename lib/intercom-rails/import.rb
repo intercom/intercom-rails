@@ -116,11 +116,15 @@ module IntercomRails
       if IntercomRails.config.user.model.present?
         IntercomRails.config.user.model.call
       else
-        User
+        user_klass_name if user_klass_name.class != Module
       end
     rescue NameError
       # Rails lazy loads constants, so this is how we check
       nil
+    end
+
+    def user_klass_name
+      User
     end
 
     def send_users(users)

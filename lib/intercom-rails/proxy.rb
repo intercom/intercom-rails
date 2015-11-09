@@ -72,7 +72,7 @@ module IntercomRails
       end
 
       def identity_present?
-        self.class.identity_attributes.any? { |attribute_name| proxied_object.respond_to?(attribute_name) && proxied_object.send(attribute_name).present? }
+        self.class.identity_attributes.any? { |attribute_name| (proxied_object.is_a?(Hash) && proxied_object[attribute_name].present?) || (proxied_object.respond_to?(attribute_name) && proxied_object.send(attribute_name).present?) }
       end
 
       def self.proxy_delegator(attribute_name, options = {})

@@ -90,6 +90,13 @@ describe IntercomRails::Proxy::User do
     expect(ProxyUser.new(DUMMY_USER).valid?).to be(true)
   end
 
+  it 'works with hashes' do
+    user = {
+      email: 'hash@foo.com'
+    }
+    expect(ProxyUser.new(user).valid?).to be(true)
+  end
+
   it 'considers new records to be invalid' do
     new_record_user = dummy_user(:email => 'not-saved@intercom.io', :name => 'New Record')
 

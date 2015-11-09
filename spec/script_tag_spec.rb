@@ -47,6 +47,16 @@ describe IntercomRails::ScriptTag do
     expect(script_tag.output).not_to include(nasty_email)
   end
 
+  it 'should escape html attributes in app_id' do
+    email = "bob@foo.com"
+    before = IntercomRails.config.app_id
+    nasty_app_id = "</script><script>alert('sup?');</script>"
+    IntercomRails.config.app_id = nasty_app_id
+    script_tag = ScriptTag.new(:user_details => {:email => email})
+    expect(script_tag.output).not_to include(nasty_app_id)
+    IntercomRails.config.app_id = before
+  end
+
   context 'secure mode - user_hash' do
 
     it 'computes user_hash using email when email present, and user_id blank' do

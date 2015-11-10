@@ -137,6 +137,12 @@ With this option enabled, clicks on any element with an id of `Intercom` will op
   <a id="Intercom">Support</a>
 ```
 
+You can customize the CSS selector, by setting
+
+```ruby
+  config.inbox.custom_activator = '.intercom-link'
+```
+
 You can read more about configuring the messenger in your applications settings, within Intercom.
 
 ### Environments

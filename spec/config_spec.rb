@@ -35,6 +35,11 @@ describe IntercomRails do
     expect(IntercomRails.config.inbox.style).to eq(:custom)
   end
 
+  it 'gets/sets custom_activator' do
+    IntercomRails.config.inbox.custom_activator = '.intercom'
+    expect(IntercomRails.config.inbox.custom_activator).to eq('.intercom')
+  end
+
   it 'raises error if current user not a proc' do
     expect { IntercomRails.config.user.current = 1 }.to raise_error(ArgumentError)
   end

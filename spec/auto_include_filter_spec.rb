@@ -56,6 +56,11 @@ class TestController < ActionController::Base
     render :text => params[:body], :content_type => 'text/html'
   end
 
+  def with_some_tricky_string
+    @user = dummy_user(:email => "\\\"foo\"")
+    render :text => params[:body], :content_type => 'text/html'
+  end
+
   def current_user
     raise NameError if params[:action] != 'with_current_user_method'
     dummy_user(:email => 'ciaran@intercom.io', :name => 'Ciaran Lee')
@@ -183,6 +188,11 @@ describe TestController, type: :controller do
   it 'can be skipped with skip_filter' do
     get :with_user_instance_variable_after_filter_skipped, :body => "<body>Hello world</body>"
     expect(response.body).to eq("<body>Hello world</body>")
+  end
+
+  it 'escapes strings with \\s' do
+    get :with_some_tricky_string, :body => "<body>Normal</body>"
+    expect(response.body).to include("\"email\":\"\\\\\\\"foo\\\"\"")
   end
 
   it 'can be disabled in non whitelisted environments' do

@@ -129,6 +129,7 @@ module IntercomRails
 
       def custom_data_from_config
         return {} if config.custom_data.blank?
+        return config.custom_data.call(proxied_object) if config.custom_data.kind_of?(Proc)
         config.custom_data.reduce({}) do |custom_data, (k,v)|
           custom_data.merge(k => custom_data_value_from_proc_or_symbol(v))
         end

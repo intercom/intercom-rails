@@ -19,10 +19,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activesupport', '>3.0'
   s.add_development_dependency 'rake'
-  s.add_development_dependency 'actionpack', '>3.2.12'
-  s.add_development_dependency 'rspec', '~> 3.1'
-  s.add_development_dependency 'rspec-rails', '~> 3.1'
+  s.add_development_dependency 'actionpack', '~> 3.2.22'
   s.add_development_dependency 'test-unit'
+  s.add_development_dependency 'rspec', '~> 3.4'
+  s.add_development_dependency 'rspec-rails', '~> 3.4'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'sinatra', '~> 1.4.5'
   s.add_development_dependency 'thin', '~> 1.6.4'

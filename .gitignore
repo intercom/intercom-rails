@@ -10,3 +10,4 @@ spike.rb
 html
 .idea
 .ruby-version
+vendor/*

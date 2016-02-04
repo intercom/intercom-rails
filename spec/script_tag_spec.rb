@@ -142,4 +142,21 @@ describe IntercomRails::ScriptTag do
       expect(script_tag.valid?).to eq(false)
     end
   end
+
+  context 'content security policy support' do
+    it 'returns a valid sha256 hash for the CSP header' do
+      #
+      # If default values change, re-generate the string below using this one
+      # liner:
+      #  echo "sha256-$(echo -n "js code" | openssl dgst -sha256 -binary | openssl base64)"
+      # or an online service like https://report-uri.io/home/hash/
+      #
+      # For instance:
+      #  echo "sha256-$(echo -n "alert('hello');" | openssl dgst -sha256 -binary | openssl base64)"
+      #  sha256-gj4FLpwFgWrJxA7NLcFCWSwEF/PMnmWidszB6OONAAo=
+      #
+      script_tag = ScriptTag.new()
+      expect(script_tag.csp_sha256).to eq('sha256-z1bnWCBro/nhI8gp7DGIc24wxMzuCddMZNjO767BZRY=')
+    end
+  end
 end

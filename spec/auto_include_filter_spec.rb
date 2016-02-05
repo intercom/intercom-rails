@@ -94,7 +94,7 @@ describe TestController, type: :controller do
 
   it 'finds user from current_user method' do
     get :with_current_user_method, :body => "<body>Hello world</body>"
-    expect(response.body).to include("<script>")
+    expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
     expect(response.body).to include("ciaran@intercom.io")
     expect(response.body).to include("Ciaran Lee")
   end
@@ -102,7 +102,7 @@ describe TestController, type: :controller do
   it 'finds user using config.user.current proc' do
     IntercomRails.config.user.current = Proc.new { @admin }
     get :with_admin_instance_variable, :body => "<body>Hello world</body>"
-    expect(response.body).to include("<script>")
+    expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
     expect(response.body).to include("eoghan@intercom.io")
     expect(response.body).to include("Eoghan McCabe")
   end
@@ -110,21 +110,21 @@ describe TestController, type: :controller do
   it 'excludes users if necessary' do
     IntercomRails.config.user.exclude_if = Proc.new {|user| user.email.start_with?('ciaran')}
     get :with_current_user_method, :body => "<body>Hello world</body>"
-    expect(response.body).not_to include("<script>")
+    expect(response.body).not_to include('<script id="IntercomSettingsScriptTag">')
     expect(response.body).not_to include("ciaran@intercom.io")
     expect(response.body).not_to include("Ciaran Lee")
   end
 
   it 'uses default library_url' do
     get :with_current_user_method, :body => "<body>Hello world</body>"
-    expect(response.body).to include("<script>")
+    expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
     expect(response.body).to include("s.src='https://widget.intercom.io/widget/abc123'")
   end
 
   it 'allows library_url override' do
     IntercomRails.config.library_url = 'http://a.b.c.d/library.js'
     get :with_current_user_method, :body => "<body>Hello world</body>"
-    expect(response.body).to include("<script>")
+    expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
     expect(response.body).to include("s.src='http://a.b.c.d/library.js")
   end
 

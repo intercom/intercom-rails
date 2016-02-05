@@ -10,7 +10,7 @@ module IntercomRails
     include ::ActionView::Helpers::JavaScriptHelper
 
     def self.generate(*args)
-      new(*args).output
+      new(*args)
     end
 
     attr_reader :user_details, :company_details, :show_everywhere
@@ -44,8 +44,8 @@ module IntercomRails
       hsh
     end
 
-    def output
-      str = "<script>#{intercom_javascript}</script>\n"
+    def to_s
+      str = "<script id=\"IntercomSettingsScriptTag\">#{intercom_javascript}</script>\n"
       str.respond_to?(:html_safe) ? str.html_safe : str
     end
 

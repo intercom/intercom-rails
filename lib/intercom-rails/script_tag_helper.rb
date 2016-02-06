@@ -33,7 +33,7 @@ module IntercomRails
       options[:find_current_user_details] = !options[:user_details]
       options[:find_current_company_details] = !(options[:user_details] && options[:user_details][:company])
       options[:controller] = controller if defined?(controller)
-      ScriptTag.generate(options)
+      ScriptTag.new(options)
     end
   end
 end

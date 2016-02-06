@@ -5,7 +5,7 @@ describe IntercomRails::ScriptTagHelper do
   include IntercomRails::ScriptTagHelper
 
   it 'delegates to script tag ' do
-    expect(IntercomRails::ScriptTag).to receive(:generate)
+    expect(IntercomRails::ScriptTag).to receive(:new)
     intercom_script_tag({})
   end
 

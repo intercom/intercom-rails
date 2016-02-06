@@ -9,10 +9,6 @@ module IntercomRails
 
     include ::ActionView::Helpers::JavaScriptHelper
 
-    def self.generate(*args)
-      new(*args)
-    end
-
     attr_reader :user_details, :company_details, :show_everywhere
     attr_accessor :secret, :widget_options, :controller
 

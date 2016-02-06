@@ -8,7 +8,7 @@ describe IntercomRails::ScriptTag do
   end
 
   it 'should output html_safe?' do
-    expect(ScriptTag.generate({}).to_s.html_safe?).to be(true)
+    expect(ScriptTag.new({}).to_s.html_safe?).to be(true)
   end
 
   it 'should convert times to unix timestamps' do

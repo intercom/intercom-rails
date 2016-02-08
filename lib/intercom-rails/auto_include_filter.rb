@@ -21,7 +21,7 @@ module IntercomRails
 
         # User defined method to whitelist the script sha-256 when using CSP
         if defined?(CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook) == 'method'
-          CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook(controller.request, auto_include_filter.csp_sha256)
+          CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook(controller, auto_include_filter.csp_sha256)
         end
       end
 
@@ -74,7 +74,7 @@ module IntercomRails
         # User defined method for applying a nonce to the inserted js tag when
         # using CSP
         if defined?(CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook) == 'method'
-          nonce = CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook(controller.request)
+          nonce = CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook(controller)
           options.merge!(:nonce => nonce)
         end
         @script_tag = ScriptTag.new(options)

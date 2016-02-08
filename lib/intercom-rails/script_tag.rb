@@ -72,7 +72,7 @@ module IntercomRails
 
     def csp_sha256
       base64_sha256 = Base64.encode64(Digest::SHA256.digest(intercom_javascript))
-      csp_hash = "sha256-#{base64_sha256}".delete("\n")
+      csp_hash = "'sha256-#{base64_sha256}'".delete("\n")
       csp_hash
     end
 

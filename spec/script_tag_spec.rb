@@ -8,7 +8,7 @@ describe IntercomRails::ScriptTag do
   end
 
   it 'should output html_safe?' do
-    expect(ScriptTag.generate({}).html_safe?).to be(true)
+    expect(ScriptTag.new({}).to_s.html_safe?).to be(true)
   end
 
   it 'should convert times to unix timestamps' do
@@ -44,7 +44,7 @@ describe IntercomRails::ScriptTag do
   it 'should escape html attributes' do
     nasty_email = "</script><script>alert('sup?');</script>"
     script_tag = ScriptTag.new(:user_details => {:email => nasty_email})
-    expect(script_tag.output).not_to include(nasty_email)
+    expect(script_tag.to_s).not_to include(nasty_email)
   end
 
   it 'should escape html attributes in app_id' do
@@ -53,7 +53,7 @@ describe IntercomRails::ScriptTag do
     nasty_app_id = "</script><script>alert('sup?');</script>"
     IntercomRails.config.app_id = nasty_app_id
     script_tag = ScriptTag.new(:user_details => {:email => email})
-    expect(script_tag.output).not_to include(nasty_app_id)
+    expect(script_tag.to_s).not_to include(nasty_app_id)
     IntercomRails.config.app_id = before
   end
 
@@ -140,6 +140,47 @@ describe IntercomRails::ScriptTag do
     it 'should not be valid when show_everywhere is not set' do
       script_tag = ScriptTag.new()
       expect(script_tag.valid?).to eq(false)
+    end
+  end
+
+  context 'content security policy support' do
+    it 'returns a valid sha256 hash for the CSP header' do
+      #
+      # If default values change, re-generate the string below using this one
+      # liner:
+      #  echo "sha256-$(echo -n "js code" | openssl dgst -sha256 -binary | openssl base64)"
+      # or an online service like https://report-uri.io/home/hash/
+      #
+      # For instance:
+      #  echo "sha256-$(echo -n "alert('hello');" | openssl dgst -sha256 -binary | openssl base64)"
+      #  sha256-gj4FLpwFgWrJxA7NLcFCWSwEF/PMnmWidszB6OONAAo=
+      #
+      script_tag = ScriptTag.new(:user_details => {
+        :app_id => 'csp_sha_test',
+        :email => 'marco@intercom.io',
+        :user_id => 'marco',
+      })
+      expect(script_tag.csp_sha256).to eq('sha256-qLRbekKD6dEDMyLKPNFYpokzwYCz+WeNPqJE603mT24=')
+    end
+
+    it 'inserts a valid nonce if present' do
+      script_tag = ScriptTag.new(:user_details => {
+        :app_id => 'csp_sha_test',
+        :email => 'marco@intercom.io',
+        :user_id => 'marco',
+      },
+        :nonce => 'pJwtLVnwiMaPCxpb41KZguOcC5mGUYD+8RNGcJSlR94=')
+      expect(script_tag.to_s).to include('nonce="pJwtLVnwiMaPCxpb41KZguOcC5mGUYD+8RNGcJSlR94="')
+    end
+
+    it 'does not insert a nasty nonce if present' do
+      script_tag = ScriptTag.new(:user_details => {
+        :app_id => 'csp_sha_test',
+        :email => 'marco@intercom.io',
+        :user_id => 'marco',
+      },
+        :nonce => '>alert(1)</script><script>')
+      expect(script_tag.to_s).not_to include('>alert(1)</script><script>')
     end
   end
 end

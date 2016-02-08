@@ -18,6 +18,11 @@ module IntercomRails
         return unless auto_include_filter.include_javascript?
 
         auto_include_filter.include_javascript!
+
+        # User defined method to whitelist the script sha-256 when using CSP
+        if defined?(CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook) == 'method'
+          CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook(controller.request, auto_include_filter.csp_sha256)
+        end
       end
 
       attr_reader :controller
@@ -38,6 +43,10 @@ module IntercomRails
         intercom_script_tag.valid?
       end
 
+      def csp_sha256
+        intercom_script_tag.csp_sha256
+      end
+
       private
       def response
         controller.response
@@ -56,7 +65,16 @@ module IntercomRails
       end
 
       def intercom_script_tag
-        @script_tag ||= ScriptTag.new(:find_current_user_details => true, :find_current_company_details => true, :controller => controller, :show_everywhere => show_everywhere?)
+        # User defined method for applying a nonce to the inserted js tag when
+        # using CSP
+        if defined?(CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook) == 'method'
+          # Since the nonce changes with every request, rebuild @script_tag
+          nonce = CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook(controller.request)
+          @script_tag = ScriptTag.new(:find_current_user_details => true, :find_current_company_details => true, :controller => controller, :show_everywhere => show_everywhere?, :nonce => nonce)
+        else
+          # Nonce not needed, ||= is ok
+          @script_tag ||= ScriptTag.new(:find_current_user_details => true, :find_current_company_details => true, :controller => controller, :show_everywhere => show_everywhere?)
+        end
       end
 
       def show_everywhere?

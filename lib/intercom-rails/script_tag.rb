@@ -10,7 +10,7 @@ module IntercomRails
     include ::ActionView::Helpers::JavaScriptHelper
 
     attr_reader :user_details, :company_details, :show_everywhere
-    attr_accessor :secret, :widget_options, :controller
+    attr_accessor :secret, :widget_options, :controller, :nonce
 
     def initialize(options = {})
       self.secret = options[:secret] || Config.api_secret
@@ -23,12 +23,33 @@ module IntercomRails
       elsif options[:user_details]
         options[:user_details].delete(:company) if options[:user_details]
       end
+      self.nonce = options[:nonce]
     end
 
     def valid?
       valid = user_details[:app_id].present?
       unless @show_everywhere
         valid = valid && (user_details[:user_id] || user_details[:email]).present?
+      end
+      if nonce
+        valid = valid && valid_nonce?
+      end
+      valid
+    end
+
+    def valid_nonce?
+      valid = false
+      if nonce
+        # Base64 regexp:
+        # - blocks of 4 [A-Za-z0-9+/]
+        # followed either by:
+        # - blocks of 2 [A-Za-z0-9+/] + '=='
+        # - blocks of 3 [A-Za-z0-9+/] + '='
+        base64_regexp = Regexp.new('^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$')
+        m = base64_regexp.match(nonce)
+        if nonce == m.to_s
+          valid = true
+        end
       end
       valid
     end
@@ -41,7 +62,11 @@ module IntercomRails
     end
 
     def to_s
-      str = "<script id=\"IntercomSettingsScriptTag\">#{intercom_javascript}</script>\n"
+      js_options = 'id="IntercomSettingsScriptTag"'
+      if nonce && valid_nonce?
+        js_options = js_options + " nonce=\"#{nonce}\""
+      end
+      str = "<script #{js_options}>#{intercom_javascript}</script>\n"
       str.respond_to?(:html_safe) ? str.html_safe : str
     end
 

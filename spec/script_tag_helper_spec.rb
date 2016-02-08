@@ -37,5 +37,16 @@ describe IntercomRails::ScriptTagHelper do
       })
       expect(script_tag.csp_sha256).to eq('sha256-qLRbekKD6dEDMyLKPNFYpokzwYCz+WeNPqJE603mT24=')
     end
+
+    it 'inserts a valid nonce if present' do
+      script_tag = intercom_script_tag({
+        :app_id => 'csp_sha_test',
+        :email => 'marco@intercom.io',
+        :user_id => 'marco',
+      }, {
+        :nonce => 'pJwtLVnwiMaPCxpb41KZguOcC5mGUYD+8RNGcJSlR94=',
+      })
+      expect(script_tag.to_s).to include('nonce="pJwtLVnwiMaPCxpb41KZguOcC5mGUYD+8RNGcJSlR94="')
+    end
   end
 end

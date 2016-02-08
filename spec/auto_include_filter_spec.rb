@@ -199,4 +199,15 @@ describe TestController, type: :controller do
     expect(response.body).to include(IntercomRails.config.app_id)
     expect(response.body).to include("</script>\n</body>")
   end
+
+  context 'content security policy support' do
+    before do
+      require 'auto_include_filter_spec_csp_helper'
+    end
+    it 'injects nonce if csp_nonce_hook is defined' do
+      IntercomRails.config.api_secret = 'abcd'
+      get :with_current_user_method, :body => "<body>Hello world</body>"
+      expect(response.body).to include('nonce="aaaa"')
+    end
+  end
 end

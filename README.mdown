@@ -195,7 +195,7 @@ You can also override `IntercomRails::Config` options such as your `api_secret`,
 <% end %>
 ```
 ### Content Security Policy Level 2 (CSP) support
-As of version 0.2.30 this gem supports CSP, allowing to whitelist the include code using both nonces and SHA-256 hashes.
+As of version 0.2.30 this gem supports CSP, allowing you to whitelist the include code using both nonces and SHA-256 hashes.
 #### Automatic Insertion
 CSP support for automatic insertion exposes two namespaces that can be defined by the user via monkey patching:
  - String CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook(controller)

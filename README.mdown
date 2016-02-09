@@ -194,6 +194,58 @@ You can also override `IntercomRails::Config` options such as your `api_secret`,
   }) %>
 <% end %>
 ```
+### Content Security Policy Level 2 (CSP) support
+As of version 0.2.30 this gem supports CSP, allowing you to whitelist the include code using both nonces and SHA-256 hashes.
+#### Automatic Insertion
+CSP support for automatic insertion exposes two namespaces that can be defined by the user via monkey patching:
+ - String CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook(controller)
+ - nil CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook(controller, SHA-256 whitelist entry)
+For instance, a CSP nonce can be inserted using the [Twitter Secure Headers](https://github.com/twitter/secureheaders) gem with the following code:
+```ruby
+module CoreExtensions
+  module IntercomRails
+    module AutoInclude
+      def self.csp_nonce_hook(controller)
+        SecureHeaders.content_security_policy_script_nonce(controller.request)
+      end
+    end
+  end
+end
+```
+or, for whitelisting the SHA-256 hash:
+```ruby
+module CoreExtensions
+  module IntercomRails
+    module AutoInclude
+      def self.csp_sha256_hook(controller, sha256)
+        SecureHeaders.append_content_security_policy_directives(controller.request, {script_src: [sha256]})
+      end
+    end
+  end
+end
+```
+#### Manual Insertion
+CSP is supported in manual insertion as well, the request nonce can be passed as an option:
+```erb
+<% if logged_in? %>
+  <%= intercom_script_tag({
+    :app_id => 'your-app-id',
+    :user_id => current_user.id,
+    :email => current_user.email,
+    :name => current_user.name,
+    :created_at => current_user.created_at
+  }, {
+    :secret => 'your-apps-api-secret',
+    :widget => {:activator => '#Intercom'},
+    :nonce => get_nonce_from_your_csp_framework
+  }) %>
+<% end %>
+```
+The SHA-256 hash is available using `csp_sha256` just after generating the tag itself:
+```erb
+<%= intercom_script_tag %>
+<% add_entry_to_csp_whitelist(intercom_script_tag.csp_sha256) %>
+```
 ## Importing your users
 To get started faster with Intercom, `IntercomRails` includes a Rake task that will do an initial import of your users:
 

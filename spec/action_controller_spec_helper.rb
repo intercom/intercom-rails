@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require 'action_controller'
 
-require "rails/all"
+require 'rails'
 require 'rspec/rails'
 
 module Rails
@@ -18,6 +18,8 @@ end
 
 module IntercomRails
   class Application < Rails::Application
+    config.secret_key_base = 'secret_key_base'
+
     def routes
       TestRoutes
     end

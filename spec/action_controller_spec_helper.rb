@@ -29,7 +29,11 @@ end
 class ActionController::Base
   include IntercomRails::CustomDataHelper
   include IntercomRails::AutoInclude::Method
-  after_filter :intercom_rails_auto_include
+  if respond_to? :after_action
+    after_action :intercom_rails_auto_include
+  else
+    after_filter :intercom_rails_auto_include
+  end
 
   include TestRoutes.url_helpers
   include TestRoutes.mounted_helpers

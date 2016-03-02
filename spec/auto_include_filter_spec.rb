@@ -1,7 +1,11 @@
 require 'action_controller_spec_helper'
 
 class TestController < ActionController::Base
-  skip_after_filter :intercom_rails_auto_include, :only => :with_user_instance_variable_after_filter_skipped
+  if respond_to? :skip_after_action
+    skip_after_action :intercom_rails_auto_include, :only => :with_user_instance_variable_after_filter_skipped
+  else
+    skip_after_filter :intercom_rails_auto_include, :only => :with_user_instance_variable_after_filter_skipped
+  end
 
   def without_user
     render_content("<body>Hello world</body>")

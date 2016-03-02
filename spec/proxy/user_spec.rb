@@ -97,6 +97,15 @@ describe IntercomRails::Proxy::User do
     expect(ProxyUser.new(user).valid?).to be(true)
   end
 
+  it 'allows custom data to be a Proc which returns a hash' do
+    IntercomRails.config.user.custom_data = Proc.new do |user|
+      { user_name: user.name }
+    end
+
+    @user_proxy = ProxyUser.new(DUMMY_USER)
+    expect(@user_proxy.to_hash[:user_name]).to eql('Ciaran Lee')
+  end
+
   it 'considers new records to be invalid' do
     new_record_user = dummy_user(:email => 'not-saved@intercom.io', :name => 'New Record')
 

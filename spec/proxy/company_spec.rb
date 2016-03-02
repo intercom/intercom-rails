@@ -39,4 +39,13 @@ describe IntercomRails::Proxy::Company do
     expect(companies.length).to eq(2)
     expect(companies.map(&:company).map(&:name)).to eq(["Intercom", "Prey"])
   end
+
+  it 'allows custom data to be a Proc' do
+    IntercomRails.config.company.custom_data = Proc.new do |company|
+      { company_name: company.name }
+    end
+
+    @company_proxy = ProxyCompany.new(DUMMY_COMPANY)
+    expect(@company_proxy.to_hash[:company_name]).to eql('Intercom')
+  end
 end

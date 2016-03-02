@@ -30,6 +30,14 @@ describe IntercomRails do
     expect(IntercomRails.config.company.custom_data).to eq(custom_data_config)
   end
 
+  it 'allows custom data to be a proc which returns a hash' do
+    custom_data_proc = Proc.new do |u|
+      { "foo" => "bar" }
+    end
+    IntercomRails.config.user.custom_data = custom_data_proc
+    expect(IntercomRails.config.user.custom_data).to eq(custom_data_proc)
+  end
+
   it 'gets/sets inbox style' do
     IntercomRails.config.inbox.style = :custom
     expect(IntercomRails.config.inbox.style).to eq(:custom)

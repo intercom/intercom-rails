@@ -1,0 +1,9 @@
+source 'http://rubygems.org'
+
+gem 'rails', '5.0.0.beta3'
+gem 'sinatra', github: 'sinatra/sinatra'
+
+gem 'rspec', '3.5.0.beta1'
+gem 'rspec-rails', '3.5.0.beta1'
+
+gemspec :path => '../'

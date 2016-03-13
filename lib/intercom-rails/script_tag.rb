@@ -18,12 +18,26 @@ module IntercomRails
       self.controller = options[:controller]
       @show_everywhere = options[:show_everywhere]
       self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details]
+      remove_user_cookie_on_logout if http_request?
       self.company_details = if options[:find_current_company_details]
         find_current_company_details
       elsif options[:user_details]
         options[:user_details].delete(:company) if options[:user_details]
       end
       self.nonce = options[:nonce]
+    end
+
+    def remove_user_cookie_on_logout
+      if (find_current_user_details == {} && controller.response.request.cookies["intercom-session-#{IntercomRails.config.app_id}"])
+        controller.response.set_cookie("intercom-session-#{IntercomRails.config.app_id}", :value => "", :expires => Time.at(0))
+      end
+    end
+
+    def http_request?
+      return ( defined?(controller) &&
+        defined?(controller.response) &&
+        defined?(controller.response.request) &&
+        defined?(controller.response.set_cookie) )
     end
 
     def valid?

@@ -228,4 +228,19 @@ describe TestController, type: :controller do
       expect(response.body).to include('nonce="aaaa"')
     end
   end
+  context 'clear session on user logout' do
+    it 'clear intercom-session-app_id cookie if user just logged out' do
+      request.cookies["intercom-session-#{IntercomRails.config.app_id}"] = "intercom-session-cookie"
+      get :without_user
+      expect(response.cookies).to eq({"intercom-session-#{IntercomRails.config.app_id}" => nil}) # nil Erase the cookie
+    end
+    it 'do not clear intercom-session-app_id cookie if lead' do
+      get :without_user
+      expect(response.cookies).to eq({})
+    end
+    it 'do not clear intercom-session-app_id cookie if user logged in' do
+      get :with_user_instance_variable
+      expect(response.cookies).to eq({})
+    end
+  end
 end

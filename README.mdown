@@ -54,6 +54,27 @@ If you want to use secure mode, ensure you set your API secret in `config/initia
 ```ruby
   config.api_secret = '123456'
 ```
+### Shutdown
+
+If you use Intercom Acquire combined with another product like Support, Learn or Engage, any user that uses a shared computer and browser with someone else will be able to see the most recently logged in user’s conversation history until the cookie expires.
+Because of this, it’s very important to properly shutdown Intercom when a user’s session on your app ends (via manually or automatically logging out).
+
+#### Using Devise
+
+If your Rails application uses devise for authentication, you simply need to add the following line in your "config/initializers/session_store.rb" :
+
+```ruby
+  Rails.application.config.session_store :cookie_store, key: 'intercom-session-' + IntercomRails.config.app_id
+```
+
+#### Using another service
+
+If you use another service than Devise or if you implemented your own authentication service, you can call the following method to shutdown Intercom on logout.
+Be aware that if you call this method before a 'redirect_to' (quiet common on logout) it will have no impact as it is impossible to update cookies when you use a redirection.
+
+```ruby
+IntercomRails::ShutdownHelper::intercom_shutdown_helper(controller: self)
+```
 
 ### User Custom data attributes
 You can associate any attributes, specific to your app, with a user in Intercom.

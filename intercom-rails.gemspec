@@ -7,6 +7,7 @@ Gem::Specification.new do |s|
   s.name        = "intercom-rails"
   s.version     = IntercomRails::VERSION
   s.authors     = ["Ben McRedmond", "Ciaran Lee", "Darragh Curran",]
+  s.license     = "MIT"
   s.email       = ["ben@intercom.io", "ciaran@intercom.io", "darragh@intercom.io"]
   s.homepage    = "http://www.intercom.io"
   s.summary     = %q{Rails helper for emitting javascript script tags for Intercom}

@@ -71,6 +71,7 @@ IntercomRails.config do |config|
   # == User -> Company association
   # A Proc that given a user returns an array of companies
   # that the user belongs to.
+  # This is only used for importing users using rake command but it will not inject a list of companies in the intercom widget
   #
   # config.user.company_association = Proc.new { |user| user.companies.to_a }
   # config.user.company_association = Proc.new { |user| [user.company] }
@@ -81,6 +82,11 @@ IntercomRails.config do |config|
   # could be a company, app or group.
   #
   # config.company.current = Proc.new { current_company }
+  #
+  # Or if you are using devise you can just use the following config
+  #
+  # config.company.current = Proc.new { current_user.company }
+
 
   # == Company Custom Data
   # A hash of additional data you wish to send about a company.

@@ -273,14 +273,6 @@ The SHA-256 hash is available using `csp_sha256` just after generating the tag i
 <%= intercom_script_tag %>
 <% add_entry_to_csp_whitelist(intercom_script_tag.csp_sha256) %>
 ```
-## Importing your users
-To get started faster with Intercom, `IntercomRails` includes a Rake task that will do an initial import of your users:
-
-```
-rake intercom:import
-```
-
-Any custom data defined in `config/initializers/intercom.rb` will also be sent.
 
 ## Running tests/specs
 

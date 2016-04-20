@@ -80,6 +80,7 @@ module IntercomRails
     end
 
     config_accessor :app_id
+    config_accessor :session_duration
     config_accessor :api_secret
     config_accessor :api_key
     config_accessor :library_url

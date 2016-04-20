@@ -7,6 +7,11 @@ describe IntercomRails do
     expect(IntercomRails.config.app_id).to eq("1234")
   end
 
+  it 'gets/sets session_duration' do
+    IntercomRails.config.session_duration = 60000
+    expect(IntercomRails.config.session_duration).to eq(60000)
+  end
+
   it 'gets/sets current_user' do
     current_user = Proc.new { @blah }
     IntercomRails.config.user.current = current_user

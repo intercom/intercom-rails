@@ -9,7 +9,7 @@ module IntercomRails
 
     include ::ActionView::Helpers::JavaScriptHelper
 
-    attr_reader :user_details, :company_details, :show_everywhere
+    attr_reader :user_details, :company_details, :show_everywhere, :session_duration
     attr_accessor :secret, :widget_options, :controller, :nonce
 
     def initialize(options = {})
@@ -17,6 +17,7 @@ module IntercomRails
       self.widget_options = widget_options_from_config.merge(options[:widget] || {})
       self.controller = options[:controller]
       @show_everywhere = options[:show_everywhere]
+      @session_duration = session_duration_from_config
       self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details]
       self.company_details = if options[:find_current_company_details]
         find_current_company_details
@@ -56,6 +57,7 @@ module IntercomRails
 
     def intercom_settings
       hsh = user_details
+      hsh[:session_duration] = @session_duration if @session_duration.present?
       hsh[:widget] = widget_options if widget_options.present?
       hsh[:company] = company_details if company_details.present?
       hsh
@@ -119,6 +121,17 @@ module IntercomRails
 
     def user_hash
       OpenSSL::HMAC.hexdigest("sha256", secret, (user_details[:user_id] || user_details[:email]).to_s)
+    end
+
+    def session_duration_from_config
+      session_duration = IntercomRails.config.session_duration
+      if session_duration && valid_session_duration?(session_duration)
+        session_duration
+      end
+    end
+
+    def valid_session_duration?(session_duration)
+      session_duration.is_a?(Integer) && session_duration > 0
     end
 
     def app_id

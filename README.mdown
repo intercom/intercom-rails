@@ -81,7 +81,19 @@ Be aware that if you call this method before a 'redirect_to' (quite common on lo
 IntercomRails::ShutdownHelper::intercom_shutdown_helper(self)
 ```
 
+#### Session Duration
+
+To add a `session_duration` variable (in ms) to the widget, add the following line to `config/initializers/intercom.rb`:
+
+```ruby
+config.session_duration = 5 * 60 * 1000
+```
+That will force your Intercom session to expire after 5 minutes which is the minimum amount of time authorized.
+
+More information about how session_duration works in [intercom documentation](https://docs.intercom.io/configuring-for-your-product-or-site/customizing-the-intercom-messenger#secure-user-conversations-configure-your-cookie-timeout)
+
 ### User Custom data attributes
+
 You can associate any attributes, specific to your app, with a user in Intercom.
 For custom data attributes you want updated on every request set them in `config/initializers/intercom.rb`, the latest value will be sent to Intercom on each page visit.
 

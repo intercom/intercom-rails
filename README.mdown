@@ -70,7 +70,7 @@ If your Rails application uses devise for authentication, you simply need to add
   Rails.application.config.session_store :cookie_store, key: 'intercom-session-' + IntercomRails.config.app_id
 ```
 
-You should not modify or remove existing configurations in theis file.
+You should not modify or remove existing configurations in this file.
 
 #### Using another service
 

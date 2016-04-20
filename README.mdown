@@ -70,10 +70,12 @@ If your Rails application uses devise for authentication, you simply need to add
   Rails.application.config.session_store :cookie_store, key: 'intercom-session-' + IntercomRails.config.app_id
 ```
 
+You should not modify or remove existing configurations in this file.
+
 #### Using another service
 
 If you use another service than Devise or if you implemented your own authentication service, you can call the following method in a controller to shutdown Intercom on logout (self being the controller instance).
-Be aware that if you call this method before a 'redirect_to' (quiet common on logout) it will have no impact as it is impossible to update cookies when you use a redirection.
+Be aware that if you call this method before a 'redirect_to' (quite common on logout) it will have no impact as it is impossible to update cookies when you use a redirection.
 
 ```ruby
 IntercomRails::ShutdownHelper::intercom_shutdown_helper(self)

@@ -3,6 +3,10 @@ IntercomRails.config do |config|
   #
   config.app_id = ENV["INTERCOM_APP_ID"] || "<%= @app_id %>"
 
+  # == Intercom session_duration
+  #
+  config.session_duration = <%= @session_duration %>
+
   # == Intercom secret key
   # This is required to enable secure mode, you can find it on your Setup
   # guide in the "Secure Mode" step.

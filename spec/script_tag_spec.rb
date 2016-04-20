@@ -27,6 +27,15 @@ describe IntercomRails::ScriptTag do
 
     expect(time_from_time_with_zone.intercom_settings[:created_at]).to eq(utc_time.to_i)
   end
+  context 'session' do
+    before do
+      IntercomRails.config.session_duration = 60000
+    end
+    it 'displays session_duration' do
+      script_tag = ScriptTag.new()
+      expect(script_tag.intercom_settings[:session_duration]).to eq(60000)
+    end
+  end
 
   it 'strips out nil entries for standard attributes' do
     %w(name email user_id).each do |standard_attribute|

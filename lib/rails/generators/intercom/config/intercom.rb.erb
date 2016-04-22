@@ -5,8 +5,11 @@ IntercomRails.config do |config|
 
   # == Intercom session_duration
   #
+  <%- if @session_duration -%>
   config.session_duration = <%= @session_duration %>
-
+  <%- else -%>
+  # config.session_duration = 300000
+  <%- end -%>
   # == Intercom secret key
   # This is required to enable secure mode, you can find it on your Setup
   # guide in the "Secure Mode" step.

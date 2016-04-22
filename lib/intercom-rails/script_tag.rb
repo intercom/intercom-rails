@@ -137,8 +137,7 @@ module IntercomRails
     def app_id
       return user_details[:app_id] if user_details[:app_id].present?
       return IntercomRails.config.app_id if IntercomRails.config.app_id.present?
-      return 'abcd1234' if defined?(Rails) && Rails.env.development?
-
+      return 'abcd1234' if defined?(Rails) && (Rails.env.development? || Rails.env.test?)
       nil
     end
 

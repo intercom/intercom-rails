@@ -64,22 +64,61 @@ Because of this, it’s very important to properly shutdown Intercom when a user
 
 #### Using Devise
 
-If your Rails application uses devise for authentication, you simply need to add the following line in your "config/initializers/session_store.rb" :
-
+If you use devise, you can override (if not already done) the session_controller by replacing in your `config/routes.rb` file :
 ```ruby
-  Rails.application.config.session_store :cookie_store, key: 'intercom-session-' + IntercomRails.config.app_id
+devise_for :users
+```
+by
+```ruby
+devise_for :users, controllers: {sessions: "sessions"}
 ```
 
-You should not modify or remove existing configurations in this file.
+Then you can use the following code to prepare Intercom Shutdown on log out in your `app/session_controller.rb`
+
+```ruby
+class SessionsController < Devise::SessionsController
+
+  after_action :prepare_intercom_shutdown, only: [:destroy]
+
+  # Your logic here
+
+  protected
+  def prepare_intercom_shutdown
+    IntercomRails::ShutdownHelper.prepare_intercom_shutdown(session)
+  end
+end
+```
+
+Assuming that the `destroy` method of session_controller redirects to your `visitors_controller.rb#index` method, edit your `visitors_controller` as follow :
+
+
+```ruby
+class VisitorsController < ApplicationController
+  after_action :intercom_shutdown, only: [:index]
+
+  def index
+    # You logic here
+  end
+
+  # You logic here
+
+  protected
+  def intercom_shutdown
+    IntercomRails::ShutdownHelper.intercom_shutdown(session, cookies)
+  end
+end
+```
 
 #### Using another service
 
-If you use another service than Devise or if you implemented your own authentication service, you can call the following method in a controller to shutdown Intercom on logout (self being the controller instance).
-**Be aware that if you call this method before a 'redirect_to' (quite common on logout) it will have no impact** as it is impossible to update cookies when you use a redirection.
+If you use another service than Devise or if you implemented your own authentication service, you can call the following method in a controller to shutdown Intercom on logout.
 
 ```ruby
-IntercomRails::ShutdownHelper::intercom_shutdown_helper(self)
+IntercomRails::ShutdownHelper::intercom_shutdown_helper(cookies)
 ```
+
+**Be aware that if you call this method before a 'redirect_to' (quite common on logout) it will have no impact** as it is impossible to update cookies when you use a redirection.
+But you can use the same logic as the `devise` implementation above.
 
 #### Session Duration
 

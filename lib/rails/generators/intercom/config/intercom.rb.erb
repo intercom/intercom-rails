@@ -43,6 +43,7 @@ IntercomRails.config do |config|
   config.user.current = Proc.new { <%= @current_user %> }
   <%- else -%>
   # config.user.current = Proc.new { current_user }
+  # config.user.current = [Proc.new { current_user }]
   <%- end -%>
 
   # == Include for logged out Users

@@ -68,6 +68,18 @@ module IntercomRails
       raise ArgumentError, "#{field_name} is not a proc" unless value.kind_of?(Proc)
     end
 
+    IS_ARAY_OF_PROC_VALIDATOR = Proc.new do |data, field_name|
+        raise ArgumentError, "#{field_name} data should be a proc or an array of proc" unless data.all? { |value| value.kind_of?(Proc)}
+    end
+
+    IS_PROC_OR_ARRAY_OF_PROC_VALIDATOR = Proc.new do |data, field_name|
+      if data.kind_of?(Array)
+        IS_ARAY_OF_PROC_VALIDATOR.call(data, field_name)
+      else
+        IS_PROC_VALIDATOR.call(data, field_name)
+      end
+    end
+
     def self.reset!
       to_reset = self.constants.map {|c| const_get c}
       to_reset << self
@@ -88,7 +100,7 @@ module IntercomRails
     config_accessor :include_for_logged_out_users
 
     config_group :user do
-      config_accessor :current, &IS_PROC_VALIDATOR
+      config_accessor :current, &IS_PROC_OR_ARRAY_OF_PROC_VALIDATOR
       config_accessor :exclude_if, &IS_PROC_VALIDATOR
       config_accessor :model, &IS_PROC_VALIDATOR
       config_accessor :company_association, &IS_PROC_VALIDATOR

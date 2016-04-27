@@ -125,6 +125,14 @@ describe TestController, type: :controller do
     expect(response.body).to include("Eoghan McCabe")
   end
 
+  it 'finds user using config.user.current proc array' do
+    IntercomRails.config.user.current = [Proc.new { @admin }, Proc.new { @user_object }]
+    get :with_admin_instance_variable
+    expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
+    expect(response.body).to include("eoghan@intercom.io")
+    expect(response.body).to include("Eoghan McCabe")
+  end
+
   it 'excludes users if necessary' do
     IntercomRails.config.user.exclude_if = Proc.new {|user| user.email.start_with?('ciaran')}
     get :with_current_user_method

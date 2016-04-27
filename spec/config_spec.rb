@@ -18,6 +18,12 @@ describe IntercomRails do
     expect(IntercomRails.config.user.current).to eq(current_user)
   end
 
+  it 'gets/sets several current_user' do
+    current_user = [ Proc.new { @blah }, Proc.new { @bloh }, Proc.new{ @bleh } ]
+    IntercomRails.config.user.current = current_user
+    expect(IntercomRails.config.user.current).to eq(current_user)
+  end
+
   it 'gets/sets custom_data' do
     custom_data_config = {
       'foo' => Proc.new {},

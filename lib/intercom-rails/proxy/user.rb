@@ -16,7 +16,11 @@ module IntercomRails
 
       def self.potential_user_objects
         if config.current.present?
-          [Proc.new { instance_eval &IntercomRails.config.user.current }]
+          if config.current.kind_of?(Array)
+            config.current.map { |user| Proc.new { instance_eval &user } }
+          else
+            [Proc.new { instance_eval &IntercomRails.config.user.current }]
+          end
         else
           PREDEFINED_POTENTIAL_USER_OBJECTS
         end

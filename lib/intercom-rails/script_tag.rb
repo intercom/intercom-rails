@@ -87,7 +87,6 @@ module IntercomRails
       str
     end
 
-    private
     def user_details=(user_details)
       @user_details = DateHelper.convert_dates_to_unix_timestamps(user_details || {})
       @user_details = @user_details.with_indifferent_access.tap do |u|

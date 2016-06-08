@@ -101,5 +101,27 @@ describe IntercomRails::Import do
 
       expect(prepare_for_batch_users[0][:companies].length).to eq(1)
     end
+
+    it 'imports empty companies Array' do
+      import = IntercomRails::Import.new
+      u = dummy_user
+      u.instance_eval do
+        def apps
+          []
+        end
+      end
+
+      allow(User).to receive(:find_in_batches).and_yield([u])
+
+      IntercomRails.config.user.company_association = Proc.new { |user| user.apps }
+
+      prepare_for_batch_users = nil
+      allow(import).to receive(:prepare_batch) {|users| prepare_for_batch_users = users}
+      allow(import).to receive(:send_users).and_return('failed' => [])
+
+      import.run
+
+      expect(prepare_for_batch_users[0][:companies].length).to eq(0)
+    end
   end
 end

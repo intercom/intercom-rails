@@ -102,7 +102,7 @@ module IntercomRails
 
         for_wire = user_proxy.to_hash
         companies = Proxy::Company.companies_for_user(user_proxy)
-        for_wire.merge!(:companies => companies.map(&:to_hash)) if companies.present?
+        for_wire.merge!(:companies => companies.map(&:to_hash)) unless companies.nil?
 
         for_wire
       end.compact

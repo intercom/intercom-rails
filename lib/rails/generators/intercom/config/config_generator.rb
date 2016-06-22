@@ -8,14 +8,12 @@ module Intercom
 
       argument :app_id, :desc => "Your Intercom app-id, which can be found here: https://app.intercom.io/apps/api_keys"
       argument :api_secret, :desc => "Your Intercom api-secret, used for secure mode", :optional => true
-      argument :api_key, :desc => "An Intercom API key, for various rake tasks", :optional => true
       argument :session_duration, :desc => "user session duration, this should match your app", :optional => true
 
       FALSEY_RESPONSES = ['n', 'no']
       def create_config_file
         @app_id = app_id
         @api_secret = api_secret
-        @api_key = api_key
         @session_duration = session_duration
         @include_for_logged_out_users = false
 

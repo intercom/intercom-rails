@@ -94,7 +94,6 @@ module IntercomRails
     config_accessor :app_id
     config_accessor :session_duration
     config_accessor :api_secret
-    config_accessor :api_key
     config_accessor :library_url
     config_accessor :enabled_environments, &ARRAY_VALIDATOR
     config_accessor :include_for_logged_out_users

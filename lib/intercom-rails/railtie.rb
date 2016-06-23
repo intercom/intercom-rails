@@ -10,9 +10,5 @@ module IntercomRails
         ActionController::Base.after_filter :intercom_rails_auto_include
       end
     end
-
-    rake_tasks do
-      load 'intercom-rails/intercom.rake'
-    end
   end
 end

@@ -98,6 +98,10 @@ module IntercomRails
     config_accessor :enabled_environments, &ARRAY_VALIDATOR
     config_accessor :include_for_logged_out_users
 
+    def self.api_key=(*)
+      warn "Setting an Intercom API key is no longer supported; remove the `config.api_key = ...` line from config/initializers/intercom.rb"
+    end
+
     config_group :user do
       config_accessor :current, &IS_PROC_OR_ARRAY_OF_PROC_VALIDATOR
       config_accessor :exclude_if, &IS_PROC_VALIDATOR

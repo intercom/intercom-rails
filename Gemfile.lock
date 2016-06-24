@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    intercom-rails (0.2.35)
+    intercom-rails (0.2.36)
       activesupport (> 3.0)
 
 GEM
@@ -113,4 +113,4 @@ DEPENDENCIES
   tzinfo
 
 BUNDLED WITH
-   1.11.2
+   1.12.1

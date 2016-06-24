@@ -75,4 +75,10 @@ describe IntercomRails do
     expect(IntercomRails.config.user.custom_data).to eq(nil)
     expect(IntercomRails.config.inbox.style).to eq(nil)
   end
+
+  it 'prints a deprecation warning when #api_key= is used' do
+    expect do
+      IntercomRails.config.api_key = "foo"
+    end.to output(/no longer supported/).to_stderr
+  end
 end

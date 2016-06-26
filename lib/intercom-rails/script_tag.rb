@@ -19,6 +19,10 @@ module IntercomRails
       @show_everywhere = options[:show_everywhere]
       @session_duration = session_duration_from_config
       self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details]
+
+      # Request specific custom data for non-signed up users base on lead_attributes
+      self.user_details = self.user_details.merge(find_lead_attributes)
+
       self.company_details = if options[:find_current_company_details]
         find_current_company_details
       elsif options[:user_details]
@@ -76,6 +80,14 @@ module IntercomRails
       base64_sha256 = Base64.encode64(Digest::SHA256.digest(intercom_javascript))
       csp_hash = "'sha256-#{base64_sha256}'".delete("\n")
       csp_hash
+    end
+
+    def find_lead_attributes
+      lead_attributes = IntercomRails.config.user.lead_attributes
+      return {} unless controller.present? && lead_attributes && lead_attributes.size > 0
+
+      query_parameters = controller.request.query_parameters.with_indifferent_access
+      query_parameters.select {|k, v| lead_attributes.map(&:to_s).include?(k)}
     end
 
     private

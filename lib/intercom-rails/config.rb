@@ -106,6 +106,7 @@ module IntercomRails
       config_accessor :current, &IS_PROC_OR_ARRAY_OF_PROC_VALIDATOR
       config_accessor :exclude_if, &IS_PROC_VALIDATOR
       config_accessor :model, &IS_PROC_VALIDATOR
+      config_accessor :lead_attributes, &ARRAY_VALIDATOR
       config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
 
       def self.company_association=(*)

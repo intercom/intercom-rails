@@ -81,4 +81,10 @@ describe IntercomRails do
       IntercomRails.config.api_key = "foo"
     end.to output(/no longer supported/).to_stderr
   end
+
+  it 'prints a deprecation warning when user.company_association= is used' do
+    expect do
+      IntercomRails.config.user.company_association = Proc.new { [] }
+    end.to output(/no longer supported/).to_stderr
+  end
 end

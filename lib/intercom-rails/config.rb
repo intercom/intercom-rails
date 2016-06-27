@@ -106,8 +106,11 @@ module IntercomRails
       config_accessor :current, &IS_PROC_OR_ARRAY_OF_PROC_VALIDATOR
       config_accessor :exclude_if, &IS_PROC_VALIDATOR
       config_accessor :model, &IS_PROC_VALIDATOR
-      config_accessor :company_association, &IS_PROC_VALIDATOR
       config_accessor :custom_data, &CUSTOM_DATA_VALIDATOR
+
+      def self.company_association=(*)
+        warn "Setting a company association is no longer supported; remove the `config.user.company_association = ...` line from config/initializers/intercom.rb"
+      end
     end
 
     config_group :company do

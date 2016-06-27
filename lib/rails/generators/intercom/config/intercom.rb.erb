@@ -66,14 +66,6 @@ IntercomRails.config do |config|
   #   :favorite_color => :favorite_color
   # }
 
-  # == User -> Company association
-  # A Proc that given a user returns an array of companies
-  # that the user belongs to.
-  # This is only used for importing users using rake command but it will not inject a list of companies in the intercom widget
-  #
-  # config.user.company_association = Proc.new { |user| user.companies.to_a }
-  # config.user.company_association = Proc.new { |user| [user.company] }
-
   # == Current company method/variable
   # The method/variable that contains the current company for the current user,
   # in your controllers. 'Companies' are generic groupings of users, so this

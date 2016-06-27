@@ -25,18 +25,4 @@ describe IntercomRails::Proxy::Company do
     search_object = nil
     expect(ProxyCompany.new(search_object).valid?).to eq(false)
   end
-
-  it 'does companies for user' do
-    IntercomRails.config.user.company_association = Proc.new { |user| user.apps }
-    test_user = dummy_user
-    test_user.instance_eval do
-      def apps
-        [DUMMY_COMPANY, dummy_company(:name => "Prey", :id => "800")]
-      end
-    end
-
-    companies = ProxyCompany.companies_for_user(IntercomRails::Proxy::User.new(test_user))
-    expect(companies.length).to eq(2)
-    expect(companies.map(&:company).map(&:name)).to eq(["Intercom", "Prey"])
-  end
 end

@@ -192,4 +192,41 @@ describe IntercomRails::ScriptTag do
       expect(script_tag.to_s).not_to include('>alert(1)</script><script>')
     end
   end
+
+  context 'request specific parameters' do
+    it 'does not complain when no controller is found' do
+      script_tag = ScriptTag.new(utm_source: 'google')
+      expect(script_tag.intercom_settings[:utm_source]).to eq(nil)
+    end
+
+    it 'accepts request specific defined lead attributes and rejects rest' do
+      IntercomRails.config.user.lead_attributes = %w(utm_source ref_data)
+
+      controller_with_request = Object.new
+      controller_with_request.instance_eval do
+        def intercom_custom_data
+          Object.new.tap do |o|
+            o.instance_eval do
+              def user
+                {
+                  utm_source: 'google',
+                  ref_data: 12345,
+                  ad_data: 'something1234'
+                }
+              end
+            end
+          end
+        end
+      end
+
+      script_tag = ScriptTag.new(controller: controller_with_request)
+
+      expect(script_tag.intercom_settings[:utm_source]).to eq('google')
+      expect(script_tag.intercom_settings[:ref_data]).to eq(12345)
+      # Rejects
+      expect(script_tag.intercom_settings[:ad_data]).to eq(nil)
+    end
+
+  end
+
 end

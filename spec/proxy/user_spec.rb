@@ -135,4 +135,13 @@ describe IntercomRails::Proxy::User do
     search_object = nil
     expect(ProxyUser.new(search_object).valid?).to eq(false)
   end
+
+  it 'gets/sets lead_attributes' do
+    IntercomRails.config.user.lead_attributes = %w(utm_source ref_data)
+    expect(IntercomRails.config.user.lead_attributes).to eq(["utm_source", "ref_data"])
+  end
+
+  it 'gets/sets lead_attributes with valid types' do
+    expect { IntercomRails.config.user.lead_attributes = "utm_source" }.to raise_error(ArgumentError)
+  end
 end

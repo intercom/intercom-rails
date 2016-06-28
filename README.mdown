@@ -173,6 +173,38 @@ end
 Attributes must be accessible in order to sync with intercom.
 Additionally, attributes ending in "_at" will be parsed as times.
 
+### Custom attributes for non-signed up users
+
+In situations where you want to pass in specific request based custom data for non-signed up users or leads,
+you can do that by setting custom attributes in ```config/initializers/intercom.rb```.
+
+Any of these attributes can be used to pass in custom data.
+
+Example:
+
+**in ```config/initializers/intercom.rb```**
+
+```ruby
+config.user.lead_attributes = %w(ref_data utm_source)
+```
+
+**in ```app/controllers/posts_controller.rb```**
+
+```ruby
+class PostsController < ApplicationController
+
+  before_action :set_custom_attributes, only: [:index]
+
+  # Your logic here
+
+  protected
+  def set_custom_attributes
+    intercom_custom_data.user[:ref_data] = params[:api_ref_data]
+    intercom_custom_data.user[:utm_source] = params[:api_utm_source]
+  end
+end
+```
+
 ### Companies
 
 By default, Intercom treats all Users as unrelated individuals. If for example you know users are part of a company, you can group them as such.

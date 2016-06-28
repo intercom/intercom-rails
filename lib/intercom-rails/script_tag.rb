@@ -86,8 +86,10 @@ module IntercomRails
       lead_attributes = IntercomRails.config.user.lead_attributes
       return {} unless controller.present? && lead_attributes && lead_attributes.size > 0
 
-      query_parameters = controller.request.query_parameters.with_indifferent_access
-      query_parameters.select {|k, v| lead_attributes.map(&:to_s).include?(k)}
+      # Get custom data. This also allows to retrieve custom data
+      # set via helper function intercom_custom_data
+      custom_data = controller.intercom_custom_data.user.with_indifferent_access
+      custom_data.select {|k, v| lead_attributes.map(&:to_s).include?(k)}
     end
 
     private

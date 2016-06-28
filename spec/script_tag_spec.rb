@@ -204,10 +204,10 @@ describe IntercomRails::ScriptTag do
 
       controller_with_request = Object.new
       controller_with_request.instance_eval do
-        def request
+        def intercom_custom_data
           Object.new.tap do |o|
             o.instance_eval do
-              def query_parameters
+              def user
                 {
                   utm_source: 'google',
                   ref_data: 12345,

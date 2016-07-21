@@ -206,6 +206,14 @@ describe TestController, type: :controller do
     expect(response.body).to include("6")
   end
 
+  it 'excludes company if necessary' do
+    IntercomRails.config.company.current = Proc.new { @app }
+    IntercomRails.config.company.exclude_if = Proc.new {|app| app.name == 'Intercom' }
+    get :with_user_and_app_instance_variables
+    expect(response.body).not_to include("company")
+    expect(response.body).not_to include("6")
+  end
+
   it 'can be skipped with skip_filter' do
     get :with_user_instance_variable_after_filter_skipped
     expect(response.body).to eq("<body>Hello world</body>")

@@ -24,6 +24,7 @@ module IntercomRails
       end
 
       def valid?
+        return false if company.blank? || company.respond_to?(:new_record?) && company.new_record?
         return false if config.company.exclude_if.present? && config.company.exclude_if.call(company)
         company.present? && identity_present?
       end

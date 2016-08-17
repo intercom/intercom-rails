@@ -25,6 +25,14 @@ rails generate intercom:config YOUR-APP-ID
 
 To make installing Intercom as easy as possible, where possible a `<script>` tag **will be automatically inserted before the closing `</body>` tag**. For most Rails apps, **you won't need to do any extra config**. Having trouble? Check out troubleshooting below.
 
+
+### Live Chat / Acquire
+With our [Acquire package](https://www.intercom.io/live-chat), Intercom Messenger now works with logged out users and visitors to your web site. Include the Intercom snippet on every page by setting:
+
+```ruby
+  config.include_for_logged_out_users = true
+```
+
 ### Disabling automatic insertion
 
 To disable automatic insertion for a particular controller or action you can:
@@ -228,13 +236,6 @@ config.company.custom_data = {
   :number_of_messages => Proc.new { |app| app.messages.count },
   :is_interesting => :is_interesting?
 }
-```
-
-### Live Chat / Acquire
-With our [Acquire package](https://www.intercom.io/live-chat), Intercom Messenger now works with logged out users and visitors to your web site. Include the Intercom snippet on every page by setting:
-
-```ruby
-  config.include_for_logged_out_users = true
 ```
 
 ### Messenger

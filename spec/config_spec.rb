@@ -51,6 +51,11 @@ describe IntercomRails do
     expect(IntercomRails.config.inbox.custom_activator).to eq('.intercom')
   end
 
+  it 'gets/sets hide_default_launcher' do
+    IntercomRails.config.hide_default_launcher = true
+    expect(IntercomRails.config.hide_default_launcher).to eq(true)
+  end
+
   it 'raises error if current user not a proc' do
     expect { IntercomRails.config.user.current = 1 }.to raise_error(ArgumentError)
   end

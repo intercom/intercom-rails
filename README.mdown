@@ -271,6 +271,18 @@ By default Intercom will be automatically inserted in development and production
   config.enabled_environments = ["production"]
 ```
 
+### Hiding messenger for current request
+
+If you want to temporarily disable Intercom Messenger for current request only you can call `hide_intercom_messenger_for_request` in your controller:
+
+```ruby
+  hide_intercom_messenger_for_request
+```
+or
+```ruby
+  hide_intercom_messenger_for_request(true)
+```
+
 ### Manually Inserting the Intercom Javascript
 
 Some situations may require manually inserting the Intercom script tag. If you simply wish to place the Intercom javascript in a different place within the page or, on a page without a closing `</body>` tag:

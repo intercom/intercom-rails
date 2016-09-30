@@ -18,6 +18,13 @@ module IntercomRails
       end
     end
 
+    def hide_intercom_messenger_for_request(hide = true)
+      @hide_intercom_messenger = hide
+    end
+
+    def hide_intercom_messenger_for_request?
+      @hide_intercom_messenger == true
+    end
   end
 
 end

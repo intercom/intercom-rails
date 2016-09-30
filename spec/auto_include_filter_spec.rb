@@ -14,6 +14,12 @@ class TestController < ActionController::Base
   def with_user_instance_variable
     @user = dummy_user
     render_content("<body>Hello world</body>")
+    end
+
+  def with_user_instance_variable_and_hide_intercom_messenger_for_request
+    hide_intercom_messenger_for_request
+    @user = dummy_user
+    render_content("<body>Hello world</body>")
   end
 
   def with_user_instance_variable_no_body_tag
@@ -224,6 +230,21 @@ describe TestController, type: :controller do
     expect(response.body).to include("Ben McRedmond")
     expect(response.body).to include(IntercomRails.config.app_id)
     expect(response.body).to include("</script>\n</body>")
+  end
+
+  context 'hide_intercom_messenger_for_request' do
+    it 'messenger can be disabled with hide_intercom_messenger_for_request set to true' do
+      get :with_user_instance_variable_and_hide_intercom_messenger_for_request, { hide_intercom_messenger: true }
+      expect(response.body).to eq("<body>Hello world</body>")
+    end
+
+    it 'messenger is enabled by default' do
+      get :with_user_instance_variable
+      expect(response.body).to include("ben@intercom.io")
+      expect(response.body).to include("Ben McRedmond")
+      expect(response.body).to include(IntercomRails.config.app_id)
+      expect(response.body).to include("</script>\n</body>")
+    end
   end
 
   context 'content security policy support' do

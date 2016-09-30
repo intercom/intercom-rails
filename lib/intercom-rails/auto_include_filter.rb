@@ -36,6 +36,7 @@ module IntercomRails
       end
 
       def include_javascript?
+        !hide? &&
         enabled_for_environment? &&
         !intercom_script_tag_called_manually? &&
         html_content_type? &&
@@ -90,6 +91,9 @@ module IntercomRails
         enabled_environments.map(&:to_s).include?(Rails.env)
       end
 
+      def hide?
+        controller.hide_intercom_messenger_for_request?
+      end
     end
 
   end

@@ -68,6 +68,18 @@ describe IntercomRails do
     end
   end
 
+  it 'setting custom data with proc' do
+    custom_data = {
+      'foo' => 'bar',
+      'bar' => 'baz'
+    }
+    custom_data_config = Proc.new { custom_data }
+
+    IntercomRails.config.user.custom_data = custom_data_config
+    expect(custom_data).to eql(IntercomRails.config.user.custom_data.call)
+  end
+
+
   it 'can be reset!' do
     IntercomRails.config.inbox.style = :custom
     IntercomRails.config.user.custom_data = {'muffin' => :muffin}

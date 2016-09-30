@@ -70,6 +70,40 @@ describe IntercomRails::Proxy::User do
     expect(@user_proxy.to_hash['plan']).to eql('pro')
   end
 
+  it 'can work with proc custom data' do
+    plan_dummy_user = DUMMY_USER.dup
+    plan_dummy_user.instance_eval do
+      def custom_data
+        {
+          'plan' => 'pro',
+          'registered_at' => Time.at(5),
+        }
+      end
+    end
+
+    IntercomRails.config.user.custom_data = Proc.new { |u| u.custom_data }
+
+    @user_proxy = ProxyUser.new(plan_dummy_user)
+    expect(@user_proxy.to_hash['plan']).to eql('pro')
+  end
+
+  it 'test can work with symbol custom data' do
+    plan_dummy_user = DUMMY_USER.dup
+    plan_dummy_user.instance_eval do
+      def custom_data
+        {
+          'plan' => 'pro',
+          'registered_at' => Time.at(5),
+        }
+      end
+    end
+
+    IntercomRails.config.user.custom_data = :custom_data
+
+    @user_proxy = ProxyUser.new(plan_dummy_user)
+    expect(@user_proxy.to_hash['plan']).to eql('pro')
+  end
+
   it 'converts dates to timestamps' do
     plan_dummy_user = DUMMY_USER.dup
     plan_dummy_user.instance_eval do

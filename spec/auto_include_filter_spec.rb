@@ -66,7 +66,7 @@ class TestController < ActionController::Base
 
   def with_some_tricky_string
     @user = dummy_user(:email => "\\\"foo\"")
-    render :text => params[:body], :content_type => 'text/html'
+    render_content("<body>Hello world</body>")
   end
 
   private
@@ -217,7 +217,7 @@ describe TestController, type: :controller do
   end
 
   it 'escapes strings with \\s' do
-    get :with_some_tricky_string, :body => "<body>Normal</body>"
+    get :with_some_tricky_string
     expect(response.body).to include("\"email\":\"\\\\\\\"foo\\\"\"")
   end
 

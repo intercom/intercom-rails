@@ -159,6 +159,8 @@ e.g.
     :is_paid => Proc.new { |user| user.plan.present? },
     :email_verified => :email_verified?
   }
+  # or If User::custom_data method returns a hash
+  config.user.custom_data = Proc.new { |user| user.custom_data }
 ```
 
 In some situations you'll want to set some custom data attribute specific to a request.

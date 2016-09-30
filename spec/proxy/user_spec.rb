@@ -83,7 +83,7 @@ describe IntercomRails::Proxy::User do
 
     IntercomRails.config.user.custom_data = Proc.new { |u| u.custom_data }
 
-    @user_proxy = User.new(plan_dummy_user)
+    @user_proxy = ProxyUser.new(plan_dummy_user)
     expect(@user_proxy.to_hash['plan']).to eql('pro')
   end
 
@@ -100,7 +100,7 @@ describe IntercomRails::Proxy::User do
 
     IntercomRails.config.user.custom_data = :custom_data
 
-    @user_proxy = User.new(plan_dummy_user)
+    @user_proxy = ProxyUser.new(plan_dummy_user)
     expect(@user_proxy.to_hash['plan']).to eql('pro')
   end
 

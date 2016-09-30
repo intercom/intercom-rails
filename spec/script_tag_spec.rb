@@ -118,11 +118,13 @@ describe IntercomRails::ScriptTag do
     it 'knows about :custom' do
       IntercomRails.config.inbox.style = :custom
       expect(ScriptTag.new.intercom_settings['widget']).to eq({'activator' => '#Intercom'})
+      expect(ScriptTag.new.intercom_settings['hide_default_launcher']).to eq(true)
     end
     it 'knows about :custom_activator' do
       IntercomRails.config.inbox.style = :custom
       IntercomRails.config.inbox.custom_activator = '.intercom'
       expect(ScriptTag.new.intercom_settings['widget']).to eq({'activator' => '.intercom'})
+      expect(ScriptTag.new.intercom_settings['hide_default_launcher']).to eq(true)
     end
   end
 
@@ -169,7 +171,7 @@ describe IntercomRails::ScriptTag do
         :email => 'marco@intercom.io',
         :user_id => 'marco',
       })
-      expect(script_tag.csp_sha256).to eq("'sha256-qLRbekKD6dEDMyLKPNFYpokzwYCz+WeNPqJE603mT24='")
+      expect(script_tag.csp_sha256).to eq("'sha256-QmMmBpC2AxZc9zd18FvMACQwKPbnGG/kGMN4dGJeB3w='")
     end
 
     it 'inserts a valid nonce if present' do

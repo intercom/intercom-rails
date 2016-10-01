@@ -64,6 +64,11 @@ class TestController < ActionController::Base
     render_content("<body>Hello world</body>")
   end
 
+  def with_some_tricky_string
+    @user = dummy_user(:email => "\\\"foo\"")
+    render_content("<body>Hello world</body>")
+  end
+
   private
 
   def render_content(body)
@@ -217,6 +222,11 @@ describe TestController, type: :controller do
   it 'can be skipped with skip_filter' do
     get :with_user_instance_variable_after_filter_skipped
     expect(response.body).to eq("<body>Hello world</body>")
+  end
+
+  it 'escapes strings with \\s' do
+    get :with_some_tricky_string
+    expect(response.body).to include("\"email\":\"\\\\\\\"foo\\\"\"")
   end
 
   it 'can be disabled in non whitelisted environments' do

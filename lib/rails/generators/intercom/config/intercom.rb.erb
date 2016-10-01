@@ -84,6 +84,11 @@ IntercomRails.config do |config|
   #
   # config.company.current = Proc.new { current_user.company }
 
+  # == Exclude company
+  # A Proc that given a company returns true if the company should be excluded
+  # from imports and Javascript inclusion, false otherwise.
+  #
+  # config.company.exclude_if = Proc.new { |app| app.subdomain == 'demo' }
 
   # == Company Custom Data
   # A hash of additional data you wish to send about a company.

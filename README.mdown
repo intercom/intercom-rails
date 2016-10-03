@@ -261,6 +261,12 @@ You can customize the CSS selector, by setting
   config.inbox.custom_activator = '.intercom-link'
 ```
 
+You can hide default launcher button, by setting
+
+```ruby
+  config.hide_default_launcher = true
+```
+
 You can read more about configuring the messenger in your applications settings, within Intercom.
 
 ### Environments

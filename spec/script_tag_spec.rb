@@ -111,10 +111,6 @@ describe IntercomRails::ScriptTag do
   end
 
   context 'inbox style' do
-    it 'knows about :default' do
-      IntercomRails.config.inbox.style = :default
-      expect(ScriptTag.new.intercom_settings['widget']).to eq({'activator' => '#IntercomDefaultWidget'})
-    end
     it 'knows about :custom' do
       IntercomRails.config.inbox.style = :custom
       expect(ScriptTag.new.intercom_settings['widget']).to eq({'activator' => '#Intercom'})

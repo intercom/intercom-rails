@@ -160,8 +160,6 @@ module IntercomRails
 
       custom_activator = Config.inbox.custom_activator
       activator = case Config.inbox.style
-      when :default
-        '#IntercomDefaultWidget'
       when :custom
         custom_activator || '#Intercom'
       else

@@ -19,8 +19,9 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'activesupport', '>3.0'
-  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rake', '< 11.0'
   s.add_development_dependency 'actionpack', '>3.2.12'
+  s.add_development_dependency 'nokogiri', '< 1.7.0'
   s.add_development_dependency 'rspec', '~> 3.1'
   s.add_development_dependency 'rspec-rails', '~> 3.1'
   s.add_development_dependency 'pry'

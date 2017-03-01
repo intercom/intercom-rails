@@ -64,7 +64,7 @@ module IntercomRails
 
       info "Sending users in batches of #{max_batch_size}:"
       batches do |batch, number_in_batch|
-        failures = send_users(batch)['failed']
+        failures = send_users(batch) || []
         self.failed += failures
         self.total_sent += number_in_batch
 
@@ -129,11 +129,12 @@ module IntercomRails
     def send_users(users)
       request = Net::HTTP::Post.new(uri.request_uri)
       request.basic_auth(IntercomRails.config.app_id, IntercomRails.config.api_key)
+      request["Accept"] = "application/json"
       request["Content-Type"] = "application/json"
       request.body = users
 
       response = perform_request(request)
-      JSON.parse(response.body)
+      response.body.empty? ? JSON.parse(response.body)['errors'] : nil
     end
 
     def perform_request(request, attempts = 0, error = {})

@@ -10,6 +10,7 @@ module IntercomRails
 
       config_delegator :plan
       config_delegator :monthly_spend
+      config_delegator :name
 
       def self.companies_for_user(user)
         return unless config(:user).company_association.present?

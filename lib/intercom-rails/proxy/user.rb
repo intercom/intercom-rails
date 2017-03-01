@@ -9,6 +9,8 @@ module IntercomRails
       proxy_delegator :name
       proxy_delegator :created_at
 
+      config_delegator :name
+
       PREDEFINED_POTENTIAL_USER_OBJECTS = [
         Proc.new { current_user },
         Proc.new { @user }

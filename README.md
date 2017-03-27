@@ -26,9 +26,8 @@ rails generate intercom:config YOUR-APP-ID
 To make installing Intercom easy, where possible a `<script>` tag **will be automatically inserted before the closing `</body>` tag**. For most Rails apps, **you won't need to do any extra config**. Having trouble? Check out troubleshooting below.
 
 
-### Live Chat / Acquire
-With our [Acquire package](https://www.intercom.io/live-chat), Intercom Messenger now works with logged out users and visitors to your web site. Include the Intercom snippet on every page by setting:
-
+### Live Chat 
+With the Intercom Messenger you can [chat](https://www.intercom.com/live-chat) with users and visitors to your web site. Include the Intercom Messenger on every page by setting:
 ```ruby
   config.include_for_logged_out_users = true
 ```
@@ -54,7 +53,7 @@ If your users can be defined in different ways in your app you can also pass an 
 ```ruby
   config.user.current = [Proc.new { current_user_object }, Proc.new { @user_object }]
 ```
-* If you want the Intercom Messenger to be available when there is no current user,  set `config.include_for_logged_out_users = true` in your config and sign up for the [Acquire](https://www.intercom.io/live-chat) package.
+* If you want the Intercom Messenger to be available when there is no current user,  set `config.include_for_logged_out_users = true` in your config and sign up for the [Respond](https://www.intercom.io/live-chat) package.
 
 Feel free to mail us: team@intercom.io, if you're still having trouble.
 
@@ -69,7 +68,7 @@ If you want to use secure mode, ensure you set your API secret in `config/initia
 **Note: This example is just for the sake of simplicity, you should never include your api secret in source control. Instead, you should use the Rails [secret config](http://guides.rubyonrails.org/4_1_release_notes.html#config-secrets-yml) feature.**
 ### Shutdown
 
-If you use Intercom Acquire combined with another product like Support, Learn or Engage, any user that uses a shared computer and browser with someone else will be able to see the most recently logged in user’s conversation history until the cookie expires.
+If you use Intercom Respond combined with another product like Engage, any user that uses a shared computer and browser with someone else will be able to see the most recently logged in user’s conversation history until the cookie expires.
 Because of this, it’s very important to properly shutdown Intercom when a user’s session on your app ends (via manually or automatically logging out).
 
 #### Using Devise

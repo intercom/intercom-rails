@@ -163,13 +163,13 @@ describe TestController, type: :controller do
   it 'to_s non numeric user_id to avoid nested structure for bson ids' do
     get :with_mongo_like_user
     expect(response.body).not_to include("oid")
-    expect(response.body).to include('"user_id":"deadbeaf1234mongo"')
+    expect(response.body).to include('\\"user_id\\":\\"deadbeaf1234mongo\\"')
   end
 
   it 'leaves numeric user_id alone to avoid unintended consequences' do
     get :with_numeric_user_id
     expect(response.body).not_to include("oid")
-    expect(response.body).to include('"user_id":123')
+    expect(response.body).to include('\\"user_id\\":123')
   end
 
   it 'defaults to have no user_hash' do
@@ -227,7 +227,7 @@ describe TestController, type: :controller do
 
   it 'escapes strings with \\s' do
     get :with_some_tricky_string
-    expect(response.body).to include("\"email\":\"\\\\\\\"foo\\\"\"")
+    expect(response.body).to include('\\"email\\":\"\\\\\\\\\\\\\\"foo\\\\\\"\\"')
   end
 
   it 'can be disabled in non whitelisted environments' do

@@ -195,7 +195,7 @@ describe IntercomRails::ScriptTag do
         :email => 'marco@intercom.io',
         :user_id => 'marco',
       })
-      expect(script_tag.csp_sha256).to eq("'sha256-qLRbekKD6dEDMyLKPNFYpokzwYCz+WeNPqJE603mT24='")
+      expect(script_tag.csp_sha256).to eq("'sha256-ejA+RwRQBXGtcHVnRlsp8dTW9BaZpvIX2n1/lJhpSaQ='")
     end
 
     it 'inserts a valid nonce if present' do

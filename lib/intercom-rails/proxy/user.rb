@@ -31,11 +31,11 @@ module IntercomRails
           begin
             user_proxy = new(search_object.instance_eval(&potential_object), search_object)
             return user_proxy if user_proxy.valid?
+            raise ExcludedUserFoundError if user_proxy.excluded?
           rescue NameError
             next
           end
         end
-
         raise NoUserFoundError
       end
 
@@ -47,8 +47,12 @@ module IntercomRails
 
       def valid?
         return false if user.blank? || user.respond_to?(:new_record?) && user.new_record?
-        return false if config.user.exclude_if.present? && config.user.exclude_if.call(user)
+        return false if excluded?
         identity_present?
+      end
+
+      def excluded?
+        config.user.exclude_if.present? && config.user.exclude_if.call(user)
       end
 
     end

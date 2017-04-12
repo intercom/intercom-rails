@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = "intercom-rails"
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile", "README.mdown"]
+  s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'activesupport', '>3.0'

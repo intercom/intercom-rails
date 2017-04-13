@@ -11,8 +11,8 @@ IntercomRails.config do |config|
   # config.session_duration = 300000
   <%- end -%>
   # == Intercom secret key
-  # This is required to enable secure mode, you can find it on your Setup
-  # guide in the "Secure Mode" step.
+  # This is required to enable Identity Verification, you can find it on your Setup
+  # guide in the "Identity Verification" step.
   #
   <%- if @api_secret -%>
   config.api_secret = "<%= @api_secret %>"

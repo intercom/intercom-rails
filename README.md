@@ -26,7 +26,7 @@ rails generate intercom:config YOUR-APP-ID
 To make installing Intercom easy, where possible a `<script>` tag **will be automatically inserted before the closing `</body>` tag**. For most Rails apps, **you won't need to do any extra config**. Having trouble? Check out troubleshooting below.
 
 
-### Live Chat 
+### Live Chat
 With the Intercom Messenger you can [chat](https://www.intercom.com/live-chat) with users and visitors to your web site. Include the Intercom Messenger on every page by setting:
 ```ruby
   config.include_for_logged_out_users = true
@@ -60,7 +60,7 @@ Feel free to mail us: team@intercom.io, if you're still having trouble.
 ## Configuration
 
 ### API Secret
-If you want to use secure mode, ensure you set your API secret in `config/initializers/intercom.rb`:
+If you want to use Identity Verification, ensure you set your API secret in `config/initializers/intercom.rb`:
 
 ```ruby
   config.api_secret = '123456'
@@ -416,7 +416,7 @@ bundle exec rspec spec/
 - **Send coherent history**. Make sure each individual commit in your pull
   request is meaningful. If you had to make multiple intermediate commits while
   developing, please squash them before sending them to us.
-  
+
 
 ## Contributors
 

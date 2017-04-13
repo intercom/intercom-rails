@@ -66,7 +66,7 @@ describe IntercomRails::ScriptTag do
     IntercomRails.config.app_id = before
   end
 
-  context 'secure mode - user_hash' do
+  context 'Identity Verification - user_hash' do
 
     it 'computes user_hash using email when email present, and user_id blank' do
       script_tag = ScriptTag.new(:user_details => {:email => 'ciaran@intercom.io'}, :secret => 'abcdefgh')

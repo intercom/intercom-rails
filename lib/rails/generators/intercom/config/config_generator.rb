@@ -7,7 +7,7 @@ module Intercom
       end
 
       argument :app_id, :desc => "Your Intercom app-id, which can be found here: https://app.intercom.io/apps/api_keys"
-      argument :api_secret, :desc => "Your Intercom api-secret, used for secure mode", :optional => true
+      argument :api_secret, :desc => "Your Intercom api-secret, used for Identity Verification", :optional => true
       argument :session_duration, :desc => "user session duration, this should match your app", :optional => true
 
       FALSEY_RESPONSES = ['n', 'no']

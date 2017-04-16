@@ -67,7 +67,7 @@ describe IntercomRails::Proxy::User do
     }
 
     @user_proxy = ProxyUser.new(plan_dummy_user)
-    expect(@user_proxy.to_hash['plan']).to eql('pro')
+    expect(@user_proxy.to_hash[:custom_attributes]['plan']).to eql('pro')
   end
 
   it 'can work with proc custom data' do
@@ -117,7 +117,7 @@ describe IntercomRails::Proxy::User do
     }
 
     @user_proxy = ProxyUser.new(plan_dummy_user)
-    expect(@user_proxy.to_hash['some_date']).to eq(5)
+    expect(@user_proxy.to_hash[:custom_attributes]['some_date']).to eq(5)
   end
 
   it 'is considered valid if user_id or email' do
@@ -156,7 +156,7 @@ describe IntercomRails::Proxy::User do
     end
 
     @user_proxy = ProxyUser.new(DUMMY_USER, object_with_intercom_custom_data)
-    expect(@user_proxy.to_hash[:ponies]).to eql(:rainbows)
+    expect(@user_proxy.to_hash[:custom_attributes][:ponies]).to eql(:rainbows)
   end
 
   it 'is invalid if whiny nil' do

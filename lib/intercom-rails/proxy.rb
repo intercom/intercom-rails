@@ -22,7 +22,9 @@ module IntercomRails
       end
 
       def to_hash
-        data = standard_data.merge(custom_data)
+        data = standard_data
+        custom_attributes = custom_data
+        data[:custom_attributes] = custom_attributes if custom_attributes.present?
         [:id, :user_id].each do |id_key|
           if(data[id_key] && !data[id_key].is_a?(Numeric))
             data[id_key] = data[id_key].to_s

@@ -10,8 +10,7 @@ module IntercomRails
       proxy_delegator :created_at
 
       PREDEFINED_POTENTIAL_USER_OBJECTS = [
-        Proc.new { current_user },
-        Proc.new { @user }
+        Proc.new { current_user }
       ]
 
       def self.potential_user_objects

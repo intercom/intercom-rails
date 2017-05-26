@@ -21,14 +21,15 @@ describe IntercomRails::Proxy::User do
     expect(@user_proxy.user).to eq(DUMMY_USER)
   end
 
-  it 'finds user instance variable' do
+  it 'does not expose instance variables' do
     object_with_instance_variable = Object.new
     object_with_instance_variable.instance_eval do
       @user = DUMMY_USER
     end
 
-    @user_proxy = ProxyUser.current_in_context(object_with_instance_variable)
-    expect(@user_proxy.user).to eq(DUMMY_USER)
+    expect {
+      ProxyUser.current_in_context(object_with_instance_variable)
+    }.to raise_error(IntercomRails::NoUserFoundError)
   end
 
   it 'finds config user' do

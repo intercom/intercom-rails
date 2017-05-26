@@ -2,26 +2,33 @@ require 'action_controller_spec_helper'
 
 class TestController < ActionController::Base
   if respond_to? :skip_after_action
-    skip_after_action :intercom_rails_auto_include, :only => :with_user_instance_variable_after_filter_skipped
+    skip_after_action :intercom_rails_auto_include, :only => :with_current_user_method_after_filter_skipped
   else
-    skip_after_filter :intercom_rails_auto_include, :only => :with_user_instance_variable_after_filter_skipped
+    skip_after_filter :intercom_rails_auto_include, :only => :with_current_user_method_after_filter_skipped
   end
 
   def without_user
+    @current_user = nil
     render_content("<body>Hello world</body>")
   end
 
-  def with_user_instance_variable
+  def without_current_user_method_but_with_user_instance_variable
     @user = dummy_user
     render_content("<body>Hello world</body>")
   end
 
-  def with_user_instance_variable_no_body_tag
+  def with_current_user_method
+    @current_user = dummy_user
+    render_content("<body>Hello world</body>")
+  end
+
+  def with_current_user_method_no_body_tag
+    @current_user = dummy_user
     render_content("Hello world")
   end
 
-  def with_user_instance_variable_after_filter_skipped
-    with_user_instance_variable
+  def with_current_user_method_after_filter_skipped
+    with_current_user_method
   end
 
   def with_user_and_app_instance_variables
@@ -30,32 +37,28 @@ class TestController < ActionController::Base
     render_content("<body>Hello world</body>")
   end
 
-  def with_user_instance_variable_and_custom_data
-    @user = dummy_user
+  def with_current_user_method_and_custom_data
+    @current_user = dummy_user
     intercom_custom_data.user['testing_stuff'] = true
     render_content("<body>Hello world</body>")
   end
 
-  def with_unusable_user_instance_variable
-    @user = Object.new
+  def with_unusable_current_user
+    @current_user = Object.new
     render_content("<body>Hello world</body>")
   end
 
   def with_mongo_like_user
-    @user = Struct.new(:id).new.tap do |user|
+    @current_user = Struct.new(:id).new.tap do |user|
       user.id = DummyBSONId.new('deadbeaf1234mongo')
     end
     render_content("<body>Hello world</body>")
   end
 
   def with_numeric_user_id
-    @user = Struct.new(:id).new.tap do |user|
+    @current_user = Struct.new(:id).new.tap do |user|
       user.id = 123
     end
-    render_content("<body>Hello world</body>")
-  end
-
-  def with_current_user_method
     render_content("<body>Hello world</body>")
   end
 
@@ -65,7 +68,7 @@ class TestController < ActionController::Base
   end
 
   def with_some_tricky_string
-    @user = dummy_user(:email => "\\\"foo\"")
+    @current_user = dummy_user(:email => "\\\"foo\"")
     render_content("<body>Hello world</body>")
   end
 
@@ -80,8 +83,7 @@ class TestController < ActionController::Base
   end
 
   def current_user
-    raise NameError if params[:action] != 'with_current_user_method'
-    dummy_user(:email => 'ciaran@intercom.io', :name => 'Ciaran Lee')
+    @current_user
   end
 end
 
@@ -91,18 +93,34 @@ describe TestController, type: :controller do
     expect(response.body).to eq("<body>Hello world</body>")
   end
 
+  it 'has no intercom script if no user present even if @user is set' do
+    get :without_current_user_method_but_with_user_instance_variable
+    expect(response.body).to eq("<body>Hello world</body>")
+  end
+
+  it "falls back to instance variable if configured to" do
+    IntercomRails.config.user.current = [
+      Proc.new { current_user },
+      Proc.new { @user }
+    ]
+    get :without_current_user_method_but_with_user_instance_variable
+    expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
+    expect(response.body).to include("ben@intercom.io")
+    expect(response.body).to include("Ben McRedmond")
+  end
+
   it 'has no intercom script if no body tag' do
-    get :with_user_instance_variable_no_body_tag
+    get :with_current_user_method_no_body_tag
     expect(response.body).to eq("Hello world")
   end
 
   it 'has no intercom script if user present but unuseable' do
-    get :with_unusable_user_instance_variable
+    get :with_unusable_current_user
     expect(response.body).to eq("<body>Hello world</body>")
   end
 
   it 'includes intercom script if valid user present' do
-    get :with_user_instance_variable
+    get :with_current_user_method
     expect(response.body).to include("<body>Hello world")
     expect(response.body).to include(IntercomRails.config.app_id)
     expect(response.body).to include("ben@intercom.io")
@@ -111,15 +129,15 @@ describe TestController, type: :controller do
   end
 
   it 'includes custom data' do
-    get :with_user_instance_variable_and_custom_data
+    get :with_current_user_method_and_custom_data
     expect(response.body).to include("testing_stuff")
   end
 
   it 'finds user from current_user method' do
     get :with_current_user_method
     expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
-    expect(response.body).to include("ciaran@intercom.io")
-    expect(response.body).to include("Ciaran Lee")
+    expect(response.body).to include("ben@intercom.io")
+    expect(response.body).to include("Ben McRedmond")
   end
 
   it 'finds user using config.user.current proc' do
@@ -140,11 +158,11 @@ describe TestController, type: :controller do
 
   it 'excludes users if necessary' do
     IntercomRails.config.include_for_logged_out_users = true
-    IntercomRails.config.user.exclude_if = Proc.new {|user| user.email.start_with?('ciaran')}
+    IntercomRails.config.user.exclude_if = Proc.new {|user| user.email.start_with?('ben')}
     get :with_current_user_method
     expect(response.body).not_to include('<script id="IntercomSettingsScriptTag">')
-    expect(response.body).not_to include("ciaran@intercom.io")
-    expect(response.body).not_to include("Ciaran Lee")
+    expect(response.body).not_to include("ben@intercom.io")
+    expect(response.body).not_to include("Ben McRedmond")
   end
 
   it 'uses default library_url' do
@@ -206,6 +224,7 @@ describe TestController, type: :controller do
   end
 
   it 'includes company' do
+    IntercomRails.config.user.current = Proc.new { @user }
     IntercomRails.config.company.current = Proc.new { @app }
     get :with_user_and_app_instance_variables
     expect(response.body).to include("company")
@@ -221,7 +240,7 @@ describe TestController, type: :controller do
   end
 
   it 'can be skipped with skip_filter' do
-    get :with_user_instance_variable_after_filter_skipped
+    get :with_current_user_method_after_filter_skipped
     expect(response.body).to eq("<body>Hello world</body>")
   end
 
@@ -232,13 +251,13 @@ describe TestController, type: :controller do
 
   it 'can be disabled in non whitelisted environments' do
     IntercomRails.config.enabled_environments = ["special"]
-    get :with_user_instance_variable
+    get :with_current_user_method
     expect(response.body).to eq("<body>Hello world</body>")
   end
 
   it 'is enabled in production' do
     IntercomRails.config.enabled_environments = ["production"]
-    get :with_user_instance_variable
+    get :with_current_user_method
     expect(response.body).to include("ben@intercom.io")
     expect(response.body).to include("Ben McRedmond")
     expect(response.body).to include(IntercomRails.config.app_id)

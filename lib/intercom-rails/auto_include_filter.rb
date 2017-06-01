@@ -67,6 +67,7 @@ module IntercomRails
       end
 
       def intercom_script_tag
+        return @script_tag if @script_tag.present?
         options = {
           :find_current_user_details => true,
           :find_current_company_details => true,

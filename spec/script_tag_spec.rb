@@ -66,6 +66,28 @@ describe IntercomRails::ScriptTag do
     IntercomRails.config.app_id = before
   end
 
+  context 'Encrypted Mode' do
+    it 'sets an encrypted payload' do
+      iv = Base64.decode64("2X0G4PoOBn9+wdf8")
+      script_tag = ScriptTag.new(:user_details => {:email => 'ciaran@intercom.io'}, :secret => 'abcdefgh', :encrypted_mode => true, :initialization_vector => iv)
+      result = script_tag.to_s
+      expect(result).to_not include("ciaran@intercom.io")
+      expect(result).to match(/window\.intercomEncryptedPayload = \"[^\"\n]+\"/)
+    end
+
+    it "#plaintext_settings" do
+      script_tag = ScriptTag.new(:user_details => {:email => 'ciaran@intercom.io'}, :secret => 'abcdefgh', :encrypted_mode => true)
+      expect(script_tag.plaintext_settings).to_not include(:email)
+      script_tag = ScriptTag.new(:user_details => {:email => 'ciaran@intercom.io'}, :secret => 'abcdefgh', :encrypted_mode => false)
+      expect(script_tag.plaintext_settings).to include(:email)
+    end
+
+    it "#encrypted_settings" do
+      script_tag = ScriptTag.new(:user_details => {:email => 'ciaran@intercom.io'}, :secret => 'abcdefgh', :encrypted_mode => true)
+      expect(script_tag.encrypted_settings).to match(/[^\"\n]+/)
+    end
+  end
+
   context 'Identity Verification - user_hash' do
 
     it 'computes user_hash using email when email present, and user_id blank' do

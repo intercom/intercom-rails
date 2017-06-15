@@ -56,6 +56,11 @@ describe IntercomRails do
     expect(IntercomRails.config.hide_default_launcher).to eq(true)
   end
 
+  it 'gets/sets Encrypted Mode' do
+    IntercomRails.config.encrypted_mode = true
+    expect(IntercomRails.config.encrypted_mode).to eq(true)
+  end
+
   it 'raises error if current user not a proc' do
     expect { IntercomRails.config.user.current = 1 }.to raise_error(ArgumentError)
   end

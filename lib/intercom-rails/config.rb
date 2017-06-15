@@ -108,6 +108,7 @@ module IntercomRails
     config_accessor :enabled_environments, &ARRAY_VALIDATOR
     config_accessor :include_for_logged_out_users
     config_accessor :hide_default_launcher
+    config_accessor :encrypted_mode
 
     def self.api_key=(*)
       warn "Setting an Intercom API key is no longer supported; remove the `config.api_key = ...` line from config/initializers/intercom.rb"

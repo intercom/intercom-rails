@@ -385,8 +385,10 @@ end
 
 class DeleteFromIntercom < ApplicationJob
   def perform(user)
-    intercom = Intercom::Client.new
-    intercom.users.find(email: user.email).delete
+    intercom = Intercom::Client.new(token: 'my_token')
+    user     = intercom.users.find(email: user.email)
+    
+    intercom.users.delete(user)
   end
 end
 ```

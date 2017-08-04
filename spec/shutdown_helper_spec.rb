@@ -5,7 +5,7 @@ describe TestController, type: :controller do
   include IntercomRails::ShutdownHelper
   it 'clears response intercom-session-{app_id} cookie' do
     IntercomRails::ShutdownHelper.intercom_shutdown_helper(cookies)
-    expect(cookies.has_key?('intercom-session-abc123')).to eq true
+    expect(cookies.has_key?('intercom-id-abc123')).to eq true
   end
   it 'creates session[:perform_intercom_shutdown] var' do
     IntercomRails::ShutdownHelper.prepare_intercom_shutdown(session)
@@ -15,6 +15,6 @@ describe TestController, type: :controller do
     session[:perform_intercom_shutdown] = true
     IntercomRails::ShutdownHelper.intercom_shutdown(session, cookies)
     expect(session[:perform_intercom_shutdown]).to eq nil
-    expect(cookies.has_key?('intercom-session-abc123')).to eq true
+    expect(cookies.has_key?('intercom-id-abc123')).to eq true
   end
 end

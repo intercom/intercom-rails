@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module IntercomRails
 
   module AutoInclude
@@ -8,9 +10,8 @@ module IntercomRails
     end
 
     class Filter
-
       CLOSING_BODY_TAG = %r{</body>}
-      BLACKLISTED_CONTROLLER_NAMES = ["Devise::PasswordsController"]
+      BLACKLISTED_CONTROLLER_NAMES = %w{ Devise::PasswordsController }.freeze
 
       def self.filter(controller)
         return if BLACKLISTED_CONTROLLER_NAMES.include?(controller.class.name)

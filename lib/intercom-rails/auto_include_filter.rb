@@ -33,9 +33,7 @@ module IntercomRails
       end
 
       def include_javascript!
-        split = response.body.split("</body>")
-        response.body = split.first + intercom_script_tag.to_s + "</body>"
-        response.body = response.body + split.last if split.size > 1
+        response.body.gsub!(CLOSING_BODY_TAG, "#{intercom_script_tag.to_s}\\0")
       end
 
       def include_javascript?

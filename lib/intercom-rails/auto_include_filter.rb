@@ -84,7 +84,7 @@ module IntercomRails
           nonce = CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook(controller)
           options.merge!(:nonce => nonce)
         end
-        @script_tag = ScriptTag.new(options)
+        @script_tag ||= ScriptTag.new(options)
       end
 
       def show_everywhere?

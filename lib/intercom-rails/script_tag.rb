@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'active_support/json'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'active_support/core_ext/string/output_safety'
@@ -6,6 +8,12 @@ require 'action_view'
 module IntercomRails
 
   class ScriptTag
+    # Base64 regexp:
+    # - blocks of 4 [A-Za-z0-9+/]
+    # followed either by:
+    # - blocks of 2 [A-Za-z0-9+/] + '=='
+    # - blocks of 3 [A-Za-z0-9+/] + '='
+    NONCE_RE = %r{^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$}.freeze
 
     include ::ActionView::Helpers::JavaScriptHelper
 
@@ -47,20 +55,8 @@ module IntercomRails
     end
 
     def valid_nonce?
-      valid = false
-      if nonce
-        # Base64 regexp:
-        # - blocks of 4 [A-Za-z0-9+/]
-        # followed either by:
-        # - blocks of 2 [A-Za-z0-9+/] + '=='
-        # - blocks of 3 [A-Za-z0-9+/] + '='
-        base64_regexp = Regexp.new('^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$')
-        m = base64_regexp.match(nonce)
-        if nonce == m.to_s
-          valid = true
-        end
-      end
-      valid
+      return false unless nonce
+      NONCE_RE.match?(nonce)
     end
 
     def intercom_settings
@@ -73,10 +69,9 @@ module IntercomRails
     end
 
     def to_s
-      js_options = 'id="IntercomSettingsScriptTag"'
-      if nonce && valid_nonce?
-        js_options = js_options + " nonce=\"#{nonce}\""
-      end
+      js_options = 'id="IntercomSettingsScriptTag"'.dup
+      js_options << " nonce=\"#{nonce}\"" if valid_nonce?
+
       str = "<script #{js_options}>#{intercom_javascript}</script>\n"
       str.respond_to?(:html_safe) ? str.html_safe : str
     end
@@ -111,9 +106,7 @@ module IntercomRails
       plaintext_javascript = ActiveSupport::JSON.encode(plaintext_settings).gsub('<', '\u003C')
       intercom_encrypted_payload_javascript = encrypted_mode.encrypted_javascript(intercom_settings)
 
-      str = "window.intercomSettings = #{plaintext_javascript};#{intercom_encrypted_payload_javascript}(function(){var w=window;var ic=w.Intercom;if(typeof ic===\"function\"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='#{Config.library_url || "https://widget.intercom.io/widget/#{j app_id}"}';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}};})()"
-
-      str
+      "window.intercomSettings = #{plaintext_javascript};#{intercom_encrypted_payload_javascript}(function(){var w=window;var ic=w.Intercom;if(typeof ic===\"function\"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='#{Config.library_url || "https://widget.intercom.io/widget/#{j app_id}"}';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}};})()"
     end
 
     def user_details=(user_details)

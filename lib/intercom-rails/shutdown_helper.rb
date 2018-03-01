@@ -4,12 +4,15 @@ module IntercomRails
     # It is recommanded to call this function every time a user log out of your application
     # Do not use before a redirect_to because it will not clear the cookies on a redirection
     def self.intercom_shutdown_helper(cookies, domain = nil)
+      nil_session = { value: nil, expires: 1.day.ago }
+      nil_session = nil_session.merge(domain: domain) unless domain.nil? || domain == 'localhost'
+
       if (cookies.is_a?(ActionDispatch::Cookies::CookieJar))
-        cookies["intercom-session-#{IntercomRails.config.app_id}"] = { value: nil, expires: 1.day.ago }.merge(domain.present? ? { domain: ".#{domain}"} : {})
+        cookies["intercom-session-#{IntercomRails.config.app_id}"] = nil_session
       else
         controller = cookies
         Rails.logger.info("Warning: IntercomRails::ShutdownHelper.intercom_shutdown_helper takes an instance of ActionDispatch::Cookies::CookieJar as an argument since v0.2.34. Passing a controller is depreciated. See https://github.com/intercom/intercom-rails#shutdown for more details.")
-        controller.response.delete_cookie("intercom-session-#{IntercomRails.config.app_id}", { value: nil, expires: 1.day.ago }).merge(domain.present? ? { domain: ".#{domain}"} : {})
+        controller.response.delete_cookie("intercom-session-#{IntercomRails.config.app_id}", nil_session)
       end
     rescue
     end

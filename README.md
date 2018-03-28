@@ -62,12 +62,13 @@ Feel free to mail us: team@intercom.io, if you're still having trouble.
 ## Configuration
 
 ### API Secret
-If you want to use Identity Verification, ensure you set your API secret in `config/initializers/intercom.rb`:
+It is possible to enable Identity Verification for the Intercom Messenger and you can find the documentation in how to [here](https://developers.intercom.com/docs/enable-secure-mode-on-your-web-product). If you want to use this feature, ensure you set your Identity Verification Secret as the API secret in `config/initializers/intercom.rb`:
 
 ```ruby
   config.api_secret = '123456'
 ```
-**Note: This example is just for the sake of simplicity, you should never include your api secret in source control. Instead, you should use the Rails [secret config](http://guides.rubyonrails.org/4_1_release_notes.html#config-secrets-yml) feature.**
+**Note: This example is just for the sake of simplicity, you should never include this secret in source control. Instead, you should use the Rails [secret config](http://guides.rubyonrails.org/4_1_release_notes.html#config-secrets-yml) feature.**
+
 ### Shutdown
 
 If you use Intercom Respond combined with another product like Engage, any user that uses a shared computer and browser with someone else will be able to see the most recently logged in user’s conversation history until the cookie expires.

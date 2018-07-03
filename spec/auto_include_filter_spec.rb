@@ -142,6 +142,15 @@ describe TestController, type: :controller do
     IntercomRails.config.include_for_logged_out_users = true
     IntercomRails.config.user.exclude_if = Proc.new {|user| user.email.start_with?('ciaran')}
     get :with_current_user_method
+    expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
+    expect(response.body).not_to include("ciaran@intercom.io")
+    expect(response.body).not_to include("Ciaran Lee")
+  end
+
+  it 'excludes tag entirely if user excluded and logged out users skipped' do
+    IntercomRails.config.include_for_logged_out_users = false
+    IntercomRails.config.user.exclude_if = Proc.new {|user| user.email.start_with?('ciaran')}
+    get :with_current_user_method
     expect(response.body).not_to include('<script id="IntercomSettingsScriptTag">')
     expect(response.body).not_to include("ciaran@intercom.io")
     expect(response.body).not_to include("Ciaran Lee")

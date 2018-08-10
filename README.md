@@ -15,6 +15,7 @@ gem "intercom-rails"
 
 Then run:
 
+
 ```
 bundle install
 ```

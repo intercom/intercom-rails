@@ -55,7 +55,7 @@ If your users can be defined in different ways in your app you can also pass an 
 ```ruby
   config.user.current = [Proc.new { current_user_object }, Proc.new { @user_object }]
 ```
-* If you want the Intercom Messenger to be available when there is no current user,  set `config.include_for_logged_out_users = true` in your config and sign up for the [Respond](https://www.intercom.io/live-chat) package.
+* If you want the Intercom Messenger to be available when there is no current user,  set `config.include_for_logged_out_users = true` in your config and sign up for the [Inbox](https://www.intercom.io/live-chat) package.
 
 Feel free to mail us: team@intercom.io, if you're still having trouble.
 
@@ -71,7 +71,7 @@ It is possible to enable Identity Verification for the Intercom Messenger and yo
 
 ### Shutdown
 
-If you use Intercom Respond combined with another product like Engage, any user that uses a shared computer and browser with someone else will be able to see the most recently logged in user’s conversation history until the cookie expires.
+If you use Intercom Inbox combined with another product like Messages, any user that uses a shared computer and browser with someone else will be able to see the most recently logged in user’s conversation history until the cookie expires.
 Because of this, it’s very important to properly shutdown Intercom when a user’s session on your app ends (via manually or automatically logging out).
 
 #### Using Devise

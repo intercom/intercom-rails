@@ -379,9 +379,9 @@ If you delete a user from your system, you should also delete them from Intercom
 
 You can do this using the [intercom-ruby](https://github.com/intercom/intercom-ruby) gem. In the example below we're using an ActiveJob to perform the delete in the background.
 
-```
+```ruby
 class User
-  after_destroy { DeleteFromIntercom.perform_later(self)
+  after_destroy { DeleteFromIntercom.perform_later(self) }
 end
 
 class DeleteFromIntercom < ApplicationJob

@@ -29,7 +29,7 @@ module IntercomRails
       self.company_details = if options[:find_current_company_details]
         find_current_company_details
       elsif options[:user_details]
-        options[:user_details].delete(:company) if options[:user_details]
+        options[:user_details].delete(:company)
       end
       self.nonce = options[:nonce]
     end

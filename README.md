@@ -67,7 +67,7 @@ It is possible to enable Identity Verification for the Intercom Messenger and yo
 ```ruby
   config.api_secret = '123456'
 ```
-**Note: This example is just for the sake of simplicity, you should never include this secret in source control. Instead, you should use the Rails [secret config](http://guides.rubyonrails.org/4_1_release_notes.html#config-secrets-yml) feature.**
+**Note: This example is just for the sake of simplicity, you should never include this secret as plain text in source control. Instead, you should use the Rails [custom credentials](https://guides.rubyonrails.org/security.html#custom-credentials) feature.**
 
 ### Shutdown
 

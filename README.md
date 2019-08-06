@@ -4,7 +4,7 @@ The easiest way to install Intercom in a rails app.
 
 For interacting with the Intercom REST API, use the `intercom` gem (https://github.com/intercom/intercom-ruby)
 
-Requires ruby 2.0 or higher for `intercom-rails  >= 0.4.0`
+Requires Ruby 2.0 or higher.
 
 ## Installation
 Add this to your Gemfile:

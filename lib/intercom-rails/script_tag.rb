@@ -54,9 +54,14 @@ module IntercomRails
       valid
     end
 
-    def valid_nonce?
-      return false unless nonce
-      NONCE_RE.match?(nonce)
+    if //.respond_to?(:match?)
+      def valid_nonce?
+        nonce && NONCE_RE.match?(nonce)
+      end
+    else
+      def valid_nonce?
+        nonce && !!NONCE_RE.match(nonce)
+      end
     end
 
     def intercom_settings

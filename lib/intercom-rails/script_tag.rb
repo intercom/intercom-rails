@@ -13,7 +13,7 @@ module IntercomRails
     # followed either by:
     # - blocks of 2 [A-Za-z0-9+/] + '=='
     # - blocks of 3 [A-Za-z0-9+/] + '='
-    NONCE_RE = %r{^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$}.freeze
+    NONCE_RE = %r{^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$}
 
     include ::ActionView::Helpers::JavaScriptHelper
 

@@ -10,8 +10,8 @@ module IntercomRails
     end
 
     class Filter
-      CLOSING_BODY_TAG = "</body>".freeze
-      BLACKLISTED_CONTROLLER_NAMES = %w{ Devise::PasswordsController }.freeze
+      CLOSING_BODY_TAG = "</body>"
+      BLACKLISTED_CONTROLLER_NAMES = %w{ Devise::PasswordsController }
 
       def self.filter(controller)
         return if BLACKLISTED_CONTROLLER_NAMES.include?(controller.class.name)

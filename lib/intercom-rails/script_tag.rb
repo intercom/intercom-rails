@@ -74,11 +74,9 @@ module IntercomRails
     end
 
     def to_s
-      js_options = 'id="IntercomSettingsScriptTag"'.dup
-      js_options << " nonce=\"#{nonce}\"" if valid_nonce?
-
-      str = "<script #{js_options}>#{intercom_javascript}</script>"
-      str.respond_to?(:html_safe) ? str.html_safe : str
+      html_options = { id: 'IntercomSettingsScriptTag' }
+      html_options['nonce'] = nonce if valid_nonce?
+      javascript_tag intercom_javascript, html_options
     end
 
     def csp_sha256

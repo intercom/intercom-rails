@@ -72,7 +72,7 @@ module IntercomRails
       js_options = 'id="IntercomSettingsScriptTag"'.dup
       js_options << " nonce=\"#{nonce}\"" if valid_nonce?
 
-      str = "<script #{js_options}>#{intercom_javascript}</script>\n"
+      str = "<script #{js_options}>#{intercom_javascript}</script>"
       str.respond_to?(:html_safe) ? str.html_safe : str
     end
 

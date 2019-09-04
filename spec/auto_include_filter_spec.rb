@@ -225,7 +225,7 @@ describe TestController, type: :controller do
     expect(response.body).to eq("<body>Hello world</body>")
   end
 
-  xit 'escapes strings with \\s' do
+  it 'escapes strings with \\s' do
     get :with_some_tricky_string
     expect(response.body).to include("\"email\":\"\\\\\\\"foo\\\"\"")
   end

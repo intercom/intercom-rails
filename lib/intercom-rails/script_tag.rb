@@ -16,6 +16,7 @@ module IntercomRails
     NONCE_RE = %r{^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$}
 
     include ::ActionView::Helpers::JavaScriptHelper
+    include ::ActionView::Helpers::TagHelper
 
     attr_reader :user_details, :company_details, :show_everywhere, :session_duration
     attr_accessor :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode

@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~> 3.1'
   s.add_development_dependency 'rspec-rails', '~> 3.1'
   s.add_development_dependency 'pry'
-  s.add_development_dependency 'sinatra', '~> 1.4.5'
+  s.add_development_dependency 'sinatra', '~> 2.0.0'
   s.add_development_dependency 'thin', '~> 1.7.0'
   s.add_development_dependency 'tzinfo'
   s.add_development_dependency 'gem-release'

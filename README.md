@@ -19,7 +19,7 @@ Then run:
 bundle install
 ```
 
-Take note of your `app_id` from [here](https://app.intercom.io/a/apps/_/settings/api-keys) and generate a config file:
+Take note of your `app_id` from [here](https://app.intercom.io/a/apps/_/settings/web) and generate a config file:
 
 ```
 rails generate intercom:config YOUR-APP-ID

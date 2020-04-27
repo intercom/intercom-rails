@@ -77,7 +77,7 @@ module IntercomRails
     def to_s
       html_options = { id: 'IntercomSettingsScriptTag' }
       html_options['nonce'] = nonce if valid_nonce?
-      javascript_tag intercom_javascript, html_options
+      javascript_tag(intercom_javascript, html_options)
     end
 
     def csp_sha256

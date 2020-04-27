@@ -33,7 +33,7 @@ module IntercomRails
       end
 
       def include_javascript!
-        response.body = response.body.insert(response.body.index(CLOSING_BODY_TAG), intercom_script_tag.to_s)
+        response.body = response.body.insert(response.body.rindex(CLOSING_BODY_TAG), intercom_script_tag.to_s)
       end
 
       def include_javascript?

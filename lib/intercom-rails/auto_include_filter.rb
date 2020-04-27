@@ -55,7 +55,11 @@ module IntercomRails
       end
 
       def html_content_type?
-        response.content_type == 'text/html'
+        if response.respond_to?(:media_type)
+          response.media_type == 'text/html'
+        else
+          response.content_type == 'text/html'
+        end
       end
 
       def response_has_closing_body_tag?

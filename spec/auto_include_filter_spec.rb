@@ -107,7 +107,7 @@ describe TestController, type: :controller do
     expect(response.body).to include(IntercomRails.config.app_id)
     expect(response.body).to include("ben@intercom.io")
     expect(response.body).to include("Ben McRedmond")
-    expect(response.body).to include("</script></body>")
+    expect(response.body).to include("</script>\n</body>")
   end
 
   it 'includes custom data' do
@@ -242,7 +242,7 @@ describe TestController, type: :controller do
     expect(response.body).to include("ben@intercom.io")
     expect(response.body).to include("Ben McRedmond")
     expect(response.body).to include(IntercomRails.config.app_id)
-    expect(response.body).to include("</script></body>")
+    expect(response.body).to include("</script>\n</body>")
   end
 
   context 'content security policy support' do

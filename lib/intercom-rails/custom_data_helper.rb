@@ -1,6 +1,7 @@
 module IntercomRails
 
   module CustomDataHelper
+    STORE = Struct.new(:user, :company)
 
     # This helper allows custom data attributes to be added to a user
     # for the current request from within the controller. e.g.
@@ -10,12 +11,7 @@ module IntercomRails
     #   ...
     # end
     def intercom_custom_data
-      @_request_specific_intercom_custom_data ||= begin
-        s = Struct.new(:user, :company).new
-        s.user = {}
-        s.company = {}
-        s
-      end
+      @_request_specific_intercom_custom_data ||= STORE.new({}, {})
     end
 
   end

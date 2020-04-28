@@ -4,7 +4,7 @@ The easiest way to install Intercom in a rails app.
 
 For interacting with the Intercom REST API, use the `intercom` gem (https://github.com/intercom/intercom-ruby)
 
-Requires ruby 2.0 or higher for `intercom-rails  >= 0.4.0`
+Requires Ruby 2.0 or higher.
 
 ## Installation
 Add this to your Gemfile:
@@ -19,7 +19,7 @@ Then run:
 bundle install
 ```
 
-Take note of your `app_id` from [here](https://app.intercom.io/a/apps/_/settings/api-keys) and generate a config file:
+Take note of your `app_id` from [here](https://app.intercom.com/a/apps/_/settings/web) and generate a config file:
 
 ```
 rails generate intercom:config YOUR-APP-ID
@@ -43,7 +43,7 @@ To disable automatic insertion for a particular controller or action you can:
 ```
 
 ### Troubleshooting
-If it's not working make sure:
+If things are not working make sure that:
 
 * You've generated a config file with your `app_id` as detailed above.
 * Your user object responds to an `id` or `email` method.
@@ -51,18 +51,18 @@ If it's not working make sure:
 ```ruby
   config.user.current = Proc.new { current_user_object }
 ```
-If your users can be defined in different ways in your app you can also pass an array as follows :
+If your users can be defined in different ways in your app you can also pass an array as follows:
 ```ruby
   config.user.current = [Proc.new { current_user_object }, Proc.new { @user_object }]
 ```
-* If you want the Intercom Messenger to be available when there is no current user,  set `config.include_for_logged_out_users = true` in your config and sign up for the [Inbox](https://www.intercom.io/live-chat) package.
+* If you want the Intercom Messenger to be available when there is no current user,  set `config.include_for_logged_out_users = true` in your config.
 
-Feel free to mail us: team@intercom.io, if you're still having trouble.
+Feel free to mail us: team@intercom.io, if you're still having trouble and we'll work with you to get you sorted.
 
 ## Configuration
 
 ### API Secret
-It is possible to enable Identity Verification for the Intercom Messenger and you can find the documentation in how to [here](https://developers.intercom.com/docs/enable-secure-mode-on-your-web-product). If you want to use this feature, ensure you set your Identity Verification Secret as the API secret in `config/initializers/intercom.rb`:
+It is possible to enable Identity Verification for the Intercom Messenger and you can find the documentation in how to do it [here](https://developers.intercom.com/docs/enable-secure-mode-on-your-web-product). We strongly encourage doing this as it makes your installation more secure! If you want to use this feature, ensure you set your Identity Verification Secret as the API secret in `config/initializers/intercom.rb`:
 
 ```ruby
   config.api_secret = '123456'
@@ -70,19 +70,17 @@ It is possible to enable Identity Verification for the Intercom Messenger and yo
 **Note: This example is just for the sake of simplicity, you should never include this secret as plain text in source control. Instead, you should use the Rails [custom credentials](https://guides.rubyonrails.org/security.html#custom-credentials) feature.**
 
 ### Shutdown
-
-If you use Intercom Inbox combined with another product like Messages, any user that uses a shared computer and browser with someone else will be able to see the most recently logged in user’s conversation history until the cookie expires.
-Because of this, it’s very important to properly shutdown Intercom when a user’s session on your app ends (via manually or automatically logging out).
+We make use of first-party cookies so that we can identify your users the next time they open your messenger. When people share devices with someone else, they might be able to see the most recently logged in user’s conversation history until the cookie expires. Because of this, it’s very important to properly shutdown Intercom when a user’s session on your app ends (either manually or due to an automated logout).
 
 #### Using Devise
 
-If you use devise, you can override (if not already done) the session_controller by replacing in your `config/routes.rb` file :
+If you use devise, you can override (if not already done) the session_controller by replacing in your `config/routes.rb` file:
 ```ruby
 devise_for :users
 ```
-by
+with
 ```ruby
-devise_for :users, controllers: {sessions: "sessions"}
+devise_for :users, controllers: { sessions: "sessions" }
 ```
 
 Then you can use the following code to prepare Intercom Shutdown on log out in your `app/session_controller.rb`
@@ -381,10 +379,10 @@ You can do this using the [intercom-ruby](https://github.com/intercom/intercom-r
 
 ```
 class User
-  after_destroy { DeleteFromIntercom.perform_later(self)
+  after_destroy { DeleteFromIntercomJob.perform_later(self) }
 end
 
-class DeleteFromIntercom < ApplicationJob
+class DeleteFromIntercomJob < ApplicationJob
   def perform(user)
     intercom = Intercom::Client.new
     user = intercom.users.find(id: user.id)
@@ -433,4 +431,4 @@ intercom-rails is released under the [MIT License](http://www.opensource.org/lic
 
 ## Copyright
 
-Copyright (c) 2011-2012 Intercom, Inc.  All rights reserved.
+Copyright (c) 2011-2020 Intercom, Inc.  All rights reserved.

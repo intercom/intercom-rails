@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module IntercomRails
 
   module AutoInclude
@@ -8,9 +10,8 @@ module IntercomRails
     end
 
     class Filter
-
-      CLOSING_BODY_TAG = %r{</body>}
-      BLACKLISTED_CONTROLLER_NAMES = ["Devise::PasswordsController"]
+      CLOSING_BODY_TAG = "</body>"
+      BLACKLISTED_CONTROLLER_NAMES = %w{ Devise::PasswordsController }
 
       def self.filter(controller)
         return if BLACKLISTED_CONTROLLER_NAMES.include?(controller.class.name)
@@ -32,9 +33,7 @@ module IntercomRails
       end
 
       def include_javascript!
-        split = response.body.split("</body>")
-        response.body = split.first + intercom_script_tag.to_s + "</body>"
-        response.body = response.body + split.last if split.size > 1
+        response.body = response.body.insert(response.body.rindex(CLOSING_BODY_TAG), intercom_script_tag.to_s)
       end
 
       def include_javascript?
@@ -55,11 +54,15 @@ module IntercomRails
       end
 
       def html_content_type?
-        response.content_type == 'text/html'
+        if response.respond_to?(:media_type)
+          response.media_type == 'text/html'
+        else
+          response.content_type == 'text/html'
+        end
       end
 
       def response_has_closing_body_tag?
-        !!(response.body[CLOSING_BODY_TAG])
+        response.body.include? CLOSING_BODY_TAG
       end
 
       def intercom_script_tag_called_manually?
@@ -79,7 +82,7 @@ module IntercomRails
           nonce = CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook(controller)
           options.merge!(:nonce => nonce)
         end
-        @script_tag = ScriptTag.new(options)
+        @script_tag ||= ScriptTag.new(options)
       end
 
       def show_everywhere?

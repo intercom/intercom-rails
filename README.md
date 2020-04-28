@@ -379,10 +379,10 @@ You can do this using the [intercom-ruby](https://github.com/intercom/intercom-r
 
 ```
 class User
-  after_destroy { DeleteFromIntercom.perform_later(self)
+  after_destroy { DeleteFromIntercomJob.perform_later(self) }
 end
 
-class DeleteFromIntercom < ApplicationJob
+class DeleteFromIntercomJob < ApplicationJob
   def perform(user)
     intercom = Intercom::Client.new
     user = intercom.users.find(id: user.id)

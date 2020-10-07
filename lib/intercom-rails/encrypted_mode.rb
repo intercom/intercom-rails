@@ -2,7 +2,7 @@ module IntercomRails
   class EncryptedMode
     attr_reader :secret, :initialization_vector, :enabled
 
-    ENCRYPTED_MODE_SETTINGS_WHITELIST = [:app_id, :session_duration, :widget, :custom_launcher_selector, :hide_default_launcher, :alignment, :horizontal_padding, :vertical_padding]
+    ENCRYPTED_MODE_SETTINGS_WHITELIST = [:app_id, :session_duration, :widget, :custom_launcher_selector, :hide_default_launcher, :api_base, :alignment, :horizontal_padding, :vertical_padding]
 
     def initialize(secret, initialization_vector, options)
       @secret = secret

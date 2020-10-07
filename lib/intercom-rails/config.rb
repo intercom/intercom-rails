@@ -108,6 +108,7 @@ module IntercomRails
     config_accessor :enabled_environments, &ARRAY_VALIDATOR
     config_accessor :include_for_logged_out_users
     config_accessor :hide_default_launcher
+    config_accessor :api_base
     config_accessor :encrypted_mode
 
     def self.api_key=(*)

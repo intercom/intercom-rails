@@ -150,6 +150,10 @@ describe IntercomRails::ScriptTag do
       IntercomRails.config.hide_default_launcher = true
       expect(ScriptTag.new.intercom_settings['hide_default_launcher']).to eq(true)
     end
+    it 'knows about :api_base' do
+      IntercomRails.config.api_base = "https://abcde1.intercom-messenger.com"
+      expect(ScriptTag.new.intercom_settings['api_base']).to eq("https://abcde1.intercom-messenger.com")
+    end
   end
 
   context 'company' do

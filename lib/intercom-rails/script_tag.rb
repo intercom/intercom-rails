@@ -71,6 +71,7 @@ module IntercomRails
       hsh[:widget] = widget_options if widget_options.present?
       hsh[:company] = company_details if company_details.present?
       hsh[:hide_default_launcher] = Config.hide_default_launcher if Config.hide_default_launcher
+      hsh[:api_base] = Config.api_base if Config.api_base
       hsh
     end
 

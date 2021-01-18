@@ -199,8 +199,8 @@ describe TestController, type: :controller do
     expect(response.body).to eq("<body>Hello world</body>")
   end
 
-  it 'does not inject if blacklisted controller' do
-    stub_const("IntercomRails::AutoInclude::Filter::BLACKLISTED_CONTROLLER_NAMES", ["TestController"])
+  it 'does not inject if blocked controller' do
+    stub_const("IntercomRails::AutoInclude::Filter::BLOCKED_CONTROLLER_NAMES", ["TestController"])
     get :with_current_user_method
     expect(response.body).to eq("<body>Hello world</body>")
   end

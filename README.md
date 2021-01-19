@@ -325,7 +325,20 @@ CSP support for automatic insertion exposes two namespaces that can be defined b
  - String CoreExtensions::IntercomRails::AutoInclude.csp_nonce_hook(controller)
  - nil CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook(controller, SHA-256 whitelist entry)
 
-For instance, a CSP nonce can be inserted using the [Twitter Secure Headers](https://github.com/twitter/secureheaders) gem with the following code:
+For instance, a CSP nonce can be inserted using Rails' (5.2+) built-in [Content Security Policy](https://guides.rubyonrails.org/security.html#content-security-policy) configuration:
+```ruby
+module CoreExtensions
+  module IntercomRails
+    module AutoInclude
+      def self.csp_nonce_hook(controller)
+        controller.request.content_security_policy_nonce
+      end
+    end
+  end
+end
+```
+
+Alternatively, use the [Twitter Secure Headers](https://github.com/twitter/secureheaders) gem with the following code:
 ```ruby
 module CoreExtensions
   module IntercomRails

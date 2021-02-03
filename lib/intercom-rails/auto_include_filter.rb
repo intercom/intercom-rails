@@ -14,7 +14,7 @@ module IntercomRails
       BLOCKED_CONTROLLER_NAMES = %w{ Devise::PasswordsController }
 
       def self.filter(controller)
-        return if (BLOCKED_CONTROLLER_NAMES & controller.class.ancestors.map(&:name)).length > 0
+        return if blocked_controller?(controller)
         auto_include_filter = new(controller)
         return unless auto_include_filter.include_javascript?
 
@@ -24,6 +24,10 @@ module IntercomRails
         if defined?(CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook) == 'method'
           CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook(controller, auto_include_filter.csp_sha256)
         end
+      end
+
+      def self.blocked_controller?(controller)
+        (BLOCKED_CONTROLLER_NAMES & controller.class.ancestors.map(&:name)).length > 0
       end
 
       attr_reader :controller

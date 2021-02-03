@@ -14,7 +14,7 @@ module IntercomRails
       BLOCKED_CONTROLLER_NAMES = %w{ Devise::PasswordsController }
 
       def self.filter(controller)
-        return if BLOCKED_CONTROLLER_NAMES.include?(controller.class.name)
+        return if (BLOCKED_CONTROLLER_NAMES & controller.class.ancestors.map(&:name)).length > 0
         auto_include_filter = new(controller)
         return unless auto_include_filter.include_javascript?
 

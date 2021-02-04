@@ -67,7 +67,7 @@ It is possible to enable Identity Verification for the Intercom Messenger and yo
 ```ruby
   config.api_secret = '123456'
 ```
-**Note: This example is just for the sake of simplicity, you should never include this secret in source control. Instead, you should use the Rails [secret config](http://guides.rubyonrails.org/4_1_release_notes.html#config-secrets-yml) feature.**
+**Note: This example is just for the sake of simplicity, you should never include this secret as plain text in source control. Instead, you should use the Rails [custom credentials](https://guides.rubyonrails.org/security.html#custom-credentials) feature.**
 
 ### Shutdown
 We make use of first-party cookies so that we can identify your users the next time they open your messenger. When people share devices with someone else, they might be able to see the most recently logged in user’s conversation history until the cookie expires. Because of this, it’s very important to properly shutdown Intercom when a user’s session on your app ends (either manually or due to an automated logout).

@@ -11,11 +11,6 @@ module Rails
   end
 end
 
-TestRoutes = ActionDispatch::Routing::RouteSet.new
-TestRoutes.draw do
-  get ':controller(/:action)'
-end
-
 module IntercomRails
   class Application < Rails::Application
     config.secret_key_base = 'secret_key_base'
@@ -34,7 +29,18 @@ class ActionController::Base
   else
     after_filter :intercom_rails_auto_include
   end
+end
 
+require 'test_controller'
+
+TestRoutes = ActionDispatch::Routing::RouteSet.new
+TestRoutes.draw do
+  TestController.public_instance_methods.each do |method|
+    get "test/#{method}", to: "test##{method}"
+  end
+end
+
+class ActionController::Base
   include TestRoutes.url_helpers
   include TestRoutes.mounted_helpers
 end

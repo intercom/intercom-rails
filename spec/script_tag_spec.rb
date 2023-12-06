@@ -146,6 +146,10 @@ describe IntercomRails::ScriptTag do
       IntercomRails.config.inbox.custom_activator = '.intercom'
       expect(ScriptTag.new.intercom_settings['widget']).to eq({'activator' => '.intercom'})
     end
+    it 'knows about :alignment' do
+      IntercomRails.config.alignment = :left
+      expect(ScriptTag.new.intercom_settings['hide_default_launcher']).to eq(:left)
+    end
     it 'knows about :hide_default_launcher' do
       IntercomRails.config.hide_default_launcher = true
       expect(ScriptTag.new.intercom_settings['hide_default_launcher']).to eq(true)

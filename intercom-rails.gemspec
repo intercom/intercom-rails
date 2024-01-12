@@ -18,14 +18,15 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
 
-  s.add_dependency 'activesupport', '>3.0'
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'actionpack', '>3.2.12'
-  s.add_development_dependency 'rspec', '~> 3.1'
-  s.add_development_dependency 'rspec-rails', '~> 3.1'
-  s.add_development_dependency 'pry'
-  s.add_development_dependency 'sinatra', '~> 1.4.5'
-  s.add_development_dependency 'thin', '~> 1.7.0'
-  s.add_development_dependency 'tzinfo'
+  s.add_dependency 'activesupport', '~> 7.0.8'
+  s.add_development_dependency 'actionpack', '~> 7.0.8'
   s.add_development_dependency 'gem-release'
+  s.add_development_dependency 'pry'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rexml', '~> 3.2'
+  s.add_development_dependency 'rspec', '~> 3.12'
+  s.add_development_dependency 'rspec-rails', '~> 6.0.2'
+  s.add_development_dependency 'sinatra', '~> 3.2.0'
+  s.add_development_dependency 'thin', '~> 1.8.2'
+  s.add_development_dependency 'tzinfo'
 end

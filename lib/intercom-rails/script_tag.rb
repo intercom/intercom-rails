@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_support/json'
-require 'active_support/core_ext/hash/indifferent_access'
-require 'active_support/core_ext/string/output_safety'
+require 'active_support/all'
 require 'action_view'
 
 module IntercomRails

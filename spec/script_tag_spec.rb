@@ -37,6 +37,13 @@ describe IntercomRails::ScriptTag do
     end
   end
 
+  context 'integration type' do
+    it 'should be rails' do
+      script_tag = ScriptTag.new()
+      expect(script_tag.intercom_settings[:installation_type]).to eq('rails')
+    end
+  end
+
   it 'strips out nil entries for standard attributes' do
     %w(name email user_id).each do |standard_attribute|
       with_value = ScriptTag.new(:user_details => {standard_attribute => 'value'})

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_support/json'
-require 'active_support/core_ext/hash/indifferent_access'
-require 'active_support/core_ext/string/output_safety'
+require 'active_support/all'
 require 'action_view'
 
 module IntercomRails
@@ -72,6 +70,7 @@ module IntercomRails
       hsh[:company] = company_details if company_details.present?
       hsh[:hide_default_launcher] = Config.hide_default_launcher if Config.hide_default_launcher
       hsh[:api_base] = Config.api_base if Config.api_base
+      hsh[:installation_type] = 'rails'
       hsh
     end
 

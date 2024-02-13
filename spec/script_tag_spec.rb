@@ -37,6 +37,13 @@ describe IntercomRails::ScriptTag do
     end
   end
 
+  context 'integration type' do
+    it 'should be rails' do
+      script_tag = ScriptTag.new()
+      expect(script_tag.intercom_settings[:installation_type]).to eq('rails')
+    end
+  end
+
   it 'strips out nil entries for standard attributes' do
     %w(name email user_id).each do |standard_attribute|
       with_value = ScriptTag.new(:user_details => {standard_attribute => 'value'})
@@ -199,7 +206,7 @@ describe IntercomRails::ScriptTag do
         :email => 'marco@intercom.io',
         :user_id => 'marco',
       })
-      expect(script_tag.csp_sha256).to eq("'sha256-qLRbekKD6dEDMyLKPNFYpokzwYCz+WeNPqJE603mT24='")
+      expect(script_tag.csp_sha256).to eq("'sha256-lOGcYryJDhf1KCboXuy8wxCxIGAT16HDiUQNRhluxRQ='")
     end
 
     it 'inserts a valid nonce if present' do

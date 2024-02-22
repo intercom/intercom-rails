@@ -255,4 +255,11 @@ describe TestController, type: :controller do
       expect(response.body).to include('nonce="aaaa"')
     end
   end
+
+  context 'when intercom script is not injected' do
+    it 'invokes callback on controller' do
+      expect(controller).to receive(:intercom_javascript_excluded)
+      get :without_user
+    end
+  end
 end

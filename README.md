@@ -294,6 +294,14 @@ By default Intercom will be automatically inserted in development and production
   config.enabled_environments = ["production"]
 ```
 
+### Controller callback
+
+When using automatic insertion of Intercom Javascript, you can have a callback method in your controller should the criteria to automatically insert javascript is unmet. The callback is `intercom_javascript_excluded` by default, but you can configure to a more appropriate name for all controllers in your application.
+
+```ruby
+  config.exclude_javascript_callback = :intercom_javascript_excluded
+```
+
 ### Manually Inserting the Intercom Javascript
 
 Some situations may require manually inserting the Intercom script tag. If you simply wish to place the Intercom javascript in a different place within the page or, on a page without a closing `</body>` tag:

@@ -110,6 +110,7 @@ module IntercomRails
     config_accessor :hide_default_launcher
     config_accessor :api_base
     config_accessor :encrypted_mode
+    config_accessor :exclude_javascript_callback
 
     def self.api_key=(*)
       warn "Setting an Intercom API key is no longer supported; remove the `config.api_key = ...` line from config/initializers/intercom.rb"

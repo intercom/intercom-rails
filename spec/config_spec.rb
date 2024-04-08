@@ -56,6 +56,11 @@ describe IntercomRails do
     expect(IntercomRails.config.hide_default_launcher).to eq(true)
   end
 
+  it 'gets/sets alignment' do
+    IntercomRails.config.alignment = :left
+    expect(IntercomRails.config.alignment).to eq(:left)
+  end
+
   it 'gets/sets api_base' do
     IntercomRails.config.api_base = "https://abcde1.intercom-messenger.com"
     expect(IntercomRails.config.api_base).to eq("https://abcde1.intercom-messenger.com")

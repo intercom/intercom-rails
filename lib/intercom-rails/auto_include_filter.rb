@@ -15,10 +15,14 @@ module IntercomRails
 
       def self.filter(controller)
         return if BLOCKED_CONTROLLER_NAMES.include?(controller.class.name)
-        auto_include_filter = new(controller)
-        return unless auto_include_filter.include_javascript?
 
-        auto_include_filter.include_javascript!
+        auto_include_filter = new(controller)
+
+        if auto_include_filter.include_javascript?
+          auto_include_filter.include_javascript!
+        else
+          auto_include_filter.exclude_javascript
+        end
 
         # User defined method to whitelist the script sha-256 when using CSP
         if defined?(CoreExtensions::IntercomRails::AutoInclude.csp_sha256_hook) == 'method'
@@ -42,6 +46,11 @@ module IntercomRails
         html_content_type? &&
         response_has_closing_body_tag? &&
         intercom_script_tag.valid?
+      end
+
+      def exclude_javascript
+        callback = exclude_javascript_callback
+        controller.send(callback) if controller.respond_to?(callback)
       end
 
       def csp_sha256
@@ -87,6 +96,11 @@ module IntercomRails
 
       def show_everywhere?
         IntercomRails.config.include_for_logged_out_users
+      end
+
+      def exclude_javascript_callback
+        IntercomRails.config.exclude_javascript_callback ||
+          :intercom_javascript_excluded
       end
 
       def enabled_for_environment?

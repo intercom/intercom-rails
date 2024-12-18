@@ -1,5 +1,6 @@
 require 'active_support/time'
 require 'spec_helper'
+require 'jwt'
 
 describe IntercomRails::ScriptTag do
   ScriptTag = IntercomRails::ScriptTag
@@ -264,6 +265,68 @@ describe IntercomRails::ScriptTag do
       expect(script_tag.intercom_settings[:ad_data]).to eq(nil)
     end
 
+  end
+
+  context 'JWT authentication' do
+    before(:each) do
+      IntercomRails.config.app_id = 'jwt_test'
+      IntercomRails.config.api_secret = 'super-secret'
+    end
+
+    it 'does not include JWT when jwt_enabled is false' do
+      script_tag = ScriptTag.new(
+        user_details: { user_id: '1234' },
+        jwt_enabled: false
+      )
+      expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_nil
+    end
+
+    it 'includes JWT when jwt_enabled is true' do
+      script_tag = ScriptTag.new(
+        user_details: { user_id: '1234' },
+        jwt_enabled: true
+      )
+      expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_present
+    end
+
+    it 'does not include user_hash when JWT is enabled' do
+      script_tag = ScriptTag.new(
+        user_details: { user_id: '1234' },
+        jwt_enabled: true
+      )
+      expect(script_tag.intercom_settings[:user_hash]).to be_nil
+    end
+
+    it 'generates a valid JWT with correct payload' do
+      user_id = '1234'
+      script_tag = ScriptTag.new(
+        user_details: { user_id: user_id },
+        jwt_enabled: true
+      )
+      
+      jwt = script_tag.intercom_settings[:intercom_user_jwt]
+      decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
+      
+      expect(decoded_payload['user_id']).to eq(user_id)
+      expect(decoded_payload['exp']).to be_within(5).of(24.hours.from_now.to_i)
+    end
+
+    it 'does not generate JWT when user_id is missing' do
+      script_tag = ScriptTag.new(
+        user_details: { email: 'test@example.com' },
+        jwt_enabled: true
+      )
+      expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_nil
+    end
+
+    it 'does not generate JWT when api_secret is missing' do
+      IntercomRails.config.api_secret = nil
+      script_tag = ScriptTag.new(
+        user_details: { user_id: '1234' },
+        jwt_enabled: true
+      )
+      expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_nil
+    end
   end
 
 end

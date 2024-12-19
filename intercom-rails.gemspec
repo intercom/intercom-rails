@@ -19,14 +19,13 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'activesupport', '>4.0'
+
   s.add_development_dependency 'rake'
   s.add_development_dependency 'actionpack', '>5.0'
   s.add_development_dependency 'rspec', '~> 3.13'
   s.add_development_dependency 'rspec-rails', '~> 5.0'
   s.add_development_dependency 'pry'
-  s.add_development_dependency 'sinatra', '~> 2.0'
-  s.add_development_dependency 'thin', '~> 1.7.0'
-  s.add_development_dependency 'bigdecimal', '1.3.5'
+  s.add_development_dependency 'sinatra', '~> 3.0'
   s.add_development_dependency 'tzinfo'
   s.add_development_dependency 'gem-release'
 end

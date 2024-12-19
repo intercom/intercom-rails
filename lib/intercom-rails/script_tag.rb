@@ -134,6 +134,7 @@ module IntercomRails
         if secret.present?
           if jwt_enabled && u[:user_id].present?
             u[:intercom_user_jwt] ||= generate_jwt
+            u.delete(:user_id)  # No need to send plaintext user_id when using JWT
           elsif (u[:user_id] || u[:email]).present?
             u[:user_hash] ||= user_hash
           end

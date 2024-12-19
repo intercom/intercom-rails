@@ -327,6 +327,37 @@ describe IntercomRails::ScriptTag do
       )
       expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_nil
     end
+
+    it 'removes user_id from payload when using JWT' do
+      script_tag = ScriptTag.new(
+        user_details: { 
+          user_id: '1234',
+          email: 'test@example.com',
+          name: 'Test User'
+        },
+        jwt_enabled: true
+      )
+      
+      expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_present
+      expect(script_tag.intercom_settings[:user_id]).to be_nil
+      expect(script_tag.intercom_settings[:email]).to eq('test@example.com')
+      expect(script_tag.intercom_settings[:name]).to eq('Test User')
+    end
+
+    it 'keeps user_id in payload when not using JWT' do
+      script_tag = ScriptTag.new(
+        user_details: { 
+          user_id: '1234',
+          email: 'test@example.com',
+          name: 'Test User'
+        },
+        jwt_enabled: false
+      )
+      
+      expect(script_tag.intercom_settings[:user_id]).to eq('1234')
+      expect(script_tag.intercom_settings[:email]).to eq('test@example.com')
+      expect(script_tag.intercom_settings[:name]).to eq('Test User')
+    end
   end
 
 end

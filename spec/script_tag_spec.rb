@@ -264,7 +264,42 @@ describe IntercomRails::ScriptTag do
       # Rejects
       expect(script_tag.intercom_settings[:ad_data]).to eq(nil)
     end
+  end
 
+  context 'with lead attributes' do
+    before do
+      IntercomRails.config.user.lead_attributes = [:plan]
+      IntercomRails.config.api_secret = 'abcdefgh'
+      allow_any_instance_of(IntercomRails::ScriptTag).to receive(:controller).and_return(
+        double(intercom_custom_data: double(user: { 'plan' => 'pro' }))
+      )
+    end
+
+    it 'merges lead attributes with user details' do
+      script_tag = ScriptTag.new(
+        user_details: { 
+          user_id: '1234',
+          name: 'Test User'
+        }
+      )
+
+      expect(script_tag.intercom_settings[:plan]).to eq('pro')
+      expect(script_tag.intercom_settings[:user_hash]).to be_present
+    end
+
+    it 'preserves existing user details when merging lead attributes' do
+      script_tag = ScriptTag.new(
+        user_details: { 
+          user_id: '1234',
+          name: 'Test User',
+          email: 'test@example.com'
+        }
+      )
+
+      expect(script_tag.intercom_settings[:plan]).to eq('pro')
+      expect(script_tag.intercom_settings[:name]).to eq('Test User')
+      expect(script_tag.intercom_settings[:email]).to eq('test@example.com')
+    end
   end
 
   context 'JWT authentication' do

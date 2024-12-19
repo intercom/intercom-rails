@@ -28,13 +28,18 @@ module IntercomRails
       @session_duration = session_duration_from_config
       self.jwt_enabled = options[:jwt_enabled] || Config.jwt_enabled
 
-      self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details]
+      initial_user_details = if options[:find_current_user_details]
+        find_current_user_details
+      else
+        options[:user_details] || {}
+      end
+
+      lead_attributes = find_lead_attributes
+
+      self.user_details = initial_user_details.merge(lead_attributes)
 
       self.encrypted_mode_enabled = options[:encrypted_mode] || Config.encrypted_mode
       self.encrypted_mode = IntercomRails::EncryptedMode.new(secret, options[:initialization_vector], {:enabled => encrypted_mode_enabled})
-
-      # Request specific custom data for non-signed up users base on lead_attributes
-      self.user_details = self.user_details.merge(find_lead_attributes)
 
       self.company_details = if options[:find_current_company_details]
         find_current_company_details

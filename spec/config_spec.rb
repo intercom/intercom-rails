@@ -114,4 +114,21 @@ describe IntercomRails do
       IntercomRails.config.user.company_association = Proc.new { [] }
     end.to output(/no longer supported/).to_stderr
   end
+
+  it 'gets/sets jwt_enabled' do
+    IntercomRails.config.jwt_enabled = true
+    expect(IntercomRails.config.jwt_enabled).to eq(true)
+  end
+
+  it 'defaults jwt_enabled to nil' do
+    IntercomRails.config.reset!
+    expect(IntercomRails.config.jwt_enabled).to eq(nil)
+  end
+
+  it 'allows jwt_enabled in block form' do
+    IntercomRails.config do |config|
+      config.jwt_enabled = true
+    end
+    expect(IntercomRails.config.jwt_enabled).to eq(true)
+  end
 end

@@ -2,6 +2,7 @@
 
 require 'active_support/all'
 require 'action_view'
+require 'jwt'
 
 module IntercomRails
 
@@ -17,7 +18,7 @@ module IntercomRails
     include ::ActionView::Helpers::TagHelper
 
     attr_reader :user_details, :company_details, :show_everywhere, :session_duration
-    attr_accessor :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode
+    attr_accessor :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode, :jwt_enabled
 
     def initialize(options = {})
       self.secret = options[:secret] || Config.api_secret
@@ -25,7 +26,8 @@ module IntercomRails
       self.controller = options[:controller]
       @show_everywhere = options[:show_everywhere]
       @session_duration = session_duration_from_config
-    
+      self.jwt_enabled = options[:jwt_enabled] || Config.jwt_enabled
+
       initial_user_details = if options[:find_current_user_details]
         find_current_user_details
       else
@@ -119,12 +121,30 @@ module IntercomRails
       "window.intercomSettings = #{plaintext_javascript};#{intercom_encrypted_payload_javascript}(function(){var w=window;var ic=w.Intercom;if(typeof ic===\"function\"){ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='#{Config.library_url || "https://widget.intercom.io/widget/#{j app_id}"}';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}};})()"
     end
 
+    def generate_jwt
+      return nil unless user_details[:user_id].present?
+      
+      payload = {
+        user_id: user_details[:user_id].to_s,
+        exp: 24.hours.from_now.to_i
+      }
+      JWT.encode(payload, secret, 'HS256')
+    end
+
     def user_details=(user_details)
       @user_details = DateHelper.convert_dates_to_unix_timestamps(user_details || {})
       @user_details = @user_details.with_indifferent_access.tap do |u|
         [:email, :name, :user_id].each { |k| u.delete(k) if u[k].nil? }
 
-        u[:user_hash] ||= user_hash if secret.present? && (u[:user_id] || u[:email]).present?
+        if secret.present?
+          if jwt_enabled && u[:user_id].present?
+            u[:intercom_user_jwt] ||= generate_jwt
+            u.delete(:user_id)  # No need to send plaintext user_id when using JWT
+          elsif (u[:user_id] || u[:email]).present?
+            u[:user_hash] ||= user_hash
+          end
+        end
+        
         u[:app_id] ||= app_id
       end
     end

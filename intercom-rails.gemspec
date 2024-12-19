@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'activesupport', '>4.0'
+  s.add_dependency 'jwt', '~> 2.0'
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'actionpack', '>5.0'

@@ -110,7 +110,6 @@ module IntercomRails
     config_accessor :hide_default_launcher
     config_accessor :api_base
     config_accessor :encrypted_mode
-    config_accessor :jwt_enabled
 
     def self.api_key=(*)
       warn "Setting an Intercom API key is no longer supported; remove the `config.api_key = ...` line from config/initializers/intercom.rb"
@@ -141,6 +140,15 @@ module IntercomRails
       config_accessor :custom_activator
       config_accessor :style do |value|
         raise ArgumentError, "inbox.style must be one of :default or :custom" unless [:default, :custom].include?(value)
+      end
+    end
+
+    config_group :jwt do
+      config_accessor :enabled
+      config_accessor :signed_user_fields do |value|
+        unless value.nil? || (value.kind_of?(Array) && value.all? { |v| v.kind_of?(Symbol) || v.kind_of?(String) })
+          raise ArgumentError, "jwt.signed_user_fields must be an array of symbols or strings"
+        end
       end
     end
 

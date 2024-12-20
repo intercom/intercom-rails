@@ -26,7 +26,7 @@ module IntercomRails
       self.controller = options[:controller]
       @show_everywhere = options[:show_everywhere]
       @session_duration = session_duration_from_config
-      self.jwt_enabled = options[:jwt_enabled] || Config.jwt_enabled
+      self.jwt_enabled = options[:jwt_enabled] || Config.jwt.enabled
 
       initial_user_details = if options[:find_current_user_details]
         find_current_user_details
@@ -128,6 +128,14 @@ module IntercomRails
         user_id: user_details[:user_id].to_s,
         exp: 24.hours.from_now.to_i
       }
+
+      if Config.jwt.signed_user_fields.present?
+        Config.jwt.signed_user_fields.each do |field|
+          field = field.to_sym
+          payload[field] = user_details[field].to_s if user_details[field].present?
+        end
+      end
+
       JWT.encode(payload, secret, 'HS256')
     end
 
@@ -139,7 +147,11 @@ module IntercomRails
         if secret.present?
           if jwt_enabled && u[:user_id].present?
             u[:intercom_user_jwt] ||= generate_jwt
-            u.delete(:user_id)  # No need to send plaintext user_id when using JWT
+            
+            u.delete(:user_id)
+            Config.jwt.signed_user_fields&.each do |field|
+              u.delete(field.to_sym)
+            end
           elsif (u[:user_id] || u[:email]).present?
             u[:user_hash] ||= user_hash
           end

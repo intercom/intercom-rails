@@ -393,6 +393,80 @@ describe IntercomRails::ScriptTag do
       expect(script_tag.intercom_settings[:email]).to eq('test@example.com')
       expect(script_tag.intercom_settings[:name]).to eq('Test User')
     end
+
+    context 'with signed_user_fields' do
+      before do
+        IntercomRails.config.jwt.signed_user_fields = [:email, :name, :plan, :team_id]
+      end
+
+      it 'includes configured fields in JWT when present' do
+        script_tag = ScriptTag.new(
+          user_details: { 
+            user_id: '1234',
+            email: 'test@example.com',
+            plan: 'pro',
+            team_id: 'team_123',
+            company_size: 100
+          },
+          jwt_enabled: true
+        )
+        
+        jwt = script_tag.intercom_settings[:intercom_user_jwt]
+        decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
+        
+        expect(decoded_payload['user_id']).to eq('1234')
+        expect(decoded_payload['email']).to eq('test@example.com')
+        expect(decoded_payload['plan']).to eq('pro')
+        expect(decoded_payload['team_id']).to eq('team_123')
+        expect(decoded_payload['company_size']).to be_nil
+        
+        expect(script_tag.intercom_settings[:user_id]).to be_nil
+        expect(script_tag.intercom_settings[:email]).to be_nil
+        expect(script_tag.intercom_settings[:plan]).to be_nil
+        expect(script_tag.intercom_settings[:team_id]).to be_nil
+        expect(script_tag.intercom_settings[:company_size]).to eq(100)
+      end
+
+      it 'handles missing configured fields gracefully' do
+        script_tag = ScriptTag.new(
+          user_details: { 
+            user_id: '1234',
+            email: 'test@example.com'
+          },
+          jwt_enabled: true
+        )
+        
+        jwt = script_tag.intercom_settings[:intercom_user_jwt]
+        decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
+        
+        expect(decoded_payload['user_id']).to eq('1234')
+        expect(decoded_payload['email']).to eq('test@example.com')
+        expect(decoded_payload['name']).to be_nil
+      end
+    
+      it 'respects empty signed_user_fields configuration' do
+        IntercomRails.config.jwt.signed_user_fields = []
+        script_tag = ScriptTag.new(
+          user_details: { 
+            user_id: '1234',
+            email: 'test@example.com',
+            name: 'Test User'
+          },
+          jwt_enabled: true
+        )
+        
+        jwt = script_tag.intercom_settings[:intercom_user_jwt]
+        decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
+        
+        expect(decoded_payload['user_id']).to eq('1234')
+        expect(decoded_payload['email']).to be_nil
+        expect(decoded_payload['name']).to be_nil
+        
+
+        expect(script_tag.intercom_settings[:email]).to eq('test@example.com')
+        expect(script_tag.intercom_settings[:name]).to eq('Test User')
+      end
+    end
   end
 
 end

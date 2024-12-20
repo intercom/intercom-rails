@@ -59,7 +59,7 @@ describe IntercomRails::ScriptTagHelper do
     end
 
     it 'enables JWT when configured' do
-      IntercomRails.config.jwt_enabled = true
+      IntercomRails.config.jwt.enabled = true
       output = intercom_script_tag({
         user_id: '1234',
         email: 'test@example.com'
@@ -70,7 +70,7 @@ describe IntercomRails::ScriptTagHelper do
     end
 
     it 'falls back to user_hash when JWT is disabled' do
-      IntercomRails.config.jwt_enabled = false
+      IntercomRails.config.jwt.enabled = false
       output = intercom_script_tag({
         user_id: '1234',
         email: 'test@example.com'

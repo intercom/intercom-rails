@@ -18,7 +18,7 @@ module IntercomRails
     include ::ActionView::Helpers::TagHelper
 
     attr_reader :user_details, :company_details, :show_everywhere, :session_duration
-    attr_accessor :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode, :jwt_enabled
+    attr_accessor :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode, :jwt_enabled, :jwt_expiry
 
     def initialize(options = {})
       self.secret = options[:secret] || Config.api_secret
@@ -27,6 +27,7 @@ module IntercomRails
       @show_everywhere = options[:show_everywhere]
       @session_duration = session_duration_from_config
       self.jwt_enabled = options[:jwt_enabled] || Config.jwt.enabled
+      self.jwt_expiry = options[:jwt_expiry] || Config.jwt.expiry
 
       initial_user_details = if options[:find_current_user_details]
         find_current_user_details
@@ -124,10 +125,11 @@ module IntercomRails
     def generate_jwt
       return nil unless user_details[:user_id].present?
       
-      payload = {
-        user_id: user_details[:user_id].to_s,
-        exp: 24.hours.from_now.to_i
-      }
+      payload = { user_id: user_details[:user_id].to_s }
+
+      if jwt_expiry
+        payload[:exp] = jwt_expiry.from_now.to_i
+      end
 
       if Config.jwt.signed_user_fields.present?
         Config.jwt.signed_user_fields.each do |field|

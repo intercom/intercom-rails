@@ -332,7 +332,7 @@ describe IntercomRails::ScriptTag do
       expect(script_tag.intercom_settings[:user_hash]).to be_nil
     end
 
-    it 'generates a valid JWT with correct payload' do
+    it 'generates a valid JWT with the correct user_id' do
       user_id = '1234'
       script_tag = ScriptTag.new(
         user_details: { user_id: user_id },
@@ -343,7 +343,6 @@ describe IntercomRails::ScriptTag do
       decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
       
       expect(decoded_payload['user_id']).to eq(user_id)
-      expect(decoded_payload['exp']).to be_within(5).of(24.hours.from_now.to_i)
     end
 
     it 'does not generate JWT when user_id is missing' do
@@ -465,6 +464,48 @@ describe IntercomRails::ScriptTag do
 
         expect(script_tag.intercom_settings[:email]).to eq('test@example.com')
         expect(script_tag.intercom_settings[:name]).to eq('Test User')
+      end
+    end
+
+    context 'JWT expiry' do
+      it 'includes expiry when configured' do
+        IntercomRails.config.jwt.expiry = 12.hours
+        script_tag = ScriptTag.new(
+          user_details: { user_id: '1234' },
+          jwt_enabled: true
+        )
+        
+        jwt = script_tag.intercom_settings[:intercom_user_jwt]
+        decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
+        
+        expect(decoded_payload['exp']).to be_within(5).of(12.hours.from_now.to_i)
+      end
+
+      it 'omits expiry when not configured' do
+        IntercomRails.config.jwt.expiry = nil
+        script_tag = ScriptTag.new(
+          user_details: { user_id: '1234' },
+          jwt_enabled: true
+        )
+        
+        jwt = script_tag.intercom_settings[:intercom_user_jwt]
+        decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
+        
+        expect(decoded_payload).not_to have_key('exp')
+      end
+
+      it 'allows overriding expiry via options' do
+        IntercomRails.config.jwt.expiry = 24.hours
+        script_tag = ScriptTag.new(
+          user_details: { user_id: '1234' },
+          jwt_enabled: true,
+          jwt_expiry: 1.hour
+        )
+        
+        jwt = script_tag.intercom_settings[:intercom_user_jwt]
+        decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
+        
+        expect(decoded_payload['exp']).to be_within(5).of(1.hour.from_now.to_i)
       end
     end
   end

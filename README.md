@@ -278,6 +278,12 @@ You can customize the CSS selector, by setting
   config.inbox.custom_activator = '.intercom-link'
 ```
 
+You can choose widget alignment, by setting
+
+```ruby
+  config.alignment = :left
+```
+
 You can hide default launcher button, by setting
 
 ```ruby

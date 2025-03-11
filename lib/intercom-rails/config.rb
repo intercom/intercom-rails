@@ -143,6 +143,16 @@ module IntercomRails
       end
     end
 
+    config_group :jwt do
+      config_accessor :enabled
+      config_accessor :expiry
+      config_accessor :signed_user_fields do |value|
+        unless value.nil? || (value.kind_of?(Array) && value.all? { |v| v.kind_of?(Symbol) || v.kind_of?(String) })
+          raise ArgumentError, "jwt.signed_user_fields must be an array of symbols or strings"
+        end
+      end
+    end
+
   end
 
 end

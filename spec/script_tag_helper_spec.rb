@@ -35,7 +35,7 @@ describe IntercomRails::ScriptTagHelper do
         :email => 'marco@intercom.io',
         :user_id => 'marco',
       })
-      expect(script_tag.csp_sha256).to eq("'sha256-qLRbekKD6dEDMyLKPNFYpokzwYCz+WeNPqJE603mT24='")
+      expect(script_tag.csp_sha256).to eq("'sha256-/0mStQPBID1jSuXAoW0YtDqu8JmWUJJ5SdBB2u7Fy90='")
     end
 
     it 'inserts a valid nonce if present' do
@@ -47,6 +47,37 @@ describe IntercomRails::ScriptTagHelper do
         :nonce => 'pJwtLVnwiMaPCxpb41KZguOcC5mGUYD+8RNGcJSlR94=',
       })
       expect(script_tag.to_s).to include('nonce="pJwtLVnwiMaPCxpb41KZguOcC5mGUYD+8RNGcJSlR94="')
+    end
+  end
+
+  context 'JWT authentication' do
+    before(:each) do
+      allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("test"))
+    end
+    before(:each) do
+      IntercomRails.config.api_secret = 'super-secret'
+    end
+
+    it 'enables JWT when configured' do
+      IntercomRails.config.jwt.enabled = true
+      output = intercom_script_tag({
+        user_id: '1234',
+        email: 'test@example.com'
+      }).to_s
+    
+      expect(output).to include('intercom_user_jwt')
+      expect(output).not_to include('user_hash')
+    end
+
+    it 'falls back to user_hash when JWT is disabled' do
+      IntercomRails.config.jwt.enabled = false
+      output = intercom_script_tag({
+        user_id: '1234',
+        email: 'test@example.com'
+      }).to_s
+      
+      expect(output).not_to include('intercom_user_jwt')
+      expect(output).to include('user_hash')
     end
   end
 end

@@ -240,6 +240,23 @@ config.company.custom_data = {
 }
 ```
 
+In some situations you'll want to set some custom company data attribute specific to a request.
+You can do this similarly to user data attribute set by using the `intercom_custom_data` helper available in your controllers:
+
+```ruby
+class AppsController < ActionController::Base
+  def activate
+    intercom_custom_data.company[:app_activated_at] = Time.now
+    ...
+  end
+
+  def destroy
+    intercom_custom_data.company[:app_deleted_at] = Time.now
+    ...
+  end
+end
+```
+
 ### Messenger
 Intercom includes an in-app messenger which allows a user to read messages and start conversations.
 

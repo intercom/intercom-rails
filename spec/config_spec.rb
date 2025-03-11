@@ -114,4 +114,49 @@ describe IntercomRails do
       IntercomRails.config.user.company_association = Proc.new { [] }
     end.to output(/no longer supported/).to_stderr
   end
+
+  context 'jwt configuration' do
+
+    it 'gets/sets jwt_enabled' do
+      IntercomRails.config.jwt.enabled = true
+      expect(IntercomRails.config.jwt.enabled).to eq(true)
+    end
+
+    it 'defaults jwt_enabled to nil' do
+      IntercomRails.config.reset!
+      expect(IntercomRails.config.jwt.enabled).to eq(nil)
+    end
+
+    it 'allows jwt_enabled in block form' do
+      IntercomRails.config do |config|
+        config.jwt.enabled = true
+      end
+      expect(IntercomRails.config.jwt.enabled).to eq(true)
+    end\
+
+    it 'gets/sets signed_user_fields' do
+      IntercomRails.config.jwt.signed_user_fields = [:email, :name]
+      expect(IntercomRails.config.jwt.signed_user_fields).to eq([:email, :name])
+    end
+
+    it 'validates signed_user_fields is an array of symbols or strings' do
+      expect { 
+        IntercomRails.config.jwt.signed_user_fields = "not_an_array"
+      }.to raise_error(ArgumentError)
+
+      expect { 
+        IntercomRails.config.jwt.signed_user_fields = [1, 2, 3]
+      }.to raise_error(ArgumentError)
+
+      expect { 
+        IntercomRails.config.jwt.signed_user_fields = [:email, "name", :custom_field]
+      }.not_to raise_error
+    end
+
+    it 'allows nil signed_user_fields' do
+      expect { 
+        IntercomRails.config.jwt.signed_user_fields = nil
+      }.not_to raise_error
+    end
+  end
 end

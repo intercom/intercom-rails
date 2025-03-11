@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require 'active_support/json'
-require 'active_support/core_ext/hash/indifferent_access'
-require 'active_support/core_ext/string/output_safety'
+require 'active_support/all'
 require 'action_view'
+require 'jwt'
 
 module IntercomRails
 
@@ -19,7 +18,7 @@ module IntercomRails
     include ::ActionView::Helpers::TagHelper
 
     attr_reader :user_details, :company_details, :show_everywhere, :session_duration
-    attr_accessor :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode
+    attr_accessor :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode, :jwt_enabled, :jwt_expiry
 
     def initialize(options = {})
       self.secret = options[:secret] || Config.api_secret
@@ -27,13 +26,21 @@ module IntercomRails
       self.controller = options[:controller]
       @show_everywhere = options[:show_everywhere]
       @session_duration = session_duration_from_config
-      self.user_details = options[:find_current_user_details] ? find_current_user_details : options[:user_details]
+      self.jwt_enabled = options[:jwt_enabled] || Config.jwt.enabled
+      self.jwt_expiry = options[:jwt_expiry] || Config.jwt.expiry
+
+      initial_user_details = if options[:find_current_user_details]
+        find_current_user_details
+      else
+        options[:user_details] || {}
+      end
+
+      lead_attributes = find_lead_attributes
+
+      self.user_details = initial_user_details.merge(lead_attributes)
 
       self.encrypted_mode_enabled = options[:encrypted_mode] || Config.encrypted_mode
       self.encrypted_mode = IntercomRails::EncryptedMode.new(secret, options[:initialization_vector], {:enabled => encrypted_mode_enabled})
-
-      # Request specific custom data for non-signed up users base on lead_attributes
-      self.user_details = self.user_details.merge(find_lead_attributes)
 
       self.company_details = if options[:find_current_company_details]
         find_current_company_details
@@ -72,6 +79,7 @@ module IntercomRails
       hsh[:company] = company_details if company_details.present?
       hsh[:hide_default_launcher] = Config.hide_default_launcher if Config.hide_default_launcher
       hsh[:api_base] = Config.api_base if Config.api_base
+      hsh[:installation_type] = 'rails'
       hsh
     end
 
@@ -111,7 +119,26 @@ module IntercomRails
       plaintext_javascript = ActiveSupport::JSON.encode(plaintext_settings).gsub('<', '\u003C')
       intercom_encrypted_payload_javascript = encrypted_mode.encrypted_javascript(intercom_settings)
 
-      "window.intercomSettings = #{plaintext_javascript};#{intercom_encrypted_payload_javascript}(function(){var w=window;var ic=w.Intercom;if(typeof ic===\"function\"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='#{Config.library_url || "https://widget.intercom.io/widget/#{j app_id}"}';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}};})()"
+      "window.intercomSettings = #{plaintext_javascript};#{intercom_encrypted_payload_javascript}(function(){var w=window;var ic=w.Intercom;if(typeof ic===\"function\"){ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='#{Config.library_url || "https://widget.intercom.io/widget/#{j app_id}"}';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}};})()"
+    end
+
+    def generate_jwt
+      return nil unless user_details[:user_id].present?
+      
+      payload = { user_id: user_details[:user_id].to_s }
+
+      if jwt_expiry
+        payload[:exp] = jwt_expiry.from_now.to_i
+      end
+
+      if Config.jwt.signed_user_fields.present?
+        Config.jwt.signed_user_fields.each do |field|
+          field = field.to_sym
+          payload[field] = user_details[field].to_s if user_details[field].present?
+        end
+      end
+
+      JWT.encode(payload, secret, 'HS256')
     end
 
     def user_details=(user_details)
@@ -119,7 +146,19 @@ module IntercomRails
       @user_details = @user_details.with_indifferent_access.tap do |u|
         [:email, :name, :user_id].each { |k| u.delete(k) if u[k].nil? }
 
-        u[:user_hash] ||= user_hash if secret.present? && (u[:user_id] || u[:email]).present?
+        if secret.present?
+          if jwt_enabled && u[:user_id].present?
+            u[:intercom_user_jwt] ||= generate_jwt
+            
+            u.delete(:user_id)
+            Config.jwt.signed_user_fields&.each do |field|
+              u.delete(field.to_sym)
+            end
+          elsif (u[:user_id] || u[:email]).present?
+            u[:user_hash] ||= user_hash
+          end
+        end
+        
         u[:app_id] ||= app_id
       end
     end

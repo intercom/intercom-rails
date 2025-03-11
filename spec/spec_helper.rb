@@ -1,6 +1,7 @@
 require 'intercom-rails'
 require 'rspec'
 require 'active_support/core_ext/string/output_safety'
+require 'pry'
 
 def dummy_user(options = {})
   user = Struct.new(:email, :name).new

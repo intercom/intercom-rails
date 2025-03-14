@@ -51,7 +51,6 @@ module IntercomRails
     end
 
     def valid?
-      return false if user_details[:excluded_user] == true
       valid = user_details[:app_id].present?
       unless @show_everywhere
         valid = valid && (user_details[:user_id] || user_details[:email]).present?

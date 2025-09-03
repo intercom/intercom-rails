@@ -17,8 +17,8 @@ module IntercomRails
     include ::ActionView::Helpers::JavaScriptHelper
     include ::ActionView::Helpers::TagHelper
 
-    attr_reader :user_details, :company_details, :show_everywhere, :session_duration
-    attr_accessor :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode, :jwt_enabled, :jwt_expiry
+    attr_reader :published_user_details, :company_details, :show_everywhere, :session_duration
+    attr_accessor :user_details, :secret, :widget_options, :controller, :nonce, :encrypted_mode_enabled, :encrypted_mode, :jwt_enabled, :jwt_expiry
 
     def initialize(options = {})
       self.secret = options[:secret] || Config.api_secret
@@ -38,6 +38,8 @@ module IntercomRails
       lead_attributes = find_lead_attributes
 
       self.user_details = initial_user_details.merge(lead_attributes)
+      user_details[:app_id] = app_id
+      @published_user_details = sanitize_user_details(user_details)
 
       self.encrypted_mode_enabled = options[:encrypted_mode] || Config.encrypted_mode
       self.encrypted_mode = IntercomRails::EncryptedMode.new(secret, options[:initialization_vector], {:enabled => encrypted_mode_enabled})
@@ -73,7 +75,7 @@ module IntercomRails
     end
 
     def intercom_settings
-      hsh = user_details
+      hsh = published_user_details
       hsh[:session_duration] = @session_duration if @session_duration.present?
       hsh[:widget] = widget_options if widget_options.present?
       hsh[:company] = company_details if company_details.present?
@@ -141,9 +143,9 @@ module IntercomRails
       JWT.encode(payload, secret, 'HS256')
     end
 
-    def user_details=(user_details)
-      @user_details = DateHelper.convert_dates_to_unix_timestamps(user_details || {})
-      @user_details = @user_details.with_indifferent_access.tap do |u|
+    def sanitize_user_details(user_details)
+      sanitize_user_details = DateHelper.convert_dates_to_unix_timestamps(user_details || {})
+      sanitize_user_details.with_indifferent_access.tap do |u|
         [:email, :name, :user_id].each { |k| u.delete(k) if u[k].nil? }
 
         if secret.present?

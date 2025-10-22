@@ -69,6 +69,53 @@ It is possible to enable Identity Verification for the Intercom Messenger and yo
 ```
 **Note: This example is just for the sake of simplicity, you should never include this secret in source control. Instead, you should use the Rails [secret config](http://guides.rubyonrails.org/4_1_release_notes.html#config-secrets-yml) feature.**
 
+### JWT Authentication
+You can enable JWT authentication for enhanced security with the Intercom Messenger. This feature uses JSON Web Tokens (JWTs) to authenticate users instead of the traditional user_hash method. To enable JWT authentication, add the following to your `config/initializers/intercom.rb`:
+
+```ruby
+  config.jwt.enabled = true
+```
+
+#### JWT Expiry
+You can set an expiry time for JWTs. This determines how long the token remains valid:
+
+```ruby
+  config.jwt.expiry = 12.hours  # Token expires after 12 hours
+```
+
+If no expiry is set, the JWT will not include an expiration claim.
+
+#### Signed User Fields
+You can specify which user fields should be included in the JWT payload and removed from the client-side settings for enhanced security:
+
+```ruby
+  config.jwt.signed_user_fields = [:email, :name, :plan, :team_id]
+```
+
+With this configuration, these fields will be:
+- Included in the signed JWT payload
+- Removed from the client-side `intercomSettings` object
+- Still available to Intercom through the secure JWT
+
+#### Per-Request JWT Configuration
+You can also configure JWT settings on a per-request basis using the `intercom_script_tag` helper:
+
+```erb
+<%= intercom_script_tag({
+  :user_id => current_user.id,
+  :email => current_user.email
+}, {
+  :jwt_enabled => true,
+  :jwt_expiry => 1.hour
+}) %>
+```
+
+**Important Notes:**
+- JWT authentication requires an `api_secret` to be configured
+- JWT is only generated when a `user_id` is present
+- When JWT is enabled, the `user_id` is removed from client-side settings and only included in the secure JWT
+- Other configured signed fields are also removed from client-side settings when JWT is used
+
 ### Shutdown
 We make use of first-party cookies so that we can identify your users the next time they open your messenger. When people share devices with someone else, they might be able to see the most recently logged in user’s conversation history until the cookie expires. Because of this, it’s very important to properly shutdown Intercom when a user’s session on your app ends (either manually or due to an automated logout).
 

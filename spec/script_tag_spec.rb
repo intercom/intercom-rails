@@ -443,6 +443,22 @@ describe IntercomRails::ScriptTag do
         expect(decoded_payload['name']).to be_nil
       end
     
+      it 'remains valid when both user_id and email are signed fields' do
+        IntercomRails.config.jwt.signed_user_fields = [:user_id, :email]
+        script_tag = ScriptTag.new(
+          user_details: {
+            user_id: '1234',
+            email: 'test@example.com'
+          },
+          jwt_enabled: true
+        )
+
+        expect(script_tag).to be_valid
+        expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_present
+        expect(script_tag.intercom_settings[:user_id]).to be_nil
+        expect(script_tag.intercom_settings[:email]).to be_nil
+      end
+
       it 'respects empty signed_user_fields configuration' do
         IntercomRails.config.jwt.signed_user_fields = []
         script_tag = ScriptTag.new(

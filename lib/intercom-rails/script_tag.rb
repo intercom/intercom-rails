@@ -54,7 +54,7 @@ module IntercomRails
       return false if user_details[:excluded_user] == true
       valid = user_details[:app_id].present?
       unless @show_everywhere
-        valid = valid && (user_details[:user_id] || user_details[:email]).present?
+        valid = valid && @has_identity
       end
       if nonce
         valid = valid && valid_nonce?
@@ -145,6 +145,8 @@ module IntercomRails
       @user_details = DateHelper.convert_dates_to_unix_timestamps(user_details || {})
       @user_details = @user_details.with_indifferent_access.tap do |u|
         [:email, :name, :user_id].each { |k| u.delete(k) if u[k].nil? }
+
+        @has_identity = (u[:user_id] || u[:email]).present?
 
         if secret.present?
           if jwt_enabled && u[:user_id].present?

@@ -8,5 +8,30 @@ jobs:
 
     steps:
       - checkout
+      - run:
+          name: Route Bundler through the Socket Firewall registry
+          command: |
+            set -euo pipefail
+            if [ -z "${SOCKET_GEM_URL:-}" ]; then
+              # CircleCI does not share context credentials with forked PRs, so a
+              # fork cannot be routed. Say so rather than failing the contributor.
+              if [ -n "${CIRCLE_PR_REPONAME:-}" ]; then
+                echo "Forked PR: no Socket Firewall credentials available, gems will come from rubygems.org."
+                exit 0
+              fi
+              echo "FATAL: SOCKET_GEM_URL is required (provided by the socket-firewall context)"
+              exit 1
+            fi
+            bundle config set --global mirror.https://rubygems.org "$SOCKET_GEM_URL"
+            bundle config get mirror.https://rubygems.org | grep -q socket-firewall-registry \
+              || { echo "FAIL: bundler mirror not pointing at Socket Firewall"; exit 1; }
       - run: bundle install
       - run: bundle exec rake
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build:
+          context:
+            - socket-firewall

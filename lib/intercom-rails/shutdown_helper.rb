@@ -1,27 +1,31 @@
 module IntercomRails
   module ShutdownHelper
-    # This helper allows to erase cookies when a user log out of an application
-    # It is recommanded to call this function every time a user log out of your application
+    # This helper allows to erase cookies when a user logs out of an application
+    # It is recommended to call this function every time a user logs out of your application
     # Do not use before a redirect_to because it will not clear the cookies on a redirection
-    def self.intercom_shutdown_helper(cookies, domain = nil)
+    #
+    # @param cookies [ActionDispatch::Cookies::CookieJar] The cookies object
+    # @param domain [String] The domain used for the Intercom cookies (required).
+    #   Specify the same domain that Intercom uses for its cookies
+    #   (typically your main domain with a leading dot, e.g. ".yourdomain.com").
+    def self.intercom_shutdown_helper(cookies, domain)      
       nil_session = { value: nil, expires: 1.day.ago }
-      nil_session = nil_session.merge(domain: domain) unless domain.nil? || domain == 'localhost'
-
-      if (cookies.is_a?(ActionDispatch::Cookies::CookieJar))
-        cookies["intercom-session-#{IntercomRails.config.app_id}"] = nil_session
-      else
-        controller = cookies
-        Rails.logger.info("Warning: IntercomRails::ShutdownHelper.intercom_shutdown_helper takes an instance of ActionDispatch::Cookies::CookieJar as an argument since v0.2.34. Passing a controller is depreciated. See https://github.com/intercom/intercom-rails#shutdown for more details.")
-        controller.response.delete_cookie("intercom-session-#{IntercomRails.config.app_id}", nil_session)
+      
+      unless domain == 'localhost'
+        dotted_domain = domain.start_with?('.') ? domain : ".#{domain}"
+        nil_session = nil_session.merge(domain: dotted_domain)
       end
-    rescue
+
+      cookies["intercom-session-#{IntercomRails.config.app_id}"] = nil_session
+    rescue => e
+      Rails.logger.error("Error in intercom_shutdown_helper: #{e.message}") if defined?(Rails) && Rails.logger
     end
 
     def self.prepare_intercom_shutdown(session)
       session[:perform_intercom_shutdown] = true
     end
 
-    def self.intercom_shutdown(session, cookies, domain = nil)
+    def self.intercom_shutdown(session, cookies, domain)
       if session[:perform_intercom_shutdown]
         session.delete(:perform_intercom_shutdown)
         intercom_shutdown_helper(cookies, domain)

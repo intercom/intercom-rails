@@ -59,6 +59,17 @@ class TestController < ActionController::Base
     render_content("<body>Hello world</body>")
   end
 
+  def with_user_instance_variable_but_no_current_user
+    @user = dummy_user
+    render_content("<body>Hello world</body>")
+  end
+
+  def with_unsaved_user_instance_variable
+    @user = dummy_user
+    def @user.persisted?; false; end
+    render_content("<body>Hello world</body>")
+  end
+
   def with_admin_instance_variable
     @admin = dummy_user(:email => 'eoghan@intercom.io', :name => 'Eoghan McCabe')
     render_content("<body>Hello world</body>")
@@ -80,8 +91,9 @@ class TestController < ActionController::Base
   end
 
   def current_user
-    raise NameError if params[:action] != 'with_current_user_method'
-    dummy_user(:email => 'ciaran@intercom.io', :name => 'Ciaran Lee')
+    raise NameError if params[:action] == 'with_user_instance_variable_but_no_current_user'
+    return dummy_user(:email => 'ciaran@intercom.io', :name => 'Ciaran Lee') if params[:action] == 'with_current_user_method'
+    @user
   end
 end
 
@@ -120,6 +132,16 @@ describe TestController, type: :controller do
     expect(response.body).to include('<script id="IntercomSettingsScriptTag">')
     expect(response.body).to include("ciaran@intercom.io")
     expect(response.body).to include("Ciaran Lee")
+  end
+
+  it 'has no intercom script if @user is set but current_user is not defined' do
+    get :with_user_instance_variable_but_no_current_user
+    expect(response.body).to eq("<body>Hello world</body>")
+  end
+
+  it 'has no intercom script if current_user is not persisted' do
+    get :with_unsaved_user_instance_variable
+    expect(response.body).to eq("<body>Hello world</body>")
   end
 
   it 'finds user using config.user.current proc' do

@@ -47,7 +47,7 @@ If things are not working make sure that:
 
 * You've generated a config file with your `app_id` as detailed above.
 * Your user object responds to an `id` or `email` method.
-* Your current user is accessible in your controllers as `current_user` or `@user`, if not in `config/initializers/intercom.rb`:
+* Your current user is accessible in your controllers as `current_user`. If it is not, set it in `config/initializers/intercom.rb`:
 ```ruby
   config.user.current = Proc.new { current_user_object }
 ```

@@ -71,6 +71,13 @@ module IntercomRails
         config.send(variable_name).present?
       end
 
+      def unsaved?
+        return proxied_object.new_record? if proxied_object.respond_to?(:new_record?)
+        return !proxied_object.persisted? if proxied_object.respond_to?(:persisted?)
+        return proxied_object.new? if proxied_object.respond_to?(:new?)
+        false
+      end
+
       def identity_present?
         self.class.identity_attributes.any? { |attribute_name| (proxied_object.is_a?(Hash) && proxied_object[attribute_name].present?) || (proxied_object.respond_to?(attribute_name) && proxied_object.send(attribute_name).present?) }
       end

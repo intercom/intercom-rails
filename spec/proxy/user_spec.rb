@@ -21,14 +21,30 @@ describe IntercomRails::Proxy::User do
     expect(@user_proxy.user).to eq(DUMMY_USER)
   end
 
-  it 'finds user instance variable' do
+  it 'ignores a @user instance variable' do
     object_with_instance_variable = Object.new
-    object_with_instance_variable.instance_eval do
-      @user = DUMMY_USER
-    end
+    object_with_instance_variable.instance_variable_set(:@user, DUMMY_USER)
 
-    @user_proxy = ProxyUser.current_in_context(object_with_instance_variable)
-    expect(@user_proxy.user).to eq(DUMMY_USER)
+    expect { ProxyUser.current_in_context(object_with_instance_variable) }.to raise_error(IntercomRails::NoUserFoundError)
+  end
+
+  {
+    'current_user' => ->(search_object, user) { search_object.define_singleton_method(:current_user) { user } },
+    'config.user.current' => ->(search_object, user) {
+      search_object.instance_variable_set(:@user, user)
+      IntercomRails.config.user.current = Proc.new { @user }
+    },
+  }.each do |source, assign|
+    it "does not use a user reporting persisted? false from #{source}" do
+      unsaved_user = dummy_user(:email => 'not-saved@intercom.io')
+      def unsaved_user.persisted?
+        false
+      end
+      search_object = Object.new
+      assign.call(search_object, unsaved_user)
+
+      expect { ProxyUser.current_in_context(search_object) }.to raise_error(IntercomRails::NoUserFoundError)
+    end
   end
 
   it 'finds config user' do
@@ -131,14 +147,14 @@ describe IntercomRails::Proxy::User do
     expect(ProxyUser.new(user).valid?).to be(true)
   end
 
-  it 'considers new records to be invalid' do
-    new_record_user = dummy_user(:email => 'not-saved@intercom.io', :name => 'New Record')
-
-    def new_record_user.new_record?
-      true
+  { 'new_record?' => true, 'persisted?' => false, 'new?' => true }.each do |predicate, unsaved_value|
+    it "is invalid when the user reports #{predicate} == #{unsaved_value}" do
+      user = dummy_user(:email => 'not-saved@intercom.io')
+      user.define_singleton_method(predicate) { unsaved_value }
+      expect(ProxyUser.new(user).valid?).to be(false)
+      user.define_singleton_method(predicate) { !unsaved_value }
+      expect(ProxyUser.new(user).valid?).to be(true)
     end
-
-    expect(ProxyUser.new(new_record_user).valid?).to be(false)
   end
 
   it 'includes custom data from intercom custom data' do

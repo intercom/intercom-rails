@@ -20,9 +20,9 @@ module Intercom
         introduction = <<-desc
 Intercom will automatically insert its javascript before the closing '</body>'
 tag on every page where it can find a logged-in user. Intercom by default
-looks for logged-in users, in the controller, via 'current_user' and '@user'.
+looks for logged-in users, in the controller, via 'current_user'.
 
-Is the logged-in user accessible via either 'current_user' or '@user'? [Yn]
+Is the logged-in user accessible via 'current_user'? [Yn]
         desc
 
         print "#{introduction.strip} "

@@ -9,10 +9,7 @@ module IntercomRails
       proxy_delegator :name
       proxy_delegator :created_at
 
-      PREDEFINED_POTENTIAL_USER_OBJECTS = [
-        Proc.new { current_user },
-        Proc.new { @user }
-      ]
+      PREDEFINED_POTENTIAL_USER_OBJECTS = [Proc.new { current_user }]
 
       def self.potential_user_objects
         if config.current.present?
@@ -46,7 +43,7 @@ module IntercomRails
       end
 
       def valid?
-        return false if user.blank? || user.respond_to?(:new_record?) && user.new_record?
+        return false if user.blank? || unsaved?
         return false if excluded?
         identity_present?
       end

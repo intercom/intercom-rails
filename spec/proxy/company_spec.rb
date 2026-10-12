@@ -25,4 +25,10 @@ describe IntercomRails::Proxy::Company do
     search_object = nil
     expect(ProxyCompany.new(search_object).valid?).to eq(false)
   end
+
+  it 'is invalid when the company reports persisted? == false' do
+    company = dummy_company
+    def company.persisted?; false; end
+    expect(ProxyCompany.new(company).valid?).to eq(false)
+  end
 end

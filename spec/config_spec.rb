@@ -66,6 +66,11 @@ describe IntercomRails do
     expect(IntercomRails.config.encrypted_mode).to eq(true)
   end
 
+  it 'gets/sets controller callback' do
+    IntercomRails.config.exclude_javascript_callback = :callback
+    expect(IntercomRails.config.exclude_javascript_callback).to eq(:callback)
+  end
+
   it 'raises error if current user not a proc' do
     expect { IntercomRails.config.user.current = 1 }.to raise_error(ArgumentError)
   end

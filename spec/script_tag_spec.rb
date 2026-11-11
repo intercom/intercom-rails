@@ -313,6 +313,7 @@ describe IntercomRails::ScriptTag do
         user_details: { user_id: '1234' },
         jwt_enabled: false
       )
+      expect(script_tag).to be_valid
       expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_nil
     end
 
@@ -321,6 +322,7 @@ describe IntercomRails::ScriptTag do
         user_details: { user_id: '1234' },
         jwt_enabled: true
       )
+      expect(script_tag).to be_valid
       expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_present
     end
 
@@ -329,6 +331,7 @@ describe IntercomRails::ScriptTag do
         user_details: { user_id: '1234' },
         jwt_enabled: true
       )
+      expect(script_tag).to be_valid
       expect(script_tag.intercom_settings[:user_hash]).to be_nil
     end
 
@@ -339,6 +342,7 @@ describe IntercomRails::ScriptTag do
         jwt_enabled: true
       )
       
+      expect(script_tag).to be_valid
       jwt = script_tag.intercom_settings[:intercom_user_jwt]
       decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
       
@@ -350,6 +354,7 @@ describe IntercomRails::ScriptTag do
         user_details: { email: 'test@example.com' },
         jwt_enabled: true
       )
+      expect(script_tag).to be_valid
       expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_nil
     end
 
@@ -359,6 +364,7 @@ describe IntercomRails::ScriptTag do
         user_details: { user_id: '1234' },
         jwt_enabled: true
       )
+      expect(script_tag).to be_valid
       expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_nil
     end
 
@@ -372,6 +378,7 @@ describe IntercomRails::ScriptTag do
         jwt_enabled: true
       )
       
+      expect(script_tag).to be_valid
       expect(script_tag.intercom_settings[:intercom_user_jwt]).to be_present
       expect(script_tag.intercom_settings[:user_id]).to be_nil
       expect(script_tag.intercom_settings[:email]).to eq('test@example.com')
@@ -388,6 +395,7 @@ describe IntercomRails::ScriptTag do
         jwt_enabled: false
       )
       
+      expect(script_tag).to be_valid
       expect(script_tag.intercom_settings[:user_id]).to eq('1234')
       expect(script_tag.intercom_settings[:email]).to eq('test@example.com')
       expect(script_tag.intercom_settings[:name]).to eq('Test User')
@@ -410,6 +418,7 @@ describe IntercomRails::ScriptTag do
           jwt_enabled: true
         )
         
+        expect(script_tag).to be_valid
         jwt = script_tag.intercom_settings[:intercom_user_jwt]
         decoded_payload = JWT.decode(jwt, 'super-secret', true, { algorithm: 'HS256' })[0]
         
